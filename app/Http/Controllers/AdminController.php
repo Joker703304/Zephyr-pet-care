@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\pemilik_hewan;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class AdminController extends Controller
@@ -19,19 +21,19 @@ class AdminController extends Controller
     public function index()
     {
         // Dapatkan statistik atau data lainnya yang relevan untuk admin
-        $usersCount = \App\Models\User::count();  // Jumlah pengguna
+        $usersCount = User::count();  // Jumlah pengguna
         // $appointmentsCount = \App\Models\Appointment::count();  // Jumlah janji temu
         // $medicationsCount = \App\Models\Obat::count();
-        // $ownersCount = \App\Models\pemilik_hewan::count();
+        $ownersCount = pemilik_hewan::count();
 
-        return view('admin.dashboard', compact('usersCount'));
+        return view('admin.dashboard', compact('usersCount', 'ownersCount'));
     }
 
     // Tambahkan fungsi lain untuk mengelola fitur admin, misalnya:
     public function manageUsers()
     {
         // Ambil semua pengguna untuk dikelola
-        $users = \App\Models\User::all();
+        $users = User::all();
         return view('admin.user', compact('users'));
     }
 
@@ -42,10 +44,10 @@ class AdminController extends Controller
     //     return view('admin.obat', compact('obats'));
     // }
 
-    // public function managePemilik()
-    // {
-    //     // Ambil semua pengguna untuk dikelola
-    //     $data = \App\Models\pemilik_hewan::all();
-    //     return view('admin.pemilik_hewan', compact('data'));
-    // }
+    public function managePemilik()
+    {
+        // Ambil semua pengguna untuk dikelola
+        $data =pemilik_hewan::all();
+        return view('admin.pemilik_hewan', compact('data'));
+    }
 }
