@@ -24,7 +24,7 @@ class AdminController extends Controller
         // $medicationsCount = \App\Models\Obat::count();
         // $ownersCount = \App\Models\pemilik_hewan::count();
 
-        return view('admin.dashboard', compact('usersCount', 'medicationsCount', 'ownersCount'));
+        return view('admin.dashboard', compact('usersCount'));
     }
 
     // Tambahkan fungsi lain untuk mengelola fitur admin, misalnya:
