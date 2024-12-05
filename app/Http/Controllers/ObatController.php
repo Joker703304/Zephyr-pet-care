@@ -14,42 +14,42 @@ class ObatController extends Controller
     }
 
     // Menampilkan form untuk menambahkan obat baru
-    // public function create()
-    // {
-    //     return view('admin.obat.create');
-    // }
+    public function create()
+    {
+        return view('admin.obat.create');
+    }
 
     // // Menyimpan obat baru ke database
-    // public function store(Request $request)
-    // {
-    //     $request->validate([
-    //         'nama_obat' => 'required|string',
-    //         'jenis_obat' => 'nullable|string',
-    //         'stok' => 'required|integer',
-    //         'harga' => 'required|string',
-    //     ]);
+    public function store(Request $request)
+    {
+        $request->validate([
+            'nama_obat' => 'required|string',
+            'jenis_obat' => 'nullable|string',
+            'stok' => 'required|integer',
+            'harga' => 'required|string',
+        ]);
 
-    //     $lastObat = Obat::latest()->first();
+        $lastObat = Obat::latest()->first();
 
-    //     // Mengambil angka terakhir dan menambahkannya satu
-    //     $lastId = $lastObat ? (int) substr($lastObat->id_pemilik, 1) : 0;
-    //     $newId = 'D' . str_pad($lastId + 1, 3, '0', STR_PAD_LEFT);
+        // Mengambil angka terakhir dan menambahkannya satu
+        $lastId = $lastObat ? (int) substr($lastObat->id_pemilik, 1) : 0;
+        $newId = 'D' . str_pad($lastId + 1, 3, '0', STR_PAD_LEFT);
 
-    //     while (Obat::where('id_obat', $newId)->exists()) {
-    //         $lastId++;
-    //         $newId = 'D' . str_pad($lastId + 1, 3, '0', STR_PAD_LEFT);
-    //     }
+        while (Obat::where('id_obat', $newId)->exists()) {
+            $lastId++;
+            $newId = 'D' . str_pad($lastId + 1, 3, '0', STR_PAD_LEFT);
+        }
 
-    //     Obat::create([
-    //         'id_obat' => $newId,
-    //         'nama_obat' => $request->nama_obat,
-    //         'jenis_obat' => $request->jenis_obat,
-    //         'stok' => $request->stok,
-    //         'harga' => $request->harga,
-    //     ]);
+        Obat::create([
+            'id_obat' => $newId,
+            'nama_obat' => $request->nama_obat,
+            'jenis_obat' => $request->jenis_obat,
+            'stok' => $request->stok,
+            'harga' => $request->harga,
+        ]);
 
-    //     return redirect()->route('admin.obat')->with('success', 'Obat berhasil ditambahkan.');
-    // }
+        return redirect()->route('admin.obat.index')->with('success', 'Obat berhasil ditambahkan.');
+    }
 
     // Menampilkan form untuk mengedit data obat
     public function edit(Obat $obat)
@@ -69,7 +69,7 @@ class ObatController extends Controller
 
         $obat->update($request->all());
 
-        return redirect()->route('admin.obat')->with('success', 'Obat berhasil diperbarui.');
+        return redirect()->route('admin.obat.index')->with('success', 'Obat berhasil diperbarui.');
     }
 
     // Menghapus data obat
@@ -77,6 +77,6 @@ class ObatController extends Controller
     {
         $obat->delete();
 
-        return redirect()->route('admin.obat')->with('success', 'Obat berhasil dihapus.');
+        return redirect()->route('admin.obat.index')->with('success', 'Obat berhasil dihapus.');
     }
 }

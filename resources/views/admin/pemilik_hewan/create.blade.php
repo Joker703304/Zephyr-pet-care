@@ -61,7 +61,7 @@
 
         <div class="form-group">
             <button type="submit" class="btn btn-primary">Save</button>
-            <a href="{{ route('admin.pemilik_hewan') }}" class="btn btn-secondary">Cancel</a>
+            <a href="{{ route('admin.pemilik_hewan.index') }}" class="btn btn-secondary">Cancel</a>
         </div>
     </form>
 </div>
