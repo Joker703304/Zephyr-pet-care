@@ -167,7 +167,7 @@
                             <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $ownersCount ?? 'N/A' }}</div>
                         </div>
                         <div class="col-auto">
-                            <i class="fas fa-clipboard-list fa-2x text-gray-300"></i>
+                            <i class="fas fa-paw fa-2x text-gray-300"></i>
                         </div>
                     </div>
                 </div>
@@ -185,7 +185,7 @@
                             <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $animalsCount ?? 'N/A' }}</div>
                         </div>
                         <div class="col-auto">
-                            <i class="fas fa-clipboard-list fa-2x text-gray-300"></i>
+                            <i class="fas fa-dog fa-2x text-gray-300"></i>
                         </div>
                     </div>
                 </div>
@@ -204,17 +204,10 @@
                                 <div class="col-auto">
                                     <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">{{ $doctorsCount ?? 'N/A' }}</div>
                                 </div>
-                                {{-- <div class="col">
-                                    <div class="progress progress-sm mr-2">
-                                        <div class="progress-bar bg-info" role="progressbar"
-                                            style="width: 50%" aria-valuenow="50" aria-valuemin="0"
-                                            aria-valuemax="100"></div>
-                                    </div>
-                                </div> --}}
                             </div>
                         </div>
                         <div class="col-auto">
-                            <i class="fas fa-clipboard-list fa-2x text-gray-300"></i>
+                            <i class="fas fa-user-md fa-2x text-gray-300"></i>
                         </div>
                     </div>
                 </div>
@@ -233,7 +226,7 @@
                             <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $consultationsCount ?? 'N/A' }}</div>
                         </div>
                         <div class="col-auto">
-                            <i class="fas fa-comments fa-2x text-gray-300"></i>
+                            <i class="fas fa-notes-medical fa-2x text-gray-300"></i>
                         </div>
                     </div>
                 </div>
@@ -251,7 +244,7 @@
                         <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $medicationsCount ?? 'N/A' }}</div>
                     </div>
                     <div class="col-auto">
-                        <i class="fas fa-clipboard-list fa-2x text-gray-300"></i>
+                        <i class="fas fa-pills fa-2x text-gray-300"></i>
                     </div>
                 </div>
             </div>
@@ -315,7 +308,7 @@
                         <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $queueCount ?? 'N/A' }}</div>
                     </div>
                     <div class="col-auto">
-                        <i class="fas fa-comments fa-2x text-gray-300"></i>
+                        <i class="fas fa-hourglass fa-2x text-gray-300"></i>
                     </div>
                 </div>
             </div>

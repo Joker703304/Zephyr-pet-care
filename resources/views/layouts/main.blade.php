@@ -35,7 +35,7 @@
                 <div class="sidebar-brand-icon rotate-n-15">
                     <i class="fas fa-laugh-wink"></i>
                 </div>
-                <div class="sidebar-brand-text mx-3">SB Admin <sup>2</sup></div>
+                <div class="sidebar-brand-text mx-3">Zerhy Pet Care</div>
             </a>
 
             <!-- Divider -->
@@ -61,6 +61,12 @@
                 <a class="nav-link" href="{{ route('admin.pemilik_hewan') }}">
                     <i class="fas fa-fw fa-table"></i>
                     <span>Pemilik Hewan</span></a>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link" href="{{ route('admin.obat') }}">
+                    <i class="fas fa-fw fa-table"></i>
+                    <span>Obat</span></a>
             </li>
 
             <!-- Nav Item - Pages Collapse Menu -->

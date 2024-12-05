@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\obat;
 use App\Models\pemilik_hewan;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -23,10 +24,10 @@ class AdminController extends Controller
         // Dapatkan statistik atau data lainnya yang relevan untuk admin
         $usersCount = User::count();  // Jumlah pengguna
         // $appointmentsCount = \App\Models\Appointment::count();  // Jumlah janji temu
-        // $medicationsCount = \App\Models\Obat::count();
+        $medicationsCount = obat::count();
         $ownersCount = pemilik_hewan::count();
 
-        return view('admin.dashboard', compact('usersCount', 'ownersCount'));
+        return view('admin.dashboard', compact('usersCount', 'ownersCount', 'medicationsCount'));
     }
 
     // Tambahkan fungsi lain untuk mengelola fitur admin, misalnya:
@@ -37,12 +38,12 @@ class AdminController extends Controller
         return view('admin.user', compact('users'));
     }
 
-    // public function manageObat()
-    // {
-    //     // Ambil semua pengguna untuk dikelola
-    //     $obats = \App\Models\Obat::all();
-    //     return view('admin.obat', compact('obats'));
-    // }
+    public function manageObat()
+    {
+        // Ambil semua pengguna untuk dikelola
+        $obats = Obat::all();
+        return view('admin.obat', compact('obats'));
+    }
 
     public function managePemilik()
     {
