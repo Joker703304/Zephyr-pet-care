@@ -3,7 +3,7 @@
 @section('content')
 <div class="container">
     <h1>Owners Management</h1>
-    <a href="{{ route('admin.pemilik_hewan.create') }}" class="btn btn-success mb-3">Add New Owner</a>
+    {{-- <a href="{{ route('admin.pemilik_hewan.create') }}" class="btn btn-success mb-3">Add New Owner</a> --}}
 
     <!-- Success Message -->
     @if(session('success'))
