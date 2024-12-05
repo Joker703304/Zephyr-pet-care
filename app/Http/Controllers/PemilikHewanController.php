@@ -84,7 +84,7 @@ class PemilikHewanController extends Controller
             'no_tlp' => $request->no_tlp,
         ]);
 
-        return redirect()->route('admin.pemilik_hewan')->with('success', 'Pemilik Hewan berhasil diperbarui.');
+        return redirect()->route('admin.pemilik_hewan.index')->with('success', 'Pemilik Hewan berhasil diperbarui.');
     }
 
     // Menghapus data pemilik hewan
@@ -94,6 +94,6 @@ class PemilikHewanController extends Controller
         $pemilikHewan = pemilik_hewan::findOrFail($id_pemilik);
         $pemilikHewan->delete();
 
-        return redirect()->route('admin.pemilik_hewan')->with('success', 'Pemilik Hewan berhasil dihapus.');
+        return redirect()->route('admin.pemilik_hewan.index')->with('success', 'Pemilik Hewan berhasil dihapus.');
     }
 }

@@ -22,7 +22,7 @@
         </div>
     @endif
 
-    <form action="{{ route('admin.pemilik_hewan.update', $pemilik->id_pemilik) }}" method="POST">
+    {{-- <form action="{{ route('admin.pemilik_hewan.update', $pemilik->id_pemilik) }}" method="POST">
         @csrf
         @method('PUT')
 
@@ -58,6 +58,53 @@
             <button type="submit" class="btn btn-primary">Update</button>
             <a href="{{ route('admin.pemilik_hewan') }}" class="btn btn-secondary">Cancel</a>
         </div>
-    </form>
+    </form> --}}
+</div>
+
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">Edit Drug</h6>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <form action="{{ route('admin.pemilik_hewan.update', $pemilik->id_pemilik) }}" method="POST">
+                @csrf
+                @method('PUT')
+        
+                <div class="form-group">
+                    <label for="nama">Nama</label>
+                    <input type="text" name="nama" id="nama" class="form-control" value="{{ old('nama', $pemilik->nama) }}" required>
+                </div>        
+        
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" name="email" class="form-control" value="{{ $pemilik->email }}" required>
+                </div>
+        
+                <div class="form-group">
+                    <label for="jenkel">Jenis Kelamin</label>
+                    <select name="jenkel" id="jenkel" class="form-control">
+                        <option value="pria" {{ old('jenkel', $pemilik->jenkel) == 'pria' ? 'selected' : '' }}>pria</option>
+                        <option value="wanita" {{ old('jenkel', $pemilik->jenkel) == 'wanita' ? 'selected' : '' }}>Wanita</option>
+                    </select>
+                </div>
+        
+                <div class="form-group">
+                    <label for="alamat">Alamat</label>
+                    <textarea name="alamat" id="alamat" class="form-control" required>{{ old('alamat', $pemilik->alamat) }}</textarea>
+                </div>
+        
+                <div class="form-group">
+                    <label for="no_tlp">Nomor Telepon</label>
+                    <input type="text" name="no_tlp" id="no_tlp" class="form-control" value="{{ old('no_tlp', $pemilik->no_tlp) }}" required>
+                </div>
+        
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary">Update</button>
+                    <a href="{{ route('admin.pemilik_hewan.index') }}" class="btn btn-secondary">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
 </div>
 @endsection
