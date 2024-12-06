@@ -9,6 +9,7 @@ use App\Http\Controllers\ApotekerController;
 use App\Http\Controllers\PemilikHewanController;
 use App\Http\Controllers\ObatController;
 use App\Http\Controllers\DokterController;
+use App\Http\Controllers\HewanController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -58,10 +59,17 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     // Route::delete('/obat/{obat}', [ObatController::class, 'destroy'])->name('obat.destroy');
 });
 
+//dokter
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
     //pemilik hewan
     Route::resource('dokter', DokterController::class);
    });
+
+//hewan
+Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
+    Route::resource('hewan', HewanController::class);
+});
+
 
 //apoteker
 Route::middleware(['auth', 'role:apoteker'])->prefix('apoteker')->name('apoteker.')->group(function () {
