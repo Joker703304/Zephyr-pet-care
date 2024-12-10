@@ -14,6 +14,7 @@
             <tr>
                 <th>#</th>
                 <th>Nama</th>
+                <th>Email</th>
                 <th>Spesialis</th>
                 <th>No Telepon</th>
                 <th>Hari</th>
@@ -25,10 +26,11 @@
             @foreach ($dokters as $dokter)
                 <tr>
                     <td>{{ $loop->iteration }}</td>
-                    <td>{{ $dokter->nama }}</td>
+                    <td>{{ $dokter->user->name }}</td>
+                    <td>{{ $dokter->user->email }}</td>
                     <td>{{ $dokter->spesialis }}</td>
                     <td>{{ $dokter->no_telepon }}</td>
-                    <td>{{ $dokter->hari }}</td>
+                    <td>{{ implode(', ', json_decode($dokter->hari ?? '[]', true)) }}</td>
                     <td>{{ $dokter->jam_mulai }} - {{ $dokter->jam_selesai }}</td>
                     <td>
                         <a href="{{ route('admin.dokter.edit', $dokter->id) }}" class="btn btn-warning btn-sm">Edit</a>

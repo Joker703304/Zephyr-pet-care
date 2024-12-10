@@ -9,7 +9,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>SB Admin 2 - Dashboard</title>
+    <title>Zephyr Pet Care - Dashboard</title>
 
     <!-- Custom fonts for this template-->
     <link href="{{ asset('assets/startbootstrap-sb-admin-2-gh-pages') }}/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
@@ -35,7 +35,7 @@
                 <div class="sidebar-brand-icon rotate-n-15">
                     <i class="fas fa-cat"></i>
                 </div>
-                <div class="sidebar-brand-text mx-3">Zerhy Pet Care</div>
+                <div class="sidebar-brand-text mx-3">Zerhyr Pet Care</div>
             </a>
 
             <!-- Divider -->
