@@ -10,6 +10,7 @@ use App\Http\Controllers\PemilikHewanController;
 use App\Http\Controllers\ObatController;
 use App\Http\Controllers\DokterController;
 use App\Http\Controllers\HewanController;
+use App\Http\Controllers\KonsultasiController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -32,12 +33,6 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
  //pemilik hewan
  Route::resource('pemilik_hewan', PemilikHewanController::class);
-//  Route::get('/pemilik_hewan', [PemilikHewanController::class, 'index'])->name('pemilik_hewan');
-//  Route::get('/pemilik_hewan/create', [PemilikHewanController::class, 'create'])->name('pemilik_hewan.create');
-//  Route::post('/pemilik_hewan', [PemilikHewanController::class, 'store'])->name('pemilik_hewan.store');
-//  Route::get('/pemilik_hewan/{pemilik_hewan}/edit', [PemilikHewanController::class, 'edit'])->name('pemilik_hewan.edit');
-//  Route::put('/pemilik_hewan/{pemilik_hewan}', [PemilikHewanController::class, 'update'])->name('pemilik_hewan.update');
-//  Route::delete('/pemilik_hewan/{pemilik_hewan}', [PemilikHewanController::class, 'destroy'])->name('pemilik_hewan.destroy');
 });
 
 // Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
@@ -52,11 +47,6 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     // //obat
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::resource('obat', ObatController::class);
-    // Route::get('/obat/create', [ObatController::class, 'create'])->name('obat.create');
-    // Route::post('/obat', [ObatController::class, 'store'])->name('obat.store');
-    // Route::get('/obat/{obat}/edit', [ObatController::class, 'edit'])->name('obat.edit');
-    // Route::put('/obat/{obat}', [ObatController::class, 'update'])->name('obat.update');
-    // Route::delete('/obat/{obat}', [ObatController::class, 'destroy'])->name('obat.destroy');
 });
 
 //dokter
@@ -70,6 +60,10 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::resource('hewan', HewanController::class);
 });
 
+//konsultasi
+Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
+    Route::resource('konsultasi', KonsultasiController::class);
+});
 
 //apoteker
 Route::middleware(['auth', 'role:apoteker'])->prefix('apoteker')->name('apoteker.')->group(function () {

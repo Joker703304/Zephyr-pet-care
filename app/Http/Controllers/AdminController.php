@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Dokter;
 use App\Models\hewan;
+use App\Models\konsultasi;
 use App\Models\obat;
 use App\Models\pemilik_hewan;
 use App\Models\User;
@@ -31,9 +32,10 @@ class AdminController extends Controller
         $ownersCount = pemilik_hewan::count();
         $doctorsCount = Dokter::count();
         $animalsCount = hewan::count();
+        $consultationsCount = konsultasi::count();
 
 
-        return view('admin.dashboard', compact('usersCount', 'ownersCount', 'medicationsCount', 'doctorsCount', 'animalsCount'));
+        return view('admin.dashboard', compact('usersCount', 'ownersCount', 'medicationsCount', 'doctorsCount', 'animalsCount', 'consultationsCount'));
     }
 
     // Tambahkan fungsi lain untuk mengelola fitur admin, misalnya:
@@ -70,5 +72,12 @@ class AdminController extends Controller
         // Ambil semua pengguna untuk dikelola
         $hewan = hewan::all();
         return view('admin.hewan', compact('hewan'));
+    }
+
+    public function manageKonsultasi()
+    {
+        // Ambil semua pengguna untuk dikelola
+        $konsultasi = konsultasi::all();
+        return view('admin.konsultasi', compact('konsultasi'));
     }
 }
