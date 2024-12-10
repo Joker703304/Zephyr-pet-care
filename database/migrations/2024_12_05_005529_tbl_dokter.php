@@ -13,13 +13,15 @@ return new class extends Migration
     {
         Schema::create('tbl_dokter', function (Blueprint $table) {
             $table->id(); // Primary key
-            $table->string('nama', 100); // Nama dokter
+            $table->unsignedBigInteger('id_user');
             $table->string('spesialis', 50)->nullable(); // Spesialisasi dokter
             $table->string('no_telepon', 20)->unique(); // Nomor telepon
-            $table->string('hari', 20)->nullable();; // Hari kerja (Senin, Selasa, dst.)
-            $table->time('jam_mulai')->nullable();; // Jam mulai kerja
-            $table->time('jam_selesai')->nullable();; // Jam selesai kerja
+            $table->json('hari')->nullable(); // Ubah kolom hari menjadi json
+            $table->time('jam_mulai')->nullable(); // Jam mulai kerja
+            $table->time('jam_selesai')->nullable();// Jam selesai kerja
+            $table->foreign('id_user')->references('id')->on('users')->onDelete('cascade');
             $table->timestamps(); // Kolom created_at dan updated_at
+            
         });
     }
 

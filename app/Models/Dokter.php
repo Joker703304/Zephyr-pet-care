@@ -12,11 +12,17 @@ class Dokter extends Model
     protected $table = 'tbl_dokter';
 
     protected $fillable = [
-        'nama',
+        'id_user',
         'spesialis',
         'no_telepon',
         'hari',
         'jam_mulai',
         'jam_selesai',
     ];
+
+
+    public function user()
+{
+    return $this->belongsTo(User::class, 'id_user');
+}
 }

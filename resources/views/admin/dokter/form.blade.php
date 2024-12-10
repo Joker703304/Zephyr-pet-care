@@ -1,6 +1,6 @@
 <div class="form-group mb-3">
     <label for="nama">Nama</label>
-    <input type="text" name="nama" id="nama" class="form-control" value="{{ old('nama', $dokter->nama ?? '') }}" required>
+    <input type="text" name="name" id="name" class="form-control" value="{{ old('name', $dokter->user->name ?? '') }}" required>
 </div>
 
 <div class="form-group mb-3">
@@ -14,9 +14,20 @@
 </div>
 
 <div class="form-group mb-3">
-    <label for="hari">Hari Kerja</label>
-    <input type="text" name="hari" id="hari" class="form-control" value="{{ old('hari', $dokter->hari ?? '') }}">
+    <label for="hari">Hari Kerja</label><br>
+    @php
+        $days = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu'];
+        $selectedDays = old('hari', isset($dokter) ? json_decode($dokter->hari, true) : []);
+    @endphp
+    @foreach ($days as $day)
+        <label>
+            <input type="checkbox" name="hari[]" value="{{ $day }}" 
+                {{ in_array($day, $selectedDays) ? 'checked' : '' }}>
+            {{ $day }}
+        </label>
+    @endforeach
 </div>
+
 
 <div class="form-group mb-3">
     <label for="jam_mulai">Jam Mulai</label>
