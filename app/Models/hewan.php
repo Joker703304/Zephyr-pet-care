@@ -27,4 +27,9 @@ class hewan extends Model
     {
         return $this->belongsTo(pemilik_hewan::class, 'id_pemilik', 'id_pemilik');
     }
+
+    public function konsultasi()
+    {
+        return $this->hasMany(Konsultasi::class, 'id_hewan');
+    }
 }
