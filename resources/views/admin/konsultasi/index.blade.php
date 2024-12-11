@@ -14,6 +14,7 @@
         <thead>
             <tr>
                 <th>ID Konsultasi</th>
+                <th>NO Antrian</th>
                 <th>Nama Dokter</th>
                 <th>Nama Hewan</th>
                 <th>Keluhan</th>
@@ -26,6 +27,7 @@
             @foreach ($konsultasi as $item)
             <tr>
                 <td>{{ $loop->iteration }}</td>
+                <td>{{ $item->no_antrian }}</td>
                 <td>{{ $item->dokter->user->name ?? 'Tidak ada' }}</td>
                 <td>{{ $item->hewan->nama_hewan ?? 'Tidak ada' }}</td>
                 <td>{{ $item->keluhan }}</td>

@@ -25,6 +25,13 @@ class AdminController extends Controller
      */
     public function index()
     {
+        $today = now()->toDateString();
+
+        // Cari antrian berikutnya
+        $nextQueue = Konsultasi::whereDate('tanggal_konsultasi', $today)
+            ->where('status', 'Menunggu')
+            ->orderBy('no_antrian')
+            ->first();
         // Dapatkan statistik atau data lainnya yang relevan untuk admin
         $usersCount = User::count();  // Jumlah pengguna
         // $appointmentsCount = \App\Models\Appointment::count();  // Jumlah janji temu
@@ -35,7 +42,7 @@ class AdminController extends Controller
         $consultationsCount = konsultasi::count();
 
 
-        return view('admin.dashboard', compact('usersCount', 'ownersCount', 'medicationsCount', 'doctorsCount', 'animalsCount', 'consultationsCount'));
+        return view('admin.dashboard', compact('usersCount', 'ownersCount', 'medicationsCount', 'doctorsCount', 'animalsCount', 'consultationsCount', 'nextQueue'));
     }
 
     // Tambahkan fungsi lain untuk mengelola fitur admin, misalnya:
@@ -56,7 +63,7 @@ class AdminController extends Controller
     public function managePemilik()
     {
         // Ambil semua pengguna untuk dikelola
-        $data =pemilik_hewan::all();
+        $data = pemilik_hewan::all();
         return view('admin.pemilik_hewan', compact('data'));
     }
 

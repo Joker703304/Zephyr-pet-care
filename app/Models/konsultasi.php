@@ -17,7 +17,8 @@ class konsultasi extends Model
         'id_hewan', 
         'keluhan', 
         'tanggal_konsultasi', 
-        'status'
+        'status',
+        'no_antrian'
     ];
 
     public function dokter()
