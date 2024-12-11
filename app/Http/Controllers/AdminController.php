@@ -29,7 +29,7 @@ class AdminController extends Controller
 
         // Cari antrian berikutnya
         $nextQueue = Konsultasi::whereDate('tanggal_konsultasi', $today)
-            ->where('status', 'Menunggu')
+            ->whereIn('status', ['Menunggu', 'Sedang Diproses'])
             ->orderBy('no_antrian')
             ->first();
         // Dapatkan statistik atau data lainnya yang relevan untuk admin
