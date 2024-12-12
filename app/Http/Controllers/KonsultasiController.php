@@ -41,8 +41,23 @@ class KonsultasiController extends Controller
             'status' => 'required|in:Menunggu,Sedang Diproses,Selesai,Dibatalkan',
         ]);
 
-        Konsultasi::create($request->all());
+         // Hitung nomor antrian untuk tanggal konsultasi
+    $today = now()->toDateString();  // Dapatkan tanggal saat ini (atau bisa berdasarkan tanggal yang dipilih)
+    $lastQueueNumber = Konsultasi::whereDate('tanggal_konsultasi', $request->tanggal_konsultasi)
+        ->where('status', 'Menunggu')  // Hanya hitung yang statusnya "Menunggu"
+        ->max('no_antrian');  // Ambil nomor antrian terbesar pada hari tersebut
 
+    // Tentukan nomor antrian berikutnya
+    $nextQueueNumber = $lastQueueNumber ? intval(substr($lastQueueNumber, 3)) + 1 : 1; // Ambil nomor antrian terakhir dan tambah 1
+    $formattedQueueNumber = 'ATR' . str_pad($nextQueueNumber, 4, '0', STR_PAD_LEFT);  // Format dengan 4 digit
+
+    // Simpan data konsultasi dengan nomor antrian
+    $requestData = $request->all();
+    $requestData['no_antrian'] = $formattedQueueNumber;
+
+    Konsultasi::create($requestData);
+
+    
         return redirect()->route('admin.konsultasi.index')->with('success', 'Konsultasi berhasil ditambahkan.');
     }
 
