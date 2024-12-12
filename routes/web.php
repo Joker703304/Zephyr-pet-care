@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\ResepObatController as AdminResepObatController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Auth\LoginController;
@@ -9,8 +10,11 @@ use App\Http\Controllers\ApotekerController;
 use App\Http\Controllers\PemilikHewanController;
 use App\Http\Controllers\ObatController;
 use App\Http\Controllers\DokterController;
+use App\Http\Controllers\DokterDashboardController;
 use App\Http\Controllers\HewanController;
 use App\Http\Controllers\KonsultasiController;
+use App\Http\Controllers\KonsumenDashboardController;
+use App\Http\Controllers\ResepObatController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -65,7 +69,30 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::resource('konsultasi', KonsultasiController::class);
 });
 
-//apoteker
+//role apoteker
+//dashboard apoteker
 Route::middleware(['auth', 'role:apoteker'])->prefix('apoteker')->name('apoteker.')->group(function () {
     Route::get('/dashboard', [ApotekerController::class, 'index'])->name('dashboard');
+});
+
+//obat
+Route::middleware(['auth', 'role:apoteker'])->prefix('apoteker')->name('apoteker.')->group(function () {
+    Route::resource('obat', ObatController::class);
+});
+
+//resep obat
+Route::middleware(['auth', 'role:apoteker'])->prefix('apoteker')->name('apoteker.')->group(function () {
+    Route::resource('resep_obat', ResepObatController::class);
+});
+
+//role dokter
+//dashboard dokter
+Route::middleware(['auth', 'role:dokter'])->prefix('dokter')->name('dokter.')->group(function () {
+    Route::get('/dashboard', [DokterDashboardController::class, 'dokter'])->name('dashboard');
+});
+
+//role konsumen
+//dashboard konsumen
+Route::middleware(['auth', 'role:pemilik_hewan'])->prefix('pemilik-hewan')->name('pemilik-hewan.')->group(function () {
+    Route::get('/dashboard', [KonsumenDashboardController::class, 'index'])->name('dashboard');
 });

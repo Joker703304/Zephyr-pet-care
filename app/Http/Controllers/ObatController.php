@@ -10,18 +10,31 @@ class ObatController extends Controller
     public function index()
     {
         $obats = Obat::all();
+
+        if (auth()->user()->role == 'apoteker') {
+            return view('apoteker.obat.index', compact('obats'));
+        }
+
         return view('admin.obat.index', compact('obats'));
     }
 
     // Menampilkan form untuk menambahkan obat baru
     public function create()
     {
+        if (auth()->user()->role === 'apoteker') {
+            return view('apoteker.obat.create');
+        }
+
         return view('admin.obat.create');
     }
 
-    // // Menyimpan obat baru ke database
+    // Menyimpan obat baru ke database
     public function store(Request $request)
     {
+        if (!in_array(auth()->user()->role, ['admin', 'apoteker'])) {
+            abort(403, 'Unauthorized action.');
+        }
+
         $request->validate([
             'nama_obat' => 'required|string',
             'jenis_obat' => 'nullable|string',
@@ -32,7 +45,7 @@ class ObatController extends Controller
         $lastObat = Obat::latest()->first();
 
         // Mengambil angka terakhir dan menambahkannya satu
-        $lastId = $lastObat ? (int) substr($lastObat->id_pemilik, 1) : 0;
+        $lastId = $lastObat ? (int) substr($lastObat->id_obat, 1) : 0;
         $newId = 'D' . str_pad($lastId + 1, 3, '0', STR_PAD_LEFT);
 
         while (Obat::where('id_obat', $newId)->exists()) {
@@ -48,18 +61,31 @@ class ObatController extends Controller
             'harga' => $request->harga,
         ]);
 
-        return redirect()->route('admin.obat.index')->with('success', 'Obat berhasil ditambahkan.');
+        $redirectRoute = auth()->user()->role === 'apoteker' ? 'apoteker.obat.index' : 'admin.obat.index';
+        return redirect()->route($redirectRoute)->with('success', 'Obat berhasil ditambahkan.');
     }
 
     // Menampilkan form untuk mengedit data obat
     public function edit(Obat $obat)
     {
+        if (!in_array(auth()->user()->role, ['admin', 'apoteker'])) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        if (auth()->user()->role === 'apoteker') {
+            return view('apoteker.obat.edit', compact('obat'));
+        }
+
         return view('admin.obat.edit', compact('obat'));
     }
 
     // Memperbarui data obat di database
     public function update(Request $request, Obat $obat)
     {
+        if (!in_array(auth()->user()->role, ['admin', 'apoteker'])) {
+            abort(403, 'Unauthorized action.');
+        }
+
         $request->validate([
             'nama_obat' => 'required|string',
             'jenis_obat' => 'nullable|string',
@@ -69,14 +95,20 @@ class ObatController extends Controller
 
         $obat->update($request->all());
 
-        return redirect()->route('admin.obat.index')->with('success', 'Obat berhasil diperbarui.');
+        $redirectRoute = auth()->user()->role === 'apoteker' ? 'apoteker.obat.index' : 'admin.obat.index';
+        return redirect()->route($redirectRoute)->with('success', 'Obat berhasil diperbarui.');
     }
 
     // Menghapus data obat
     public function destroy(Obat $obat)
     {
+        if (!in_array(auth()->user()->role, ['admin', 'apoteker'])) {
+            abort(403, 'Unauthorized action.');
+        }
+
         $obat->delete();
 
-        return redirect()->route('admin.obat.index')->with('success', 'Obat berhasil dihapus.');
+        $redirectRoute = auth()->user()->role === 'apoteker' ? 'apoteker.obat.index' : 'admin.obat.index';
+        return redirect()->route($redirectRoute)->with('success', 'Obat berhasil dihapus.');
     }
 }
