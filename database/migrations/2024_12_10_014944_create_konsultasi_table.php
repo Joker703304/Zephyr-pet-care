@@ -18,11 +18,15 @@ return new class extends Migration
             $table->unsignedBigInteger('id_hewan');
             $table->string('keluhan');
             $table->date('tanggal_konsultasi');
+            $table->text('diagnosis')->nullable();
+            $table->unsignedBigInteger('layanan_id')->nullable(); // Reference to the service provided
             $table->enum('status', ['Menunggu', 'Sedang Diproses', 'Selesai', 'Dibatalkan'])->default('Menunggu');
             $table->timestamps();
 
             $table->foreign('dokter_id')->references('id')->on('tbl_dokter')->onDelete('cascade');
             $table->foreign('id_hewan')->references('id_hewan')->on('hewan')->onDelete('cascade');
+            $table->foreign('layanan_id')->references('id_layanan')->on('layanan')->onDelete('cascade');
+        
         });
     }
 

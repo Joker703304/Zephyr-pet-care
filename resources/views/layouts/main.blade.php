@@ -88,6 +88,12 @@
                     <span>Konsultasi</span></a>
             </li>
 
+            <li class="nav-item">
+                <a class="nav-link" href="{{ route('admin.layanan.index') }}">
+                    <i class="fas fa-fw fa-table"></i>
+                    <span>Layanan</span></a>
+            </li>
+
             <!-- Nav Item - Pages Collapse Menu -->
             <li class="nav-item">
                 <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo"

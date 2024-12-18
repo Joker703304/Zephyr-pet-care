@@ -15,6 +15,7 @@ use App\Http\Controllers\HewanController;
 use App\Http\Controllers\KonsultasiController;
 use App\Http\Controllers\KonsumenDashboardController;
 use App\Http\Controllers\ResepObatController;
+use App\Http\Controllers\LayananController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -35,8 +36,8 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
 });
 
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
- //pemilik hewan
- Route::resource('pemilik_hewan', PemilikHewanController::class);
+    //pemilik hewan
+    Route::resource('pemilik_hewan', PemilikHewanController::class);
 });
 
 // Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
@@ -48,7 +49,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
 //     Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('user.destroy');
 // });
 
-    // //obat
+// //obat
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::resource('obat', ObatController::class);
 });
@@ -57,7 +58,12 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
     //pemilik hewan
     Route::resource('dokter', DokterController::class);
-   });
+});
+
+
+Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
+    Route::resource('layanan', LayananController::class);
+});
 
 //hewan
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
@@ -88,6 +94,10 @@ Route::middleware(['auth', 'role:apoteker'])->prefix('apoteker')->name('apoteker
 //role dokter
 //dashboard dokter
 Route::middleware(['auth', 'role:dokter'])->prefix('dokter')->name('dokter.')->group(function () {
+    Route::get('/konsultasi', [DokterDashboardController::class, 'konsultasi'])->name('konsultasi.index'); // Menampilkan daftar konsultasi
+    Route::get('/konsultasi/{id}/diagnosis', [DokterDashboardController::class, 'diagnosis'])->name('konsultasi.diagnosis'); // Form diagnosis
+    Route::post('/konsultasi/{id}/diagnosis', [DokterDashboardController::class, 'storeDiagnosis'])->name('konsultasi.storeDiagnosis'); // Simpan diagnosis
+    Route::get('/diagnosis', [DokterDashboardController::class, 'diagnosis'])->name('admin.konsultasi.index');
     Route::get('/dashboard', [DokterDashboardController::class, 'dokter'])->name('dashboard');
 });
 
