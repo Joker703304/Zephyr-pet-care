@@ -13,12 +13,14 @@ class konsultasi extends Model
     protected $primaryKey = 'id_konsultasi';
 
     protected $fillable = [
-        'dokter_id', 
-        'id_hewan', 
-        'keluhan', 
-        'tanggal_konsultasi', 
-        'status',
-        'no_antrian'
+        'no_antrian',
+        'dokter_id',
+        'id_hewan',
+        'keluhan',
+        'tanggal_konsultasi',
+        'diagnosis',
+        'layanan_id',
+        'status'
     ];
 
     public function dokter()
@@ -29,5 +31,10 @@ class konsultasi extends Model
     public function hewan()
     {
         return $this->belongsTo(hewan::class, 'id_hewan');
+    }
+
+    public function resepObat()
+    {
+        return $this->hasMany(ResepObat::class, 'id_konsultasi', 'id_konsultasi');
     }
 }

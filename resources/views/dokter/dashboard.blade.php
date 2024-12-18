@@ -8,7 +8,7 @@
             <div class="card">
                 <div class="card-header bg-primary text-white">Consultations</div>
                 <div class="card-body">
-                    <a href="#" class="btn btn-sm btn-primary">View Consultations</a>
+                    <a href="{{ route('dokter.konsultasi.index') }}" class="btn btn-sm btn-primary">View Consultations</a>
                 </div>
             </div>
         </div>
