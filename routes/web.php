@@ -29,6 +29,8 @@ Route::get('login', [LoginController::class, 'showLoginForm'])->name('login');
 Route::post('login', [LoginController::class, 'login']);
 Route::post('logout', [LoginController::class, 'logout'])->name('logout');
 
+Auth::routes(['verify' => true]);
+
 //admin
 Route::middleware(['auth', 'role:admin'])->group(function () {
     // Dashboard Admin
@@ -105,4 +107,19 @@ Route::middleware(['auth', 'role:dokter'])->prefix('dokter')->name('dokter.')->g
 //dashboard konsumen
 Route::middleware(['auth', 'role:pemilik_hewan'])->prefix('pemilik-hewan')->name('pemilik-hewan.')->group(function () {
     Route::get('/dashboard', [KonsumenDashboardController::class, 'index'])->name('dashboard');
+});
+
+//hewan
+Route::middleware(['auth', 'role:pemilik_hewan'])->prefix('pemilik-hewan')->name('pemilik-hewan.')->group(function () {
+    Route::resource('hewan', HewanController::class);
+});
+
+//konsumen
+Route::middleware(['auth', 'role:pemilik_hewan'])->prefix('pemilik-hewan')->name('pemilik-hewan.')->group(function () {
+    Route::resource('pemilik_hewan', PemilikHewanController::class);
+});
+
+//konsultasi
+Route::middleware(['auth', 'role:pemilik_hewan'])->prefix('pemilik-hewan')->name('pemilik-hewan.')->group(function () {
+    Route::resource('konsultasi', KonsultasiController::class);
 });

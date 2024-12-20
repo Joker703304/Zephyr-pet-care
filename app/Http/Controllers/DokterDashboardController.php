@@ -75,7 +75,7 @@ class DokterDashboardController extends Controller
     }
     
 
-    return redirect()->back()->with('success', 'Diagnosis dan resep berhasil diperbarui.');
+    return redirect()->route("dokter.konsultasi.index")->with('success', 'Diagnosis dan resep berhasil diperbarui.');
 }
 
 

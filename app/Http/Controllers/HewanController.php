@@ -11,18 +11,47 @@ class HewanController extends Controller
 {
     public function index()
     {
-        $hewan = Hewan::with('pemilik')->get();
+        // Mendapatkan user yang sedang login
+        $user = auth()->user();
+
+        // Jika role user adalah pemilik_hewan, filter berdasarkan nama pemilik
+        if ($user->role == 'pemilik_hewan') {
+            // Mengambil data hewan yang dimiliki oleh pemilik yang sedang login berdasarkan nama pemilik
+            $hewan = Hewan::with('pemilik')
+                        ->whereHas('pemilik', function ($query) use ($user) {
+                            $query->where('email', $user->email); // Menyaring berdasarkan nama pemilik yang login
+                        })
+                        ->get();
+        } else {
+            // Jika role user bukan pemilik_hewan (misalnya admin), tampilkan semua hewan
+            $hewan = Hewan::with('pemilik')->get();
+        }
+
+        // Menampilkan view sesuai dengan role user
+        if ($user->role == 'pemilik_hewan') {
+            return view('pemilik-hewan.hewan.index', compact('hewan'));
+        }
+        
         return view('admin.hewan.index', compact('hewan'));
     }
 
     public function create()
     {
         $pemilik = pemilik_hewan::all();
+
+        if (auth()->user()->role === 'pemilik_hewan') {
+            return view('pemilik-hewan.hewan.create', compact('pemilik'));
+        }
+
         return view('admin.hewan.create', compact('pemilik'));
     }
 
     public function store(Request $request)
     {
+        if (!in_array(auth()->user()->role, ['admin', 'pemilik_hewan'])) {
+            abort(403, 'Unauthorized action.');
+        }
+
         $request->validate([
             'id_pemilik' => 'required|exists:pemilik_hewan,id_pemilik',
             'nama_hewan' => 'required|string|max:255',
@@ -37,19 +66,30 @@ class HewanController extends Controller
 
         Hewan::create(array_merge($request->all(), ['foto' => $fotoPath]));
 
-        return redirect()->route('admin.hewan.index')->with('success', 'Hewan berhasil ditambahkan.');
+        $redirectRoute = auth()->user()->role === 'pemilik_hewan' ? 'pemilik-hewan.hewan.index' : 'admin.hewan.index';
+        return redirect()->route($redirectRoute)->with('success', 'Hewan berhasil ditambahkan.');
     }
 
     public function edit(Hewan $hewan)
     {
         $pemilik = pemilik_hewan::all();
+        if (!in_array(auth()->user()->role, ['admin', 'pemilik_hewan'])) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        if (auth()->user()->role === 'pemilik_hewan') {
+            return view('pemilik-hewan.hewan.edit', compact('hewan', 'pemilik'));
+        }
         return view('admin.hewan.edit', compact('hewan', 'pemilik'));
     }
 
     public function update(Request $request, Hewan $hewan)
     {
+        if (!in_array(auth()->user()->role, ['admin', 'pemilik_hewan'])) {
+            abort(403, 'Unauthorized action.');
+        }
         $request->validate([
-            'id_pemilik' => 'required|exists:pemilik_hewan,id_pemilik',
+            // 'id_pemilik' => 'required|exists:pemilik_hewan,id_pemilik',
             'nama_hewan' => 'required|string|max:255',
             'jenis' => 'required|string|max:255',
             'jenkel' => 'required|in:jantan,betina',
@@ -69,7 +109,8 @@ class HewanController extends Controller
 
         $hewan->update(array_merge($request->all(), ['foto' => $fotoPath]));
 
-        return redirect()->route('admin.hewan.index')->with('success', 'Hewan berhasil diperbarui.');
+        $redirectRoute = auth()->user()->role === 'pemilik_hewan' ? 'pemilik-hewan.hewan.index' : 'admin.hewan.index';
+        return redirect()->route($redirectRoute)->with('success', 'Hewan berhasil diupdate.');
     }
 
     public function destroy(Hewan $hewan)
@@ -79,6 +120,7 @@ class HewanController extends Controller
         }
         $hewan->delete();
 
-        return redirect()->route('admin.hewan.index')->with('success', 'Hewan berhasil dihapus.');
+        $redirectRoute = auth()->user()->role === 'pemilik_hewan' ? 'pemilik-hewan.hewan.index' : 'admin.hewan.index';
+        return redirect()->route($redirectRoute)->with('success', 'Hewan berhasil dihapus.');
     }
 }

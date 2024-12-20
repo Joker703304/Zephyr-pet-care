@@ -41,7 +41,7 @@ class UserController extends Controller
             'password' => bcrypt($request->password),
         ]);
 
-        return redirect()->route('admin.user')->with('success', 'User created successfully.');
+        return redirect()->route('admin.users.index')->with('success', 'User created successfully.');
     }
 
     // Menampilkan form untuk mengedit pengguna
@@ -52,24 +52,27 @@ class UserController extends Controller
 
     // Mengupdate data pengguna
     public function update(Request $request, User $user)
-    {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email,' . $user->id,
-        ]);
+{
+    $request->validate([
+        'name' => 'required|string|max:255',
+        'email' => 'required|email|unique:users,email,' . $user->id,
+        'role' => 'required|in:pemilik_hewan,admin,dokter,apoteker', // Validasi role
+    ]);
 
-        $user->update([
-            'name' => $request->name,
-            'email' => $request->email,
-        ]);
+    $user->update([
+        'name' => $request->name,
+        'email' => $request->email,
+        'role' => $request->role,  // Update role
+    ]);
 
-        return redirect()->route('admin.user')->with('success', 'User updated successfully.');
-    }
+    return redirect()->route('admin.users.index')->with('success', 'User updated successfully.');
+}
+
 
     // Menghapus pengguna
     public function destroy(User $user)
     {
         $user->delete();
-        return redirect()->route('admin.user')->with('success', 'User deleted successfully.');
+        return redirect()->route('admin.users.index')->with('success', 'User deleted successfully.');
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\hewan;
 use Illuminate\Http\Request;
 
 class KonsumenDashboardController extends Controller
