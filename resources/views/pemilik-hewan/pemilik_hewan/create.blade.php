@@ -39,8 +39,7 @@
                     </option>
                 @endforeach
             </select>
-        </div>
-              
+        </div>        
 
         <div class="form-group">
             <label for="jenkel">Jenis Kelamin</label>

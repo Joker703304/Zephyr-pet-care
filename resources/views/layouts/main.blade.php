@@ -56,6 +56,12 @@
                 Interface
             </div>
 
+            {{-- <li class="nav-item">
+                <a class="nav-link" href="{{ route('admin.verify-users') }}">
+                    <i class="fas fa-fw fa-table"></i>
+                    <span>Verify</span></a>
+            </li> --}}
+
             <!-- Nav Item - Tables -->
             <li class="nav-item">
                 <a class="nav-link" href="{{ route('admin.pemilik_hewan.index') }}">

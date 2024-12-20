@@ -15,6 +15,10 @@ class KonsultasiController extends Controller
     public function index()
     {
         $konsultasi = Konsultasi::with(['dokter', 'hewan'])->get();
+        if (auth()->user()->role == 'pemilik_hewan') {
+            return view('pemilik-hewan.konsultasi.index', compact('konsultasi'));
+        }
+
         return view('admin.konsultasi.index', compact('konsultasi'));
     }
 
