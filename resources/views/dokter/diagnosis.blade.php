@@ -45,7 +45,7 @@
             @foreach ($konsultasi->resepObat as $index => $resep)
                 <div class="form-group mt-3 d-flex align-items-center" id="obat-field-{{ $resep->id_resep }}">
                     <div class="w-100">
-                        <select name="obat[{{ $resep->id_resep }}][id_obat]" class="form-control obat-select">
+                        <select name="obat[{{ $resep->id_resep }}][id_obat]" class="form-control obat-select" required>
                             @foreach ($obat as $item)
                                 <option value="{{ $item->id_obat }}" {{ $resep->id_obat == $item->id_obat ? 'selected' : '' }}>
                                     {{ $item->nama_obat }}
@@ -53,6 +53,10 @@
                             @endforeach
                         </select>
                         <input type="number" name="obat[{{ $resep->id_resep }}][jumlah]" class="form-control mt-2" value="{{ $resep->jumlah }}" required>
+                    </div>
+                    <div class="w-100 ml-2">
+                        <label for="keterangan">Keterangan</label>
+                        <input type="text" name="obat[{{ $resep->id_resep }}][keterangan]" class="form-control" value="{{ old('obat.'.$resep->id_resep.'.keterangan', $resep->keterangan) }}">
                     </div>
                     <button type="button" class="btn btn-danger ml-2" onclick="removeObatField('{{ $resep->id_resep }}')">Hapus</button>
                 </div>
@@ -91,6 +95,10 @@
                         @endforeach
                     </select>
                     <input type="number" name="obat[new-${count}][jumlah]" class="form-control mt-2" placeholder="Jumlah" required>
+                </div>
+                <div class="w-100 ml-2">
+                    <label for="keterangan">Keterangan</label>
+                    <input type="text" name="obat[new-${count}][keterangan]" class="form-control">
                 </div>
                 <button type="button" class="btn btn-danger ml-2" onclick="removeObatField('new-${count}')">Hapus</button>
             </div>`;
