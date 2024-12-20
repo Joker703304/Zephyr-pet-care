@@ -7,6 +7,7 @@ use App\Models\konsultasi;
 use App\Models\obat;
 use App\Models\ResepObat;
 use App\Models\Layanan;
+use App\Models\DetailResepObat;
 use Illuminate\Support\Facades\Auth;
 
 class DokterDashboardController extends Controller
@@ -51,7 +52,12 @@ class DokterDashboardController extends Controller
     // Hapus resep obat yang dihapus oleh user
     if ($request->filled('deleted_obat_ids')) {
         $deletedIds = explode(',', $request->deleted_obat_ids);
+        
+        // Hapus dari tabel resep_obat
         ResepObat::whereIn('id_resep', $deletedIds)->delete();
+        
+        // Hapus juga dari tabel detail_resep_obat
+        DetailResepObat::whereIn('id_resep', $deletedIds)->delete();
     }
 
     // Update atau Tambahkan resep obat baru
@@ -59,10 +65,18 @@ class DokterDashboardController extends Controller
         foreach ($request->obat as $key => $data) {
             if (str_starts_with($key, 'new')) {
                 // Tambahkan resep obat baru
-                ResepObat::create([
+                $resep = ResepObat::create([
                     'id_konsultasi' => $konsultasi->id_konsultasi, // Pastikan id_konsultasi diisi
                     'id_obat' => $data['id_obat'],
                     'jumlah' => $data['jumlah'],
+                ]);
+
+                // Tambahkan detail resep baru
+                DetailResepObat::create([
+                    'id_resep' => $resep->id_resep,
+                    'id_obat' => $data['id_obat'],
+                    'tanggal_resep' => now(),
+                    'status' => 'belum_diberikan',
                 ]);
             } else {
                 // Update resep obat yang ada
@@ -70,14 +84,16 @@ class DokterDashboardController extends Controller
                     'id_obat' => $data['id_obat'],
                     'jumlah' => $data['jumlah'],
                 ]);
+
+                // Update detail resep
+                DetailResepObat::where('id_resep', $key)->update([
+                    'id_obat' => $data['id_obat'],
+                ]);
             }
         }
     }
-    
 
     return redirect()->back()->with('success', 'Diagnosis dan resep berhasil diperbarui.');
 }
-
-
 
 }
