@@ -11,16 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('tbl_dokter', function (Blueprint $table) {
-            $table->id(); // Primary key
+        Schema::create('apotekers', function (Blueprint $table) {
+            $table->id();
             $table->unsignedBigInteger('id_user');
-            $table->string('spesialis', 50)->nullable(); // Spesialisasi dokter
             $table->string('no_telepon', 20)->unique(); // Nomor telepon
             $table->enum('jenkel', ['pria', 'wanita']);
-            $table->string('alamat')->nullable();
+            $table->string('alamat');
             $table->foreign('id_user')->references('id')->on('users')->onDelete('cascade');
-            $table->timestamps(); // Kolom created_at dan updated_at
-            
+            $table->timestamps();
         });
     }
 
@@ -29,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('tbl_dokter');
+        Schema::dropIfExists('apotekers');
     }
 };

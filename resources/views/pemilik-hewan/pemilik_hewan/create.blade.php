@@ -22,24 +22,17 @@
         </div>
     @endif
 
-    <form action="{{ route('admin.pemilik_hewan.store') }}" method="POST">
+    <form action="{{ route('pemilik-hewan.pemilik_hewan.store') }}" method="POST">
         @csrf
         <div class="form-group">
             <label for="nama">Nama</label>
-            <input type="text" name="nama" id="nama" class="form-control" value="{{ old('nama') }}" required>
+            <input type="text" name="nama" id="nama" class="form-control" value="{{ old('nama', $user->name) }}" required>
         </div>
 
         <div class="form-group">
             <label for="email">Email</label>
-            <select name="email" id="email" class="form-control" required>
-                <option value="" disabled selected>-- Pilih Email --</option>
-                @foreach($emails as $email)
-                    <option value="{{ $email }}" {{ old('email') == $email ? 'selected' : '' }}>
-                        {{ $email }}
-                    </option>
-                @endforeach
-            </select>
-        </div>        
+            <input type="email" name="email" id="email" class="form-control" value="{{ old('email', $user->email) }}" required readonly>
+        </div>
 
         <div class="form-group">
             <label for="jenkel">Jenis Kelamin</label>
@@ -61,7 +54,7 @@
 
         <div class="form-group">
             <button type="submit" class="btn btn-primary">Save</button>
-            <a href="{{ route('admin.pemilik_hewan.index') }}" class="btn btn-secondary">Cancel</a>
+            <a href="{{ route('pemilik-hewan.dashboard') }}" class="btn btn-secondary">Cancel</a>
         </div>
     </form>
 </div>

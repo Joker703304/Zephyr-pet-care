@@ -36,8 +36,9 @@ class PemilikHewanController extends Controller
     public function create()
     {
         // Ambil semua email dari tabel users yang memiliki role 'pemilik_hewan'
+        $user = auth()->user();
         $emails = User::where('role', 'pemilik_hewan')->pluck('email', 'email'); // Hanya email dengan role pemilik_hewan
-        return view('admin.pemilik_hewan.create', compact('emails'));
+        return view('pemilik-hewan.pemilik_hewan.create', compact('emails', 'user'));
     }
 
     // Menyimpan data pemilik hewan baru
@@ -65,7 +66,7 @@ class PemilikHewanController extends Controller
             'no_tlp' => $request->no_tlp,
         ]);
 
-        return redirect()->route('admin.pemilik_hewan.index')->with('success', 'Data pemilik hewan berhasil disimpan.');
+        return redirect()->route('pemilik-hewan.dashboard')->with('success', 'Data pemilik hewan berhasil disimpan.');
     }
 
     // Menampilkan form untuk mengedit data pemilik hewan

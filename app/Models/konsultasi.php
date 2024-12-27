@@ -37,4 +37,14 @@ class konsultasi extends Model
     {
         return $this->hasMany(ResepObat::class, 'id_konsultasi', 'id_konsultasi');
     }
+
+    public static function getDailyCount($tanggal_konsultasi)
+    {
+        return self::where('tanggal_konsultasi', $tanggal_konsultasi)->count();
+    }
+
+    public function user()
+{
+    return $this->hasOneThrough(User::class, hewan::class);
+}
 }

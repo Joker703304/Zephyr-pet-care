@@ -1,9 +1,9 @@
-@extends('layouts.main')
+@extends('layouts.app')
 
 @section('content')
 <div class="container">
-    <h1>Add Doctor</h1>
-    <form action="{{ route('admin.dokter.store') }}" method="POST">
+    <h1>Add Apoteker</h1>
+    <form action="{{ route('admin.apoteker.store') }}" method="POST">
         @csrf
 
         <div class="form-group mb-3">
@@ -24,11 +24,6 @@
         </div>
 
         <div class="form-group mb-3">
-            <label for="spesialis">Spesialis</label>
-            <input type="text" name="spesialis" id="spesialis" class="form-control" value="{{ old('spesialis') }}">
-        </div>
-
-        <div class="form-group mb-3">
             <label for="no_telepon">No Telepon</label>
             <input type="text" name="no_telepon" id="no_telepon" class="form-control" value="{{ old('no_telepon') }}" required>
         </div>
@@ -36,6 +31,7 @@
         <div class="form-group mb-3">
             <label for="jenkel">Jenis Kelamin</label>
             <select name="jenkel" id="jenkel" class="form-control" required>
+                <option value="">-- Select Gender --</option>
                 <option value="pria" {{ old('jenkel') == 'pria' ? 'selected' : '' }}>Pria</option>
                 <option value="wanita" {{ old('jenkel') == 'wanita' ? 'selected' : '' }}>Wanita</option>
             </select>
@@ -47,7 +43,7 @@
         </div>
 
         <button type="submit" class="btn btn-primary">Save</button>
-        <a href="{{ route('admin.dokter.index') }}" class="btn btn-secondary">Cancel</a>
+        <a href="{{ route('admin.apoteker.index') }}" class="btn btn-secondary">Cancel</a>
     </form>
 </div>
 

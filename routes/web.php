@@ -7,12 +7,14 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ApotekerController;
+use App\Http\Controllers\ApotekerAdminController;
 use App\Http\Controllers\PemilikHewanController;
 use App\Http\Controllers\ObatController;
 use App\Http\Controllers\DokterController;
 use App\Http\Controllers\DokterDashboardController;
 use App\Http\Controllers\HewanController;
 use App\Http\Controllers\KonsultasiController;
+use App\Http\Controllers\KonsultasiPemilikController;
 use App\Http\Controllers\KonsumenDashboardController;
 use App\Http\Controllers\ResepObatController;
 use App\Http\Controllers\LayananController;
@@ -60,7 +62,9 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
     //pemilik hewan
     Route::resource('dokter', DokterController::class);
+    Route::resource('apoteker', ApotekerAdminController::class);
 });
+Route::post('/admin/dokter/find-user', [DokterController::class, 'findUserByEmail'])->name('admin.dokter.findUser');
 
 
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
@@ -117,6 +121,7 @@ Route::middleware(['auth', 'role:pemilik_hewan'])->prefix('pemilik-hewan')->name
 //konsumen
 Route::middleware(['auth', 'role:pemilik_hewan'])->prefix('pemilik-hewan')->name('pemilik-hewan.')->group(function () {
     Route::resource('pemilik_hewan', PemilikHewanController::class);
+    Route::resource('konsultasi_pemilik', KonsultasiPemilikController::class);
 });
 
 //konsultasi

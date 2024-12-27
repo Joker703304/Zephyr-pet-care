@@ -4,7 +4,7 @@
 <div class="container">
     <h1>Daftar Konsultasi</h1>
 
-    <a href="{{ route('admin.konsultasi.create') }}" class="btn btn-primary mb-3">Tambah Konsultasi</a>
+    {{-- <a href="{{ route('admin.konsultasi.create') }}" class="btn btn-primary mb-3">Tambah Konsultasi</a> --}}
 
     @if (session('success'))
         <div class="alert alert-success">{{ session('success') }}</div>
@@ -34,12 +34,12 @@
                 <td>{{ $item->tanggal_konsultasi }}</td>
                 <td>{{ $item->status }}</td>
                 <td>
-                    <a href="{{ route('admin.konsultasi.edit', $item->id_konsultasi) }}" class="btn btn-warning btn-sm">Edit</a>
-                    <form action="{{ route('admin.konsultasi.destroy', $item->id_konsultasi) }}" method="POST" style="display:inline;">
+                    <a href="{{ route('admin.konsultasi.edit', $item->id_konsultasi) }}" class="btn btn-success btn-sm">Daftar Ulang</a>
+                    {{-- <form action="{{ route('admin.konsultasi.destroy', $item->id_konsultasi) }}" method="POST" style="display:inline;">
                         @csrf
                         @method('DELETE')
                         <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Yakin ingin menghapus?')">Hapus</button>
-                    </form>
+                    </form> --}}
                 </td>
             </tr>
             @endforeach
