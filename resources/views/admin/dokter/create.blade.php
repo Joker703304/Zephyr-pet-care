@@ -11,19 +11,17 @@
         </div>
 
         <div class="form-group mb-3">
-            <label for="email">Email</label>
-            <input type="email" name="email" id="email" class="form-control" value="{{ old('email') }}" required>
+            <label for="id_user">Pilih Dokter</label>
+            <select name="id_user" id="id_user" class="form-control" required>
+                <option value="">-- Pilih Dokter --</option>
+                @foreach ($emails as $id => $email)
+                    <option value="{{ $id }}" {{ old('id_user') == $id ? 'selected' : '' }}>
+                        {{ $email }}
+                    </option>
+                @endforeach
+            </select>
         </div>
-
-        <div class="form-group mb-3">
-            <label for="password">Password</label>
-            <input type="password" name="password" id="password" class="form-control" required>
-        </div>
-
-        <div class="form-group mb-3">
-            <label for="password_confirmation">Confirm Password</label>
-            <input type="password" name="password_confirmation" id="password_confirmation" class="form-control" required>
-        </div>
+        
 
         <div class="form-group mb-3">
             <label for="spesialis">Spesialis</label>

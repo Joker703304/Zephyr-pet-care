@@ -18,46 +18,35 @@ class DokterController extends Controller
 
     public function create()
     {
-        return view('admin.dokter.create');
+        $emails = User::where('role', 'dokter')->pluck('email', 'id');
+        return view('admin.dokter.create', compact('emails'));
     }
 
     public function store(Request $request)
-    {
-        // Debugging untuk memastikan data diterima
+{
+    // Validasi input
+    $request->validate([
+        'id_user' => 'required|exists:users,id|unique:tbl_dokter,id_user',
+        'spesialis' => 'nullable|string|max:50',
+        'no_telepon' => 'required|string|max:20|unique:tbl_dokter,no_telepon',
+        'hari' => 'nullable|array',
+        'hari.*' => 'in:Senin,Selasa,Rabu,Kamis,Jumat,Sabtu,Minggu',
+        'jam_mulai' => 'nullable|date_format:H:i',
+        'jam_selesai' => 'nullable|date_format:H:i|after:jam_mulai',
+    ]);
 
+    // Simpan data dokter
+    Dokter::create([
+        'id_user' => $request->id_user, // Simpan ID pengguna
+        'spesialis' => $request->spesialis,
+        'no_telepon' => $request->no_telepon,
+        'hari' => json_encode($request->hari), // Simpan hari sebagai JSON
+        'jam_mulai' => $request->jam_mulai,
+        'jam_selesai' => $request->jam_selesai,
+    ]);
 
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users,email',
-            'password' => 'required|string|min:8|confirmed',
-            'spesialis' => 'nullable|string|max:50',
-            'no_telepon' => 'required|string|max:20|unique:tbl_dokter,no_telepon',
-            'hari' => 'nullable|array',
-            'hari.*' => 'in:Senin,Selasa,Rabu,Kamis,Jumat,Sabtu,Minggu',
-            'jam_mulai' => 'nullable|date_format:H:i',
-            'jam_selesai' => 'nullable|date_format:H:i',
-        ]);
-
-        // Membuat user
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-            'role' => 'dokter',
-        ]);
-
-        // Membuat dokter
-        Dokter::create([
-            'id_user' => $user->id, // ID user yang baru dibuat
-            'spesialis' => $request->spesialis,
-            'no_telepon' => $request->no_telepon,
-            'hari' => json_encode($request->hari), // Menyimpan hari sebagai JSON
-            'jam_mulai' => $request->jam_mulai,
-            'jam_selesai' => $request->jam_selesai,
-        ]);
-
-        return redirect()->route('admin.dokter.index')->with('success', 'Dokter added successfully.');
-    }
+    return redirect()->route('admin.dokter.index')->with('success', 'Dokter berhasil ditambahkan.');
+}
 
 
 

@@ -42,14 +42,9 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::resource('pemilik_hewan', PemilikHewanController::class);
 });
 
-// Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
-//     Route::get('/users', [UserController::class, 'index'])->name('user');
-//     Route::get('/users/create', [UserController::class, 'create'])->name('user.create');
-//     Route::post('/users', [UserController::class, 'store'])->name('user.store');
-//     Route::get('/users/{user}/edit', [UserController::class, 'edit'])->name('user.edit');
-//     Route::put('/users/{user}', [UserController::class, 'update'])->name('user.update');
-//     Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('user.destroy');
-// });
+Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
+    Route::resource('users', UserController::class);
+});
 
 // //obat
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
