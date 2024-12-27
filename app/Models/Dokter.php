@@ -15,9 +15,8 @@ class Dokter extends Model
         'id_user',
         'spesialis',
         'no_telepon',
-        'hari',
-        'jam_mulai',
-        'jam_selesai',
+        'jenkel',
+        'alamat',
     ];
 
 
