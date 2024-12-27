@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.main')
 
 @section('content')
 <div class="container">
@@ -17,8 +17,8 @@
                 <th>Email</th>
                 <th>Spesialis</th>
                 <th>No Telepon</th>
-                <th>Hari</th>
-                <th>Jam Kerja</th>
+                <th>Jenis Kelamin</th>
+                <th>Alamat</th>
                 <th>Actions</th>
             </tr>
         </thead>
@@ -30,8 +30,8 @@
                     <td>{{ $dokter->user->email }}</td>
                     <td>{{ $dokter->spesialis }}</td>
                     <td>{{ $dokter->no_telepon }}</td>
-                    <td>{{ implode(', ', json_decode($dokter->hari ?? '[]', true)) }}</td>
-                    <td>{{ $dokter->jam_mulai }} - {{ $dokter->jam_selesai }}</td>
+                    <td>{{ ucfirst($dokter->jenkel) }}</td>
+                    <td>{{ $dokter->alamat }}</td>
                     <td>
                         <a href="{{ route('admin.dokter.edit', $dokter->id) }}" class="btn btn-warning btn-sm">Edit</a>
                         <form action="{{ route('admin.dokter.destroy', $dokter->id) }}" method="POST" style="display:inline-block;">

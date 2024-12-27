@@ -25,7 +25,11 @@
                 </div>
                 <div class="card-body text-center">
                     <p class="card-text">Kelola informasi data diri Anda.</p>
-                    <a href="{{ route('pemilik-hewan.pemilik_hewan.index') }}" class="btn btn-secondary btn-sm">Kelola Data</a>
+                    @if($pemilikHewan)
+                        <a href="{{ route('pemilik-hewan.pemilik_hewan.edit', $pemilikHewan->id_pemilik) }}" class="btn btn-secondary btn-sm">Edit Data</a>
+                    @else
+                        <a href="{{ route('pemilik-hewan.pemilik_hewan.create') }}" class="btn btn-secondary btn-sm">Isi Data</a>
+                    @endif
                 </div>
             </div>
         </div>
@@ -38,7 +42,12 @@
                 </div>
                 <div class="card-body text-center">
                     <p class="card-text">Lihat dan kelola riwayat konsultasi Anda.</p>
-                    <a href="{{ route ('pemilik-hewan.konsultasi.index')}}" class="btn btn-success btn-sm">Lihat Konsultasi</a>
+                    @if($pemilikHewan)
+                    <a href="{{ route ('pemilik-hewan.konsultasi_pemilik.index')}}" class="btn btn-success btn-sm">Lihat Konsultasi</a>
+                    @else
+                        <a href="{{ route('pemilik-hewan.pemilik_hewan.create') }}" class="btn btn-secondary btn-sm">Lihat Konsultasi</a>
+                    @endif
+                    
                 </div>
             </div>
         </div>

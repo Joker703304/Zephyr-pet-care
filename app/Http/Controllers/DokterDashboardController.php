@@ -7,6 +7,7 @@ use App\Models\konsultasi;
 use App\Models\obat;
 use App\Models\ResepObat;
 use App\Models\Layanan;
+use Carbon\Carbon;
 use App\Models\DetailResepObat;
 use Illuminate\Support\Facades\Auth;
 
@@ -26,7 +27,13 @@ class DokterDashboardController extends Controller
 
     public function konsultasi()
     {
-        $konsultasi = Konsultasi::with(['hewan', 'dokter', 'resepObat'])->get();
+        $today = Carbon::today();
+
+        // Filter konsultasi to show only those with today's date
+        $konsultasi = Konsultasi::with(['hewan', 'dokter', 'resepObat'])
+            ->whereDate('tanggal_konsultasi', $today) // Filter by today's date
+            ->get();
+
         return view('dokter.konsultasi', compact('konsultasi'));
     }
 

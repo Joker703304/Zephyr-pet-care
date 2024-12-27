@@ -14,13 +14,13 @@ return new class extends Migration
         Schema::create('konsultasi', function (Blueprint $table) {
             $table->id('id_konsultasi');
             $table->string('no_antrian');
-            $table->unsignedBigInteger('dokter_id');
+            $table->unsignedBigInteger('dokter_id')->nullable();
             $table->unsignedBigInteger('id_hewan');
             $table->string('keluhan');
             $table->date('tanggal_konsultasi');
             $table->text('diagnosis')->nullable();
             $table->unsignedBigInteger('layanan_id')->nullable(); // Reference to the service provided
-            $table->enum('status', ['Menunggu', 'Sedang Diproses', 'Selesai', 'Dibatalkan'])->default('Menunggu');
+            $table->enum('status', ['Menunggu', 'Sedang Diproses', 'Selesai', 'Dibatalkan', 'Diterima'])->default('Menunggu');
             $table->timestamps();
 
             $table->foreign('dokter_id')->references('id')->on('tbl_dokter')->onDelete('cascade');

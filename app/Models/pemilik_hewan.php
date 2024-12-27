@@ -22,4 +22,9 @@ class pemilik_hewan extends Model
     {
         return $this->belongsTo(User::class, 'email', 'email'); // foreignKey, ownerKey
     }
+
+    public function hewan()
+{
+    return $this->hasOne(hewan::class, 'id_pemilik', 'id_pemilik');
+}
 }

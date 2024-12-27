@@ -7,15 +7,8 @@
     <form action="{{ route('pemilik-hewan.hewan.store') }}" method="POST" enctype="multipart/form-data">
         @csrf
 
-        <div class="form-group">
-            <label for="id_pemilik">Pemilik Hewan</label>
-            <select name="id_pemilik" id="id_pemilik" class="form-control" required>
-                <option value="">Pilih Pemilik</option>
-                @foreach($pemilik as $item)
-                    <option value="{{ $item->id_pemilik }}">{{ $item->nama }}</option>
-                @endforeach
-            </select>
-        </div>
+        <!-- Hidden field for id_pemilik -->
+        <input type="hidden" name="id_pemilik" value="{{ $pemilikId }}">
 
         <div class="form-group">
             <label for="nama_hewan">Nama Hewan</label>

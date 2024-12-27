@@ -3,10 +3,14 @@
 @section('content')
 <div class="container">
     <h1>Daftar Konsultasi</h1>
+    <a href="{{ route('pemilik-hewan.konsultasi_pemilik.create') }}" class="btn btn-success mb-3">Ajukan Konsultasi</a>
+    @if(session('success'))
+    <div class="alert alert-success">{{ session('success') }}</div>
+@endif
 
-    @if (session('success'))
-        <div class="alert alert-success">{{ session('success') }}</div>
-    @endif
+@if(session('error'))
+    <div class="alert alert-danger">{{ session('error') }}</div>
+@endif
 
     <table class="table table-bordered">
         <thead>

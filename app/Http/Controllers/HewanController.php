@@ -40,7 +40,10 @@ class HewanController extends Controller
         $pemilik = pemilik_hewan::all();
 
         if (auth()->user()->role === 'pemilik_hewan') {
-            return view('pemilik-hewan.hewan.create', compact('pemilik'));
+            $pemilikId = auth()->user()->pemilikhewan->id_pemilik;
+
+            // Pass pemilikId to the view
+            return view('pemilik-hewan.hewan.create', compact('pemilikId'));
         }
 
         return view('admin.hewan.create', compact('pemilik'));

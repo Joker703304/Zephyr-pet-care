@@ -18,93 +18,115 @@ class DokterController extends Controller
 
     public function create()
     {
-        return view('admin.dokter.create');
+        $users = User::where('role', 'pemilik_hewan')
+        ->whereDoesntHave('pemilikHewan')  // Pastikan tidak ada data di tabel pemilik_hewan
+        ->get();// Mengambil semua user
+    return view('admin.dokter.create', compact('users'));
     }
 
     public function store(Request $request)
-    {
-        // Debugging untuk memastikan data diterima
+{
+    $request->validate([
+        'email' => 'required|email|exists:users,email',
+        'spesialis' => 'nullable|string|max:50',
+        'no_telepon' => 'required|string|max:20|unique:tbl_dokter,no_telepon',
+        'jenkel' => 'required|in:pria,wanita',
+        'alamat' => 'required|string|max:255', // Ensure validation includes 'alamat'
+    ]);
+
+    $user = User::where('email', $request->email)->first();
+    $user->update(['role' => 'dokter']);
+
+    Dokter::create([
+        'id_user' => $user->id,
+        'spesialis' => $request->spesialis,
+        'no_telepon' => $request->no_telepon,
+        'jenkel' => $request->jenkel,
+        'alamat' => $request->alamat, // Include 'alamat'
+    ]);
+
+    return redirect()->route('admin.dokter.index')->with('success', 'Doctor added successfully.');
+}
 
 
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users,email',
-            'password' => 'required|string|min:8|confirmed',
-            'spesialis' => 'nullable|string|max:50',
-            'no_telepon' => 'required|string|max:20|unique:tbl_dokter,no_telepon',
-            'hari' => 'nullable|array',
-            'hari.*' => 'in:Senin,Selasa,Rabu,Kamis,Jumat,Sabtu,Minggu',
-            'jam_mulai' => 'nullable|date_format:H:i',
-            'jam_selesai' => 'nullable|date_format:H:i',
+
+
+    public function findUserByEmail(Request $request)
+{
+    $email = $request->input('email');
+    $user = User::where('email', $email)->first();
+
+    if ($user) {
+        return response()->json([
+            'name' => $user->name,
         ]);
-
-        // Membuat user
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-            'role' => 'dokter',
-        ]);
-
-        // Membuat dokter
-        Dokter::create([
-            'id_user' => $user->id, // ID user yang baru dibuat
-            'spesialis' => $request->spesialis,
-            'no_telepon' => $request->no_telepon,
-            'hari' => json_encode($request->hari), // Menyimpan hari sebagai JSON
-            'jam_mulai' => $request->jam_mulai,
-            'jam_selesai' => $request->jam_selesai,
-        ]);
-
-        return redirect()->route('admin.dokter.index')->with('success', 'Dokter added successfully.');
     }
 
+    return response()->json([
+        'message' => 'User not found.',
+    ], 404);
+}
 
 
-    public function edit(Dokter $dokter)
-    {
-        return view('admin.dokter.edit', compact('dokter'));
+    public function edit($id)
+{
+    $dokter = Dokter::findOrFail($id);
+    $users = User::where('role', 'pemilik_hewan')->orWhere('id', $dokter->id_user)->get();
+
+    return view('admin.dokter.edit', compact('dokter', 'users'));
+}
+
+public function update(Request $request, $id)
+{
+    // Validate the form input
+    $request->validate([
+        'email' => 'required|email|exists:users,email',
+        'spesialis' => 'nullable|string|max:50',
+        'no_telepon' => 'required|string|max:20|unique:tbl_dokter,no_telepon,' . $id,
+        'jenkel' => 'required|in:pria,wanita',
+        'alamat' => 'required|string|max:255',
+    ]);
+
+    // Find the dokter by ID
+    $dokter = Dokter::findOrFail($id);
+
+    // Find the user based on the selected email
+    $user = User::where('email', $request->email)->first();
+
+    // Update user role if changed
+    if ($dokter->id_user !== $user->id) {
+        // Update the old user's role to 'pemilik_hewan'
+        $oldUser = User::findOrFail($dokter->id_user);
+        $oldUser->update(['role' => 'pemilik_hewan']);
+
+        // Update the new user's role to 'dokter'
+        $user->update(['role' => 'dokter']);
     }
 
-    public function update(Request $request, Dokter $dokter)
-    {
+    // Update dokter details
+    $dokter->update([
+        'id_user' => $user->id,
+        'spesialis' => $request->spesialis,
+        'no_telepon' => $request->no_telepon,
+        'jenkel' => $request->jenkel,
+        'alamat' => $request->alamat,
+    ]);
 
-        // Validasi input dari form
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'spesialis' => 'nullable|string|max:50',
-            'no_telepon' => 'required|string|max:20|unique:tbl_dokter,no_telepon,' . $dokter->id, // Ignore the current doctor
-            'hari' => 'nullable|array',
-            'hari.*' => 'in:Senin,Selasa,Rabu,Kamis,Jumat,Sabtu,Minggu',
-            'jam_mulai' => 'nullable|date_format:H:i',
-            'jam_selesai' => 'nullable|date_format:H:i',
-        ]);
+    // Redirect with success message
+    return redirect()->route('admin.dokter.index')->with('success', 'Doctor updated successfully.');
+}
 
-        // Update nama dokter di tabel users
-        $dokter->user->update([
-            'name' => $request->name,
-        ]);
+public function destroy($id)
+{
+    $dokter = Dokter::findOrFail($id);
 
-        // Update data dokter di tabel tbl_dokter
-        $dokter->update([
-            'spesialis' => $request->spesialis,
-            'no_telepon' => $request->no_telepon,
-            'hari' => $request->has('hari') ? json_encode($request->hari) : null,  // Encode days as JSON
-            // Update jam_mulai hanya jika ada input dari user
-            'jam_mulai' => $request->has('jam_mulai') ? $request->jam_mulai : $dokter->jam_mulai,  // Update jam_mulai hanya jika ada perubahan
-            'jam_selesai' => $request->has('jam_selesai') ? $request->jam_selesai : $dokter->jam_selesai,  // Update jam_selesai hanya jika ada perubahan
-        ]);
+    // Change the role of the associated user back to "pemilik_hewan"
+    $user = User::findOrFail($dokter->id_user);
+    $user->update(['role' => 'pemilik_hewan']);
 
-        // Redirect setelah berhasil update
-        return redirect()->route('admin.dokter.index')->with('success', 'Dokter updated successfully.');
-    }
+    $dokter->delete();
 
+    return redirect()->route('admin.dokter.index')->with('success', 'Doctor deleted successfully.');
+}
 
-
-
-    public function destroy(Dokter $dokter)
-    {
-        $dokter->delete();
-        return redirect()->route('admin.dokter.index')->with('success', 'Dokter deleted successfully.');
-    }
 }
