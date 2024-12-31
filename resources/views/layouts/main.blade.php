@@ -56,11 +56,11 @@
                 Interface
             </div>
 
-            {{-- <li class="nav-item">
-                <a class="nav-link" href="{{ route('admin.verify-users') }}">
+            <li class="nav-item">
+                <a class="nav-link" href="{{ route('admin.users.index') }}">
                     <i class="fas fa-fw fa-table"></i>
-                    <span>Verify</span></a>
-            </li> --}}
+                    <span>User</span></a>
+            </li>
 
             <!-- Nav Item - Tables -->
             <li class="nav-item">

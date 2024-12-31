@@ -4,56 +4,61 @@
 <div class="container">
     <h1>Tambah Resep Obat</h1>
 
-    <form action="{{ route('apoteker.resep_obat.store') }}" method="POST">
+    <form method="POST" action="{{ route('apoteker.resep_obat.store') }}">
         @csrf
+
+        <!-- Konsultasi -->
         <div class="mb-3">
             <label for="id_konsultasi" class="form-label">Konsultasi</label>
-            <select name="id_konsultasi" id="id_konsultasi" class="form-control @error('id_konsultasi') is-invalid @enderror">
-                <option value="">Pilih Konsultasi</option>
-                @foreach ($konsultasi as $item)
-                    <option value="{{ $item->id_konsultasi }}" {{ old('id_konsultasi') == $item->id_konsultasi ? 'selected' : '' }}>
-                        No Antrian: {{ $item->no_antrian }} - {{ $item->keluhan }} - {{ $item->hewan->nama_hewan }}
-                    </option>
+            <select name="id_konsultasi" id="id_konsultasi" class="form-control" required>
+                @foreach($konsultasi as $k)
+                    <option value="{{ $k->id_konsultasi }}">{{ $k->keluhan }}</option>
                 @endforeach
             </select>
-            @error('id_konsultasi')
-                <div class="invalid-feedback">{{ $message }}</div>
-            @enderror
         </div>
 
+        <!-- Obat -->
+        <div id="obat-container">
+            <div class="obat-row mb-3">
+                <label for="id_obat" class="form-label">Obat</label>
+                <select name="obat[0][id_obat]" class="form-control" required>
+                    @foreach($obat as $o)
+                        <option value="{{ $o->id_obat }}">{{ $o->nama_obat }}</option>
+                    @endforeach
+                </select>
+                <input type="number" name="obat[0][jumlah]" class="form-control mt-2" placeholder="Jumlah" required>
+            </div>
+        </div>
+        <button type="button" id="add-obat" class="btn btn-secondary mb-3">Tambah Obat</button>
+
+        <!-- Keterangan -->
         <div class="mb-3">
-            <label for="id_obat" class="form-label">Obat</label>
-            <select name="id_obat" id="id_obat" class="form-control @error('id_obat') is-invalid @enderror">
-                <option value="">Pilih Obat</option>
-                @foreach ($obat as $item)
-                    <option value="{{ $item->id_obat }}" {{ old('id_obat') == $item->id_obat ? 'selected' : '' }}>
-                        {{ $item->nama_obat }} ({{ $item->jenis_obat }})
-                    </option>
-                @endforeach
-            </select>
-            @error('id_obat')
-                <div class="invalid-feedback">{{ $message }}</div>
-            @enderror
+            <label for="keterangan" class="form-label">Keterangan</label>
+            <textarea name="keterangan" id="keterangan" class="form-control"></textarea>
         </div>
 
-        <div class="mb-3">
-            <label for="jumlah" class="form-label">Jumlah</label>
-            <input type="number" name="jumlah" id="jumlah" class="form-control @error('jumlah') is-invalid @enderror" value="{{ old('jumlah') }}">
-            @error('jumlah')
-                <div class="invalid-feedback">{{ $message }}</div>
-            @enderror
-        </div>
-
-        <div class="mb-3">
-            <label for="keterangan" class="form-label">Keterangan (Opsional)</label>
-            <textarea name="keterangan" id="keterangan" class="form-control @error('keterangan') is-invalid @enderror">{{ old('keterangan') }}</textarea>
-            @error('keterangan')
-                <div class="invalid-feedback">{{ $message }}</div>
-            @enderror
-        </div>
-
-        <button type="submit" class="btn btn-primary">Simpan Resep Obat</button>
-        <a href="{{ route('apoteker.resep_obat.index') }}" class="btn btn-secondary">Cancel</a>
+        <button type="submit" class="btn btn-primary">Simpan</button>
     </form>
 </div>
+
+<script>
+    let obatIndex = 1;
+
+    document.getElementById('add-obat').addEventListener('click', function() {
+        const container = document.getElementById('obat-container');
+        const newRow = document.createElement('div');
+        newRow.classList.add('obat-row', 'mb-3');
+        newRow.innerHTML = `
+            <label for="id_obat" class="form-label">Obat</label>
+            <select name="obat[${obatIndex}][id_obat]" class="form-control" required>
+                @foreach($obat as $o)
+                    <option value="{{ $o->id_obat }}">{{ $o->nama_obat }}</option>
+                @endforeach
+            </select>
+            <input type="number" name="obat[${obatIndex}][jumlah]" class="form-control mt-2" placeholder="Jumlah" required>
+        `;
+        container.appendChild(newRow);
+        obatIndex++;
+    });
+</script>
 @endsection
