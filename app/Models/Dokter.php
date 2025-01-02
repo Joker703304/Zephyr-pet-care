@@ -17,7 +17,6 @@ class Dokter extends Model
         'no_telepon',
         'jenkel',
         'alamat',
-        
     ];
 
 
