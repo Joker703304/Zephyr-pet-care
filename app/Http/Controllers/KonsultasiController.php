@@ -76,7 +76,7 @@ class KonsultasiController extends Controller
 {
         $dokter = Dokter::all();
     $hewan = Hewan::all();
-    return view('kasir.konsultasi.edit', compact('konsultasi', 'dokter', 'hewan'));
+    return view('admin.konsultasi.edit', compact('konsultasi', 'dokter', 'hewan'));
 }
 
 
@@ -115,7 +115,7 @@ class KonsultasiController extends Controller
         $konsultasi->update($requestData);
 
 
-        return redirect()->route('kasir.konsultasi.index')->with('success', 'Daftar Ulang Telah Berhasil.');
+        return redirect()->route('admin.konsultasi.index')->with('success', 'Daftar Ulang Telah Berhasil.');
     }
 
     /**

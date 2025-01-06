@@ -48,7 +48,7 @@ class LoginController extends Controller
      */
     protected function authenticated(Request $request, $user)
     {
-        // Cek apakah email sudah diverifikasi
+        //Cek apakah email sudah diverifikasi
         if (!$user->hasVerifiedEmail()) {
             Auth::logout();
             return redirect('/login')->with('error', 'Email Anda belum diverifikasi. Silakan cek email Anda untuk verifikasi.');

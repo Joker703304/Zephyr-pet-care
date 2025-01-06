@@ -8,6 +8,8 @@ use Illuminate\Database\Eloquent\Model;
 class Kasir extends Model
 {
     use HasFactory;
+    
+    protected $table = 'kasir';
 
     protected $fillable = [
         'id_user',

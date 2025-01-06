@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Kasir;
 use App\Models\User;
 use App\Models\konsultasi;
 use Illuminate\Support\Facades\Auth;
@@ -22,28 +23,21 @@ class KasirAdminController extends Controller
     $user = User::create([
         'name' => $request->name,
         'email' => $request->email,
-        'password' => Hash::make($request->password), // Hashing password
-        'role' => 'kasir', // Tetapkan role sebagai dokter
+        'password' => Hash::make($request->password),
+        'role' => 'kasir',
     ]);
 
     // Kirim notifikasi verifikasi email
     $user->sendEmailVerificationNotification();
 
 
-    return redirect()->route('admin.dokter.index')->with('success', 'Dokter berhasil terdaftar.');
+    return redirect()->route('admin.kasir.index')->with('success', 'Dokter berhasil terdaftar.');
 }
+
 
 public function index()
-{
-    $today = now()->toDateString();  // Dapatkan tanggal hari ini
-$konsultasi = Konsultasi::with(['dokter', 'hewan'])
-    ->whereDate('tanggal_konsultasi', $today)  // Filter hanya untuk tanggal konsultasi hari ini
-    ->get();
-
-if (auth()->user()->role == 'pemilik_hewan') {
-    return view('pemilik-hewan.konsultasi.index', compact('konsultasi'));
-}
-
-return view('kasir.konsultasi.index', compact('konsultasi'));
-}
+    {
+        $kasir = Kasir::with('user')->get();
+        return view('admin.kasir.index', compact('kasir'));
+    }
 }
