@@ -47,4 +47,10 @@ class konsultasi extends Model
 {
     return $this->hasOneThrough(User::class, hewan::class);
 }
+
+public function layanan()
+{
+    return $this->belongsToMany(Layanan::class, 'konsultasi_layanan', 'id_konsultasi', 'id_layanan');
+}
+
 }

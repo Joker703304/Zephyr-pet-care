@@ -27,17 +27,24 @@
         </div>
 
         {{-- Layanan Dropdown --}}
-        <div class="form-group">
-            <label for="layanan_id">Layanan</label>
-            <select name="layanan_id" class="form-control" required>
-                <option value="" selected disabled>Pilih Layanan</option>
-                @foreach ($layanan as $item)
-                    <option value="{{ $item->id_layanan }}" {{ $konsultasi->layanan_id == $item->id_layanan ? 'selected' : '' }}>
-                        {{ $item->nama_layanan }} ({{ $item->harga }})
-                    </option>
-                @endforeach
-            </select>
+        <h5>Layanan</h5>
+        <div id="layanan-container">
+            @foreach ($konsultasi->layanan as $index => $layanan)
+                <div class="form-group mt-3 d-flex align-items-center" id="layanan-field-{{ $layanan->id_layanan }}">
+                    <div class="w-100">
+                        <select name="layanan_id[{{ $layanan->id_layanan }}]" class="form-control" required>
+                            @foreach ($layanan as $item)
+                                <option value="{{ $item->id_layanan }}" {{ in_array($item->id_layanan, old('layanan_id', $konsultasi->layanan->pluck('id_layanan')->toArray() ?? [])) ? 'selected' : '' }}>
+                                    {{ $item->nama_layanan }} ({{ $item->harga }})
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <button type="button" class="btn btn-danger ml-2" onclick="removeLayananField('{{ $layanan->id_layanan }}')">Hapus</button>
+                </div>
+            @endforeach
         </div>
+        <button type="button" id="add-layanan" class="btn btn-secondary mt-3">Tambah Layanan</button>
 
         {{-- Resep Obat --}}
         <h5>Resep Obat</h5>
@@ -71,6 +78,8 @@
 
 <script>
     let deletedObatIds = [];
+    let countLayanan = {{ $konsultasi->layanan->count() }};
+    let countObat = {{ $konsultasi->resepObat->count() }};
 
     // Hapus resep obat
     function removeObatField(id) {
@@ -83,27 +92,52 @@
     }
 
     // Tambah resep obat baru
-    let count = {{ $konsultasi->resepObat->count() }};
     document.getElementById('add-obat').addEventListener('click', function() {
         const container = document.getElementById('resep-obat-container');
         const newField = `
-            <div class="form-group mt-3 d-flex align-items-center" id="obat-field-new-${count}">
+            <div class="form-group mt-3 d-flex align-items-center" id="obat-field-new-${countObat}">
                 <div class="w-100">
-                    <select name="obat[new-${count}][id_obat]" class="form-control" required>
+                    <select name="obat[new-${countObat}][id_obat]" class="form-control" required>
                         @foreach ($obat as $item)
                             <option value="{{ $item->id_obat }}">{{ $item->nama_obat }}</option>
                         @endforeach
                     </select>
-                    <input type="number" name="obat[new-${count}][jumlah]" class="form-control mt-2" placeholder="Jumlah" required>
+                    <input type="number" name="obat[new-${countObat}][jumlah]" class="form-control mt-2" placeholder="Jumlah" required>
                 </div>
                 <div class="w-100 ml-2">
                     <label for="keterangan">Keterangan</label>
-                    <input type="text" name="obat[new-${count}][keterangan]" class="form-control">
+                    <input type="text" name="obat[new-${countObat}][keterangan]" class="form-control">
                 </div>
-                <button type="button" class="btn btn-danger ml-2" onclick="removeObatField('new-${count}')">Hapus</button>
+                <button type="button" class="btn btn-danger ml-2" onclick="removeObatField('new-${countObat}')">Hapus</button>
             </div>`;
         container.insertAdjacentHTML('beforeend', newField);
-        count++;
+        countObat++;
+    });
+
+    // Hapus layanan
+    function removeLayananField(id) {
+        const field = document.getElementById(`layanan-field-${id}`);
+        if (field) {
+            field.remove();
+        }
+    }
+
+    // Tambah layanan baru
+    document.getElementById('add-layanan').addEventListener('click', function() {
+        const container = document.getElementById('layanan-container');
+        const newField = `
+            <div class="form-group mt-3 d-flex align-items-center" id="layanan-field-new-${countLayanan}">
+                <div class="w-100">
+                    <select name="layanan_id[new-${countLayanan}]" class="form-control" required>
+                        @foreach ($layanan as $item)
+                            <option value="{{ $item->id_layanan }}">{{ $item->nama_layanan }} ({{ $item->harga }})</option>
+                        @endforeach
+                    </select>
+                </div>
+                <button type="button" class="btn btn-danger ml-2" onclick="removeLayananField('new-${countLayanan}')">Hapus</button>
+            </div>`;
+        container.insertAdjacentHTML('beforeend', newField);
+        countLayanan++;
     });
 </script>
 @endsection
