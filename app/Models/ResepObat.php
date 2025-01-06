@@ -17,6 +17,7 @@ class ResepObat extends Model
         'id_obat',
         'jumlah',
         'keterangan',
+        'status',
     ];
 
     // Relasi ke Konsultasi

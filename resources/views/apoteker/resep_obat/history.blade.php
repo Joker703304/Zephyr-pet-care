@@ -2,15 +2,9 @@
 
 @section('content')
 <div class="container">
-    <h1>Resep Obat</h1>
+    <h1>History Resep Obat</h1>
 
-    @if(session('success'))
-        <div class="alert alert-success">
-            {{ session('success') }}
-        </div>
-    @endif
-
-    <a href="{{ route('apoteker.resep_obat.history') }}" class="btn btn-info mb-3">Lihat History Resep Obat</a>
+    <a href="{{ route('apoteker.resep_obat.index') }}" class="btn btn-secondary">Kembali</a>
     <table class="table table-bordered">
         <thead>
             <tr>
@@ -18,8 +12,7 @@
                 <th>Konsultasi</th>
                 <th>Obat</th>
                 <th>Keterangan</th>
-                <th>Status</th>  <!-- Kolom Status -->
-                <th>Aksi</th>
+                <th>Status</th>
             </tr>
         </thead>
         <tbody>
@@ -43,15 +36,11 @@
                         {{ ucfirst($resepGroup->first()->status) ?? 'Sedang di Siapkan' }}
                     </span>
                 </td>
-                <td>
-                    <a href="{{ route('apoteker.resep_obat.edit', $id_konsultasi) }}" class="btn btn-warning">Edit</a>
-                </td>
             </tr>
             @endforeach
         </tbody>
     </table>
 </div>
-
 <!-- Tambahkan style di sini -->
 <style>
     .status-badge {

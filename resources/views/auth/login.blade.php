@@ -8,16 +8,30 @@
                 <div class="card-header">{{ __('Login') }}</div>
 
                 <div class="card-body">
+                    <!-- Pesan Flash -->
                     @if (session('error'))
                         <div class="alert alert-danger" role="alert">
                             {{ session('error') }}
                         </div>
                     @endif
 
-                <div class="card-body">
+                    @if (session('success'))
+                        <div class="alert alert-success" role="alert">
+                            {{ session('success') }}
+                        </div>
+                    @endif
+
+                    <div class="card-body">
+                        @if (session('status'))
+                            <div class="alert alert-success" role="alert">
+                                {{ session('status') }}
+                            </div>
+                        @endif
+
                     <form method="POST" action="{{ route('login') }}">
                         @csrf
 
+                        <!-- Input Email -->
                         <div class="row mb-3">
                             <label for="email" class="col-md-4 col-form-label text-md-end">{{ __('Email Address') }}</label>
 
@@ -32,6 +46,7 @@
                             </div>
                         </div>
 
+                        <!-- Input Password -->
                         <div class="row mb-3">
                             <label for="password" class="col-md-4 col-form-label text-md-end">{{ __('Password') }}</label>
 
@@ -51,6 +66,7 @@
                             </div>
                         </div>
 
+                        <!-- Remember Me -->
                         <div class="row mb-3">
                             <div class="col-md-6 offset-md-4">
                                 <div class="form-check">
@@ -63,6 +79,7 @@
                             </div>
                         </div>
 
+                        <!-- Submit Button -->
                         <div class="row mb-0">
                             <div class="col-md-8 offset-md-4">
                                 <button type="submit" class="btn btn-primary">
@@ -83,6 +100,7 @@
     </div>
 </div>
 
+<!-- Toggle Password Visibility -->
 <script>
     document.getElementById('togglePassword').addEventListener('click', function () {
         const passwordField = document.getElementById('password');
