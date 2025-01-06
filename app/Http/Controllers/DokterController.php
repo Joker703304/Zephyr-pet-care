@@ -4,11 +4,35 @@ namespace App\Http\Controllers;
 
 use App\Models\Dokter;
 use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\Request;
 
 class DokterController extends Controller
 {
+    public function registerStore(Request $request)
+{
+    $request->validate([
+        'name' => 'required|string|max:255',
+        'email' => 'required|email|unique:users,email',
+        'password' => 'required|string|min:8|confirmed',
+    ]);
+
+    // Membuat user baru dengan role dokter
+    $user = User::create([
+        'name' => $request->name,
+        'email' => $request->email,
+        'password' => Hash::make($request->password), // Hashing password
+        'role' => 'dokter', // Tetapkan role sebagai dokter
+    ]);
+
+    // Kirim notifikasi verifikasi email
+    $user->sendEmailVerificationNotification();
+
+
+    return redirect()->route('admin.dokter.index')->with('success', 'Dokter berhasil terdaftar.');
+}
+
     public function index()
     {
         $dokters = Dokter::with('user')->get();

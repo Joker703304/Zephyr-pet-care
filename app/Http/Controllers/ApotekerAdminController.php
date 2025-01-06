@@ -5,9 +5,35 @@ namespace App\Http\Controllers;
 use App\Models\Apoteker;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 
 class ApotekerAdminController extends Controller
 {
+    public function registerStore(Request $request)
+{
+    $request->validate([
+        'name' => 'required|string|max:255',
+        'email' => 'required|email|unique:users,email',
+        'password' => 'required|string|min:8|confirmed',
+    ]);
+
+    // Membuat user baru dengan role dokter
+    $user = User::create([
+        'name' => $request->name,
+        'email' => $request->email,
+        'password' => Hash::make($request->password), 
+        'role' => 'apoteker', 
+    ]);
+
+    // Kirim notifikasi verifikasi email
+    $user->sendEmailVerificationNotification();
+
+
+    return redirect()->route('admin.apoteker.index')->with('success', 'apoteker berhasil terdaftar.');
+}
+
+
     public function index()
     {
         $apotekers = Apoteker::with('user')->get();

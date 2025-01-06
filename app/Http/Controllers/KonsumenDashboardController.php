@@ -22,6 +22,11 @@ class KonsumenDashboardController extends Controller
         // Check if the user exists in the pemilik_hewan table
         $pemilikHewan = pemilik_hewan::where('email', $user->email)->first();
 
+        if (!$pemilikHewan) {
+            return redirect()->route('pemilik-hewan.pemilik_hewan.create')->with('warning', 'Silakan lengkapi data pemilik hewan terlebih dahulu.');
+        }
+    
+
 
         // If the user exists, return the dashboard view
         return view('pemilik-hewan.dashboard', compact('pemilikHewan'));

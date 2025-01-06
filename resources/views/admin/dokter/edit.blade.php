@@ -16,7 +16,7 @@
         <!-- Email field (Dropdown for selecting email) -->
         <div class="form-group mb-3">
             <label for="email">Email</label>
-            <select name="email" id="email" class="form-control" required>
+            <select name="email" id="email" class="form-control" readonly  disabled>
                 <option value="">-- Select Email --</option>
                 @foreach ($users as $user)
                     <option value="{{ $user->email }}" data-name="{{ $user->name }}" 

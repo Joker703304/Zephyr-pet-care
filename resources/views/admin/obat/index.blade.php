@@ -61,7 +61,7 @@
                             <th>Jenis Obat</th>
                             <th>Stok</th>
                             <th>Harga</th>
-                            <th>Actions</th>
+                            
                         </tr>
                     </thead>
                     
@@ -73,14 +73,7 @@
                             <td>{{ $obat->jenis_obat }}</td>
                             <td>{{ $obat->stok }}</td>
                             <td>{{ $obat->harga }}</td>
-                            <td>
-                                <a href="{{ route('admin.obat.edit', $obat->id_obat) }}" class="btn btn-warning btn-sm">Edit</a>
-                                <form action="{{ route('admin.obat.destroy', $obat->id_obat) }}" method="POST" style="display:inline;">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this drug?')">Delete</button>
-                                </form>
-                            </td>
+                            
                         </tr>
                         @endforeach
                     </tbody>

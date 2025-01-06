@@ -33,7 +33,7 @@
                     <td>{{ ucfirst($dokter->jenkel) }}</td>
                     <td>{{ $dokter->alamat }}</td>
                     <td>
-                        <a href="{{ route('admin.dokter.edit', $dokter->id) }}" class="btn btn-warning btn-sm">Edit</a>
+                        {{-- <a href="{{ route('admin.dokter.edit', $dokter->id) }}" class="btn btn-warning btn-sm">Edit</a> --}}
                         <form action="{{ route('admin.dokter.destroy', $dokter->id) }}" method="POST" style="display:inline-block;">
                             @csrf
                             @method('DELETE')

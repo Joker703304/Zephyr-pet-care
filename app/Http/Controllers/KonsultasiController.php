@@ -73,11 +73,12 @@ class KonsultasiController extends Controller
      * Show the form for editing the specified resource.
      */
     public function edit(Konsultasi $konsultasi)
-    {
+{
         $dokter = Dokter::all();
-        $hewan = Hewan::all();
-        return view('admin.konsultasi.edit', compact('konsultasi', 'dokter', 'hewan'));
-    }
+    $hewan = Hewan::all();
+    return view('kasir.konsultasi.edit', compact('konsultasi', 'dokter', 'hewan'));
+}
+
 
     /**
      * Update the specified resource in storage.
@@ -89,8 +90,12 @@ class KonsultasiController extends Controller
             'id_hewan' => 'required|exists:hewan,id_hewan',
             'keluhan' => 'required|string',
             'tanggal_konsultasi' => 'required|date',
-            'status' => 'required|in:Menunggu,Sedang Diproses,Selesai,Dibatalkan',
+            'status' => 'required|in:Menunggu,Sedang Perawatan,Sedang Diproses,Selesai,Dibatalkan',
         ]);
+
+        $dokter = Dokter::findOrFail($request->dokter_id);
+    $dokter->update(['status' => 'Sedang Melakukan Perawatan']);
+
 
         // Hitung nomor antrian untuk tanggal konsultasi
         $today = now()->toDateString();  // Dapatkan tanggal saat ini (atau bisa berdasarkan tanggal yang dipilih)
@@ -110,7 +115,7 @@ class KonsultasiController extends Controller
         $konsultasi->update($requestData);
 
 
-        return redirect()->route('admin.konsultasi.index')->with('success', 'Daftar Ulang Telah Berhasil.');
+        return redirect()->route('kasir.konsultasi.index')->with('success', 'Daftar Ulang Telah Berhasil.');
     }
 
     /**

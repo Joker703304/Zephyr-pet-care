@@ -11,9 +11,18 @@
         <div class="mb-3">
             <label for="id_konsultasi" class="form-label">Konsultasi</label>
             <select name="id_konsultasi" id="id_konsultasi" class="form-control @error('id_konsultasi') is-invalid @enderror" disabled>
+<<<<<<< Updated upstream
                 <option value="{{ $id_konsultasi }}">
                     {{ $resepGroup->first()->konsultasi->keluhan }}
                 </option>
+=======
+                <option value="">Pilih Konsultasi</option>
+                @foreach ($konsultasi as $item)
+                    <option value="{{ $item->id_konsultasi }}" {{ old('id_konsultasi', $resepObat->id_konsultasi) == $item->id_konsultasi ? 'selected' : '' }}>
+                        No Antrian: {{ $item->no_antrian }} - {{ $item->keluhan }}
+                    </option>
+                @endforeach
+>>>>>>> Stashed changes
             </select>
             <input type="hidden" name="id_konsultasi" value="{{ $id_konsultasi }}">
         </div>

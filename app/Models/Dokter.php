@@ -14,6 +14,7 @@ class Dokter extends Model
     protected $fillable = [
         'id_user',
         'spesialis',
+        'status',
         'no_telepon',
         'jenkel',
         'alamat',
@@ -29,4 +30,15 @@ class Dokter extends Model
     {
         return $this->hasMany(Konsultasi::class, 'dokter_id');
     }
+
+    public function isAvailable()
+{
+    return $this->status === 'Kosong';
+}
+
+public function isInTreatment()
+{
+    return $this->status === 'Sedang Melakukan Perawatan';
+}
+
 }

@@ -18,6 +18,7 @@ use App\Http\Controllers\KonsultasiPemilikController;
 use App\Http\Controllers\KonsumenDashboardController;
 use App\Http\Controllers\ResepObatController;
 use App\Http\Controllers\LayananController;
+use App\Models\Apoteker;
 
 Route::get('/', function () {
     return view('welcome');
@@ -62,6 +63,8 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
 //dokter
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
     //pemilik hewan
+    Route::post('dokter/register', [DokterController::class, 'registerStore'])->name('dokter.register');
+    Route::post('apoteker/register', [ApotekerAdminController::class, 'registerStore'])->name('apoteker.register');
     Route::resource('dokter', DokterController::class);
     Route::resource('apoteker', ApotekerAdminController::class);
 });
@@ -85,6 +88,10 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
 //role apoteker
 //dashboard apoteker
 Route::middleware(['auth', 'role:apoteker'])->prefix('apoteker')->name('apoteker.')->group(function () {
+    Route::get('/create-profile', [ApotekerController::class, 'createProfile'])->name('createProfile');
+Route::post('/store-profile', [ApotekerController::class, 'storeProfile'])->name('storeProfile');
+Route::get('/edit-profile', [ApotekerController::class, 'editProfile'])->name('editProfile');
+Route::post('/update-profile', [ApotekerController::class, 'updateProfile'])->name('updateProfile');
     Route::get('/dashboard', [ApotekerController::class, 'index'])->name('dashboard');
 });
 
@@ -104,6 +111,10 @@ Route::get('/reses-obat/history', [ResepObatController::class, 'history'])->name
 //role dokter
 //dashboard dokter
 Route::middleware(['auth', 'role:dokter'])->prefix('dokter')->name('dokter.')->group(function () {
+    Route::get('/dokter/create-profile', [DokterDashboardController::class, 'createProfile'])->name('createProfile');
+Route::post('/dokter/store-profile', [DokterDashboardController::class, 'storeProfile'])->name('storeProfile');
+Route::get('/dokter/edit-profile', [DokterDashboardController::class, 'editProfile'])->name('editProfile');
+Route::post('/dokter/update-profile', [DokterDashboardController::class, 'updateProfile'])->name('updateProfile');
     Route::get('/konsultasi', [DokterDashboardController::class, 'konsultasi'])->name('konsultasi.index'); // Menampilkan daftar konsultasi
     Route::get('/konsultasi/{id}/diagnosis', [DokterDashboardController::class, 'diagnosis'])->name('konsultasi.diagnosis'); // Form diagnosis
     Route::post('/konsultasi/{id}/diagnosis', [DokterDashboardController::class, 'storeDiagnosis'])->name('konsultasi.storeDiagnosis'); // Simpan diagnosis

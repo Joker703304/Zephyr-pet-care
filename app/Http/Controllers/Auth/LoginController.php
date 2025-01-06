@@ -61,9 +61,9 @@ class LoginController extends Controller
             return redirect()->route('dokter.dashboard');
         } elseif (Gate::allows('apoteker', $user)) {
             return redirect()->route('apoteker.dashboard');
-        } elseif ($user->role == 'pemilik_hewan' && !$user->profile) {
+        } elseif ($user->role == 'kasir' && !$user->profile) {
             // Jika pengguna adalah pemilik hewan dan belum mengisi profil, arahkan ke halaman create profil
-            return redirect()->route('pemilik-hewan.pemilik_hewan.create');
+            return redirect()->route('kasir.pemilik_hewan.create');
         } else {
             // Jika pengguna pemilik hewan sudah memiliki profil atau role lain, arahkan ke dashboard pemilik hewan
             return redirect()->route('pemilik-hewan.dashboard');
