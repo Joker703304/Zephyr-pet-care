@@ -96,8 +96,11 @@ Route::middleware(['auth', 'role:apoteker'])->prefix('apoteker')->name('apoteker
 //resep obat
 Route::middleware(['auth', 'role:apoteker'])->prefix('apoteker')->name('apoteker.')->group(function () {
     Route::resource('resep_obat', ResepObatController::class);
+    Route::get('/resep-obat/{id_konsultasi}/edit', [ResepObatController::class, 'edit'])->name('apoteker.resep_obat.edit');
+    
 });
 
+Route::get('/reses-obat/history', [ResepObatController::class, 'history'])->name('apoteker.resep_obat.history');
 //role dokter
 //dashboard dokter
 Route::middleware(['auth', 'role:dokter'])->prefix('dokter')->name('dokter.')->group(function () {

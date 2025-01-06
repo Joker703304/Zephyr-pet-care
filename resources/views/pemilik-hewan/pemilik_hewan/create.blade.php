@@ -37,6 +37,7 @@
         <div class="form-group">
             <label for="jenkel">Jenis Kelamin</label>
             <select name="jenkel" id="jenkel" class="form-control">
+                <option value="" disabled selected>Pilih Jenis Kelamin</option> <!-- Opsi default -->
                 <option value="pria" {{ old('jenkel') == 'pria' ? 'selected' : '' }}>Pria</option>
                 <option value="wanita" {{ old('jenkel') == 'wanita' ? 'selected' : '' }}>Wanita</option>
             </select>

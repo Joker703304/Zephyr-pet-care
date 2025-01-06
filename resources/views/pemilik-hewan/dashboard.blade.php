@@ -26,7 +26,7 @@
                 <div class="card-body text-center">
                     <p class="card-text">Kelola informasi data diri Anda.</p>
                     @if($pemilikHewan)
-                        <a href="{{ route('pemilik-hewan.pemilik_hewan.edit', $pemilikHewan->id_pemilik) }}" class="btn btn-secondary btn-sm">Edit Data</a>
+                        <a href="{{ route('pemilik-hewan.pemilik_hewan.index') }}" class="btn btn-secondary btn-sm">Lihat Data Diri</a>
                     @else
                         <a href="{{ route('pemilik-hewan.pemilik_hewan.create') }}" class="btn btn-secondary btn-sm">Isi Data</a>
                     @endif

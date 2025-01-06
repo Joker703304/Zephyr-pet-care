@@ -5,8 +5,8 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Support\Facades\Gate;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\Request;
 
 class LoginController extends Controller
 {
@@ -37,11 +37,10 @@ class LoginController extends Controller
     public function __construct()
     {
         $this->middleware('guest')->except('logout');
-        $this->middleware('auth')->only('logout');
     }
 
     /**
-     * Override the authenticated method to redirect users based on their role.
+     * Override the authenticated method to handle email verification and role-based redirection.
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  \App\Models\User  $user
@@ -49,20 +48,32 @@ class LoginController extends Controller
      */
     protected function authenticated(Request $request, $user)
     {
+        // Cek apakah email sudah diverifikasi
+        if (!$user->hasVerifiedEmail()) {
+            Auth::logout();
+            return redirect('/login')->with('error', 'Email Anda belum diverifikasi. Silakan cek email Anda untuk verifikasi.');
+        }
+
+        // Redirect berdasarkan role
         if (Gate::allows('admin', $user)) {
-            return redirect()->route('admin.dashboard'); // Ganti dengan rute dashboard admin
+            return redirect()->route('admin.dashboard');
         } elseif (Gate::allows('dokter', $user)) {
-            return redirect()->route('dokter.dashboard'); // Ganti dengan rute dashboard dokter
+            return redirect()->route('dokter.dashboard');
         } elseif (Gate::allows('apoteker', $user)) {
-            return redirect()->route('apoteker.dashboard'); // Ganti dengan rute dashboard apoteker
+            return redirect()->route('apoteker.dashboard');
+        } elseif ($user->role == 'pemilik_hewan' && !$user->profile) {
+            // Jika pengguna adalah pemilik hewan dan belum mengisi profil, arahkan ke halaman create profil
+            return redirect()->route('pemilik-hewan.pemilik_hewan.create');
         } else {
-            return redirect()->route('pemilik-hewan.dashboard'); // Ganti dengan rute dashboard pemilik hewan
+            // Jika pengguna pemilik hewan sudah memiliki profil atau role lain, arahkan ke dashboard pemilik hewan
+            return redirect()->route('pemilik-hewan.dashboard');
         }
     }
 
     /**
      * Override the logout method to log the user out and redirect.
      *
+     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\RedirectResponse
      */
     public function logout(Request $request)
@@ -73,6 +84,16 @@ class LoginController extends Controller
 
         $request->session()->regenerateToken();
 
-        return redirect('/login'); // Ubah dengan rute halaman login
+        return redirect('/login')->with('success', 'Anda berhasil logout.');
+    }
+
+    /**
+     * Get the guard to be used during authentication.
+     *
+     * @return \Illuminate\Contracts\Auth\StatefulGuard
+     */
+    protected function guard()
+    {
+        return Auth::guard();
     }
 }
