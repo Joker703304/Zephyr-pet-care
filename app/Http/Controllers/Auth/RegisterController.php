@@ -76,6 +76,6 @@ class RegisterController extends Controller
 
         $user = $this->create($request->all());
 
-        return redirect('/login')->with('success', 'Registration successful. Please verify your email before logging in.');
+        return redirect('/login')->with('success', 'Register berhasil. Silahkan verify email anda sebelum login.');
     }
 }
