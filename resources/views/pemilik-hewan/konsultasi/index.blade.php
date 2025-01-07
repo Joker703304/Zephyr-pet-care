@@ -4,6 +4,7 @@
 <div class="container">
     <h1>Daftar Konsultasi</h1>
     <a href="{{ route('pemilik-hewan.konsultasi_pemilik.create') }}" class="btn btn-success mb-3">Ajukan Konsultasi</a>
+    <a href="{{ route('pemilik-hewan.dashboard') }}" class="btn btn-secondary mb-3">Kembali</a>
     @if(session('success'))
     <div class="alert alert-success">{{ session('success') }}</div>
 @endif

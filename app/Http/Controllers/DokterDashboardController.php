@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\konsultasi;
 use App\Models\obat;
+use App\Models\Dokter;
 use App\Models\ResepObat;
 use App\Models\Layanan;
 use Carbon\Carbon;
@@ -21,6 +22,14 @@ class DokterDashboardController extends Controller
 
     public function dokter()
     {
+          // Check if the logged-in user has a doctor profile
+          $dokter = Dokter::where('id_user', Auth::id())->first();
+
+          if (!$dokter) {
+              // If no doctor profile exists, redirect to the profile creation page
+              return redirect()->route('dokter.createProfile')->with('warning', 'Please complete your profile first.');
+          }
+  
         // Menampilkan tampilan dashboard pemilik hewan
         return view('dokter.dashboard');
     }
@@ -32,6 +41,7 @@ class DokterDashboardController extends Controller
         // Filter konsultasi to show only those with today's date
         $konsultasi = Konsultasi::with(['hewan', 'dokter', 'resepObat'])
             ->whereDate('tanggal_konsultasi', $today) // Filter by today's date
+            ->where('status', 'Sedang Perawatan')
             ->get();
 
         return view('dokter.konsultasi', compact('konsultasi'));

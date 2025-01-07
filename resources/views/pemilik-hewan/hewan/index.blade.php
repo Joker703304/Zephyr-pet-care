@@ -4,6 +4,7 @@
 <div class="container">
     <h1>Daftar Hewan</h1>
     <a href="{{ route('pemilik-hewan.hewan.create') }}" class="btn btn-success mb-3">Tambah Hewan</a>
+    <a href="{{ route('pemilik-hewan.dashboard') }}" class="btn btn-secondary mb-3">Kembali</a>
 
     @if(session('success'))
         <div class="alert alert-success">{{ session('success') }}</div>

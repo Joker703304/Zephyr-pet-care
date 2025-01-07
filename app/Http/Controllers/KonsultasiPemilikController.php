@@ -20,7 +20,7 @@ class KonsultasiPemilikController extends Controller
             $query->where('id_pemilik', auth()->user()->pemilikhewan->id_pemilik);
         })->get();
     
-        return view('pemilik-hewan.konsultasi.index', compact('konsultasi'));
+        return view('pemilik-hewan.konsultasi_pemilik.index', compact('konsultasi'));
     }
 
     /**

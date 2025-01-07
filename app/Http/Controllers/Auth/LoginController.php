@@ -48,7 +48,7 @@ class LoginController extends Controller
      */
     protected function authenticated(Request $request, $user)
     {
-        //Cek apakah email sudah diverifikasi
+        // Cek apakah email sudah diverifikasi
         if (!$user->hasVerifiedEmail()) {
             Auth::logout();
             return redirect('/login')->with('error', 'Email Anda belum diverifikasi. Silakan cek email Anda untuk verifikasi.');
@@ -61,9 +61,11 @@ class LoginController extends Controller
             return redirect()->route('dokter.dashboard');
         } elseif (Gate::allows('apoteker', $user)) {
             return redirect()->route('apoteker.dashboard');
-        } elseif ($user->role == 'kasir' && !$user->profile) {
+        } elseif (Gate::allows('kasir', $user)) {
+            return redirect()->route('kasir.dashboard');
+        } elseif ($user->role == 'pemilik_hewan' && !$user->profile) {
             // Jika pengguna adalah pemilik hewan dan belum mengisi profil, arahkan ke halaman create profil
-            return redirect()->route('kasir.pemilik_hewan.create');
+            return redirect()->route('pemilik-hewan.pemilik_hewan.create');
         } else {
             // Jika pengguna pemilik hewan sudah memiliki profil atau role lain, arahkan ke dashboard pemilik hewan
             return redirect()->route('pemilik-hewan.dashboard');

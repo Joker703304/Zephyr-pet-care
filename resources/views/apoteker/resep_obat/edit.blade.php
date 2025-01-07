@@ -63,7 +63,7 @@
             <label for="status" class="form-label">Status</label>
             <select name="status" id="status" class="form-control">
                 <option value="sedang disiapkan" {{ $resepGroup->first()->status == 'sedang disiapkan' ? 'selected' : '' }}>Sedang Disiapkan</option>
-                <option value="selesai" {{ $resepGroup->first()->status == 'selesai' ? 'selected' : '' }}>Selesai</option>
+                <option value="siap" {{ $resepGroup->first()->status == 'siap' ? 'selected' : '' }}>Siap</option>
             </select>
         </div>
 

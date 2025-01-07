@@ -14,7 +14,6 @@
     <link href="https://fonts.bunny.net/css?family=Nunito" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
 
-
     <!-- Scripts -->
     @vite(['resources/sass/app.scss', 'resources/js/app.js'])
 </head>
@@ -57,10 +56,18 @@
                                 </a>
 
                                 <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                                    <!-- Link to Profile if user is Pemilik Hewan -->
+                                    @if (auth()->user()->role === 'pemilik_hewan')
+                                        <a class="dropdown-item" href="{{ route('pemilik-hewan.pemilik_hewan.index') }}">
+                                            <i class="fas fa-user-circle"></i> Profil
+                                        </a>
+                                    @endif
+
+                                    <!-- Logout with Icon -->
                                     <a class="dropdown-item" href="{{ route('logout') }}"
                                        onclick="event.preventDefault();
                                                      document.getElementById('logout-form').submit();">
-                                        {{ __('Logout') }}
+                                        <i class="fas fa-sign-out-alt"></i> {{ __('Logout') }}
                                     </a>
 
                                     <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">

@@ -23,7 +23,7 @@ class KonsultasiController extends Controller
         return view('pemilik-hewan.konsultasi.index', compact('konsultasi'));
     }
 
-    return view('admin.konsultasi.index', compact('konsultasi'));
+    return view('kasir.daftar_ulang.index', compact('konsultasi'));
     }
 
     /**
@@ -33,7 +33,7 @@ class KonsultasiController extends Controller
     {
         $dokter = Dokter::all();
         $hewan = Hewan::all();
-        return view('admin.konsultasi.create', compact('dokter', 'hewan'));
+        return view('kasir.daftar_ulang.create', compact('dokter', 'hewan'));
     }
 
     /**
@@ -66,7 +66,7 @@ class KonsultasiController extends Controller
         Konsultasi::create($requestData);
 
 
-        return redirect()->route('admin.konsultasi.index')->with('success', 'Konsultasi berhasil ditambahkan.');
+        return redirect()->route('kasir.konsultasi.index')->with('success', 'Konsultasi berhasil ditambahkan.');
     }
 
     /**
@@ -76,7 +76,7 @@ class KonsultasiController extends Controller
 {
         $dokter = Dokter::all();
     $hewan = Hewan::all();
-    return view('admin.konsultasi.edit', compact('konsultasi', 'dokter', 'hewan'));
+    return view('kasir.konsultasi.edit', compact('konsultasi', 'dokter', 'hewan'));
 }
 
 
@@ -115,7 +115,7 @@ class KonsultasiController extends Controller
         $konsultasi->update($requestData);
 
 
-        return redirect()->route('admin.konsultasi.index')->with('success', 'Daftar Ulang Telah Berhasil.');
+        return redirect()->route('kasir.konsultasi.index')->with('success', 'Daftar Ulang Telah Berhasil.');
     }
 
     /**
@@ -125,6 +125,6 @@ class KonsultasiController extends Controller
     {
         $konsultasi->delete();
 
-        return redirect()->route('admin.konsultasi.index')->with('success', 'Konsultasi berhasil dihapus.');
+        return redirect()->route('kasir.konsultasi.index')->with('success', 'Konsultasi berhasil dihapus.');
     }
 }
