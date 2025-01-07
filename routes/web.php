@@ -18,6 +18,7 @@ use App\Http\Controllers\KonsultasiPemilikController;
 use App\Http\Controllers\KonsumenDashboardController;
 use App\Http\Controllers\ResepObatController;
 use App\Http\Controllers\LayananController;
+use App\Models\ResepObat;
 
 Route::get('/', function () {
     return view('welcome');
@@ -120,6 +121,10 @@ Route::middleware(['auth', 'role:pemilik_hewan'])->prefix('pemilik-hewan')->name
 //hewan
 Route::middleware(['auth', 'role:pemilik_hewan'])->prefix('pemilik-hewan')->name('pemilik-hewan.')->group(function () {
     Route::resource('hewan', HewanController::class);
+});
+
+Route::middleware(['auth', 'role:pemilik_hewan'])->prefix('pemilik-hewan')->name('pemilik-hewan.')->group(function () {
+    Route::resource('resep_obat', ResepObat::class);
 });
 
 //konsumen

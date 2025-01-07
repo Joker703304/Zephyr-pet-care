@@ -48,6 +48,7 @@
 
                     <!-- Action Buttons -->
                     <a href="{{ route('pemilik-hewan.pemilik_hewan.edit', $pemilik->id_pemilik) }}" class="btn btn-warning btn-sm">Edit</a>
+                    <a href="{{ route('pemilik-hewan.dashboard') }}" class="btn btn-secondary btn-sm">Kembali</a>
                 @endforeach
             @else
                 <p class="text-center">Data diri tidak ditemukan.</p>
