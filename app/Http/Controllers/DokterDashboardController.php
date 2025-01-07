@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\konsultasi;
 use App\Models\obat;
+use App\Models\Dokter;
 use App\Models\ResepObat;
 use App\Models\Layanan;
 use Carbon\Carbon;
@@ -21,6 +22,14 @@ class DokterDashboardController extends Controller
 
     public function dokter()
     {
+          // Check if the logged-in user has a doctor profile
+          $dokter = Dokter::where('id_user', Auth::id())->first();
+
+          if (!$dokter) {
+              // If no doctor profile exists, redirect to the profile creation page
+              return redirect()->route('dokter.createProfile')->with('warning', 'Please complete your profile first.');
+          }
+  
         // Menampilkan tampilan dashboard pemilik hewan
         return view('dokter.dashboard');
     }
@@ -32,6 +41,7 @@ class DokterDashboardController extends Controller
         // Filter konsultasi to show only those with today's date
         $konsultasi = Konsultasi::with(['hewan', 'dokter', 'resepObat'])
             ->whereDate('tanggal_konsultasi', $today) // Filter by today's date
+            ->where('status', 'Sedang Perawatan')
             ->get();
 
         return view('dokter.konsultasi', compact('konsultasi'));
@@ -109,5 +119,74 @@ class DokterDashboardController extends Controller
     
         return redirect()->route("dokter.konsultasi.index")->with('success', 'Diagnosis dan resep berhasil diperbarui.');
     }
+
+    public function createProfile()
+    {
+        return view('dokter.createProfile');
+    }
+
+    public function storeProfile(Request $request)
+    {
+        // Validate the incoming data
+        $validated = $request->validate([
+            'spesialis' => 'required|string|max:50',
+            'no_telepon' => 'required|string|max:20|unique:tbl_dokter',
+            'jenkel' => 'required|in:pria,wanita',
+            'alamat' => 'nullable|string',
+        ]);
+
+        // Create a new doctor profile
+        Dokter::create([
+            'id_user' => Auth::id(),
+            'spesialis' => $validated['spesialis'],
+            'no_telepon' => $validated['no_telepon'],
+            'jenkel' => $validated['jenkel'],
+            'alamat' => $validated['alamat'],
+        ]);
+
+        // Redirect to the dashboard after the profile is created
+        return redirect()->route('dokter.dashboard')->with('success', 'Your profile has been created successfully.');
+    }
+
+    public function editProfile()
+    {
+        // Get the doctor's profile
+        $dokter = Dokter::where('id_user', Auth::id())->first();
+
+        // Return the profile edit view with the doctor's current data
+        return view('dokter.editProfile', compact('dokter'));
+    }
+
+    public function updateProfile(Request $request)
+{
+    // Validate the incoming data
+    $validated = $request->validate([
+        'name' => 'required|string|max:255',  // Menambahkan validasi untuk name
+        'spesialis' => 'required|string|max:50',
+        'no_telepon' => 'required|string|max:20|unique:tbl_dokter,no_telepon,' . Auth::id() . ',id_user',
+        'jenkel' => 'required|in:pria,wanita',
+        'alamat' => 'nullable|string',
+    ]);
+
+    // Temukan dokter berdasarkan id_user (auth)
+    $dokter = Dokter::where('id_user', Auth::id())->first();
+
+    // Update nama pengguna
+    $dokter->user->update([
+        'name' => $validated['name'],
+    ]);
+
+    // Update data dokter
+    $dokter->update([
+        'spesialis' => $validated['spesialis'],
+        'no_telepon' => $validated['no_telepon'],
+        'jenkel' => $validated['jenkel'],
+        'alamat' => $validated['alamat'],
+    ]);
+
+    // Redirect to the dashboard after the profile is updated
+    return redirect()->route('dokter.dashboard')->with('success', 'Your profile has been updated successfully.');
+}
+
     
 }

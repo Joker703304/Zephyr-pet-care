@@ -20,7 +20,6 @@
                 <th>No Telepon</th>
                 <th>Jenis Kelamin</th>
                 <th>Alamat</th>
-                <th>Aksi</th>
             </tr>
         </thead>
         <tbody>
@@ -33,12 +32,12 @@
                     <td>{{ ucfirst($apoteker->jenkel) }}</td>
                     <td>{{ $apoteker->alamat }}</td>
                     <td>
-                        <a href="{{ route('admin.apoteker.edit', $apoteker->id) }}" class="btn btn-warning btn-sm">Edit</a>
+                        {{-- <a href="{{ route('admin.apoteker.edit', $apoteker->id) }}" class="btn btn-warning btn-sm">Edit</a>
                         <form action="{{ route('admin.apoteker.destroy', $apoteker->id) }}" method="POST" class="d-inline">
                             @csrf
                             @method('DELETE')
                             <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Apakah Anda yakin ingin menghapus apoteker ini?')">Hapus</button>
-                        </form>
+                        </form> --}}
                     </td>
                 </tr>
             @empty

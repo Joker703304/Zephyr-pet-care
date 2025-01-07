@@ -20,7 +20,7 @@ class KonsultasiPemilikController extends Controller
             $query->where('id_pemilik', auth()->user()->pemilikhewan->id_pemilik);
         })->get();
     
-        return view('pemilik-hewan.konsultasi.index', compact('konsultasi'));
+        return view('pemilik-hewan.konsultasi_pemilik.index', compact('konsultasi'));
     }
 
     /**
@@ -48,7 +48,7 @@ class KonsultasiPemilikController extends Controller
     // Mengecek apakah jumlah pasien pada tanggal yang dipilih sudah melebihi batas
     $jumlah_pasien = Konsultasi::where('tanggal_konsultasi', $request->tanggal_konsultasi)->count();
 
-    if ($jumlah_pasien >= 3) {
+    if ($jumlah_pasien >= 50) {
         return redirect()->back()->with('error', 'Maaf, kuota pasien pada tanggal ini sudah penuh.');
     }
 
@@ -61,7 +61,7 @@ class KonsultasiPemilikController extends Controller
     $konsultasi->status = 'Menunggu'; // Status awal
     $konsultasi->save();
 
-    return redirect()->route('pemilik-hewan.konsultasi.index')->with('success', 'Konsultasi berhasil diajukan.');
+    return redirect()->route('pemilik-hewan.konsultasi_pemilik.index')->with('success', 'Konsultasi berhasil diajukan.');
 }
 
     /**

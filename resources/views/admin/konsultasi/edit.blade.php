@@ -11,9 +11,13 @@
         <div class="mb-3">
             <label for="dokter_id" class="form-label">Dokter</label>
             <select name="dokter_id" id="dokter_id" class="form-control">
+                <option value="">Pilih Dokter</option>
                 @foreach ($dokter as $item)
-                    <option value="{{ $item->id }}" {{ $item->id == $konsultasi->dokter_id ? 'selected' : '' }}>
-                        {{ $item->user->name }}
+                    <option value="{{ $item->id }}" 
+                        {{ $item->id == $konsultasi->dokter_id ? 'selected' : '' }}
+                        {{ $item->status === 'Sedang Melakukan Perawatan' ? 'disabled' : '' }}>
+                        {{ $item->user->name }} 
+                        ({{ $item->status === 'Sedang Melakukan Perawatan' ? 'Sedang Melakukan Perawatan' : 'Tersedia' }})
                     </option>
                 @endforeach
             </select>
@@ -41,16 +45,10 @@
         </div>
 
         <div class="mb-3">
-            <label for="status" class="form-label">Status</label>
-            <select name="status" id="status" class="form-control">
-                <option value="Menunggu" {{ $konsultasi->status == 'Menunggu' ? 'selected' : '' }}>Menunggu</option>
-                <option value="Sedang Diproses" {{ $konsultasi->status == 'Sedang Diproses' ? 'selected' : '' }}>Sedang Diproses</option>
-                <option value="Selesai" {{ $konsultasi->status == 'Selesai' ? 'selected' : '' }}>Selesai</option>
-                <option value="Dibatalkan" {{ $konsultasi->status == 'Dibatalkan' ? 'selected' : '' }}>Dibatalkan</option>
-            </select>
-        </div>
+    <input type="hidden" name="status" id="status" value="Sedang Perawatan">
+</div>
 
-        <button type="submit" class="btn btn-success">Simpan Perubahan</button>
+        <button type="submit" class="btn btn-success">Daftar Ulang</button>
         <a href="{{ route('admin.konsultasi.index') }}" class="btn btn-secondary">Batal</a>
     </form>
 </div>

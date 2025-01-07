@@ -35,13 +35,14 @@
         <!-- Email -->
         <div class="form-group">
             <label for="email">Email</label>
-            <input type="email" name="email" id="email" class="form-control" value="{{ old('email', $pemilik->email) }}" required>
+            <input type="email" name="email" id="email" class="form-control" value="{{ old('email', $pemilik->email) }}" readonly>
         </div>
 
         <!-- Jenis Kelamin -->
         <div class="form-group">
             <label for="jenkel">Jenis Kelamin</label>
             <select name="jenkel" id="jenkel" class="form-control">
+                <option value="">Pilih Jenis  Kelamin</option>
                 <option value="pria" {{ old('jenkel', $pemilik->jenkel) == 'pria' ? 'selected' : '' }}>Pria</option>
                 <option value="wanita" {{ old('jenkel', $pemilik->jenkel) == 'wanita' ? 'selected' : '' }}>Wanita</option>
             </select>

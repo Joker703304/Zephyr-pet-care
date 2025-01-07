@@ -20,6 +20,14 @@
                 </div>
             </div>
         </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-success text-white">Edit Profile</div>
+                <div class="card-body">
+                    <a href="{{ route('dokter.editProfile') }}" class="btn btn-sm btn-success">Edit Profile</a>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 @endsection
