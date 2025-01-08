@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\ResepObatController as AdminResepObatController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\Auth\VerificationController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\UserController;
@@ -12,6 +13,7 @@ use App\Http\Controllers\PemilikHewanController;
 use App\Http\Controllers\ObatController;
 use App\Http\Controllers\DokterController;
 use App\Http\Controllers\KasirAdminController;
+use App\Http\Controllers\KasirController;
 use App\Http\Controllers\DokterDashboardController;
 use App\Http\Controllers\HewanController;
 use App\Http\Controllers\KonsultasiController;
@@ -33,11 +35,9 @@ Auth::routes();
 Auth::routes(['verify' => true]);
 
 
-Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
-    $request->fulfill();
-
-    return redirect('/home');
-})->middleware(['auth', 'signed'])->name('verification.verify');
+Route::get('/email/verify/{id}/{hash}', [VerificationController::class, 'verify'])
+->middleware(['signed']) // Hanya signed, tanpa 'auth'
+->name('verification.verify');
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
@@ -99,12 +99,12 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
 
 //konsultasi
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
-    Route::resource('konsultasi', KonsultasiController::class);
 });
 
 //role apoteker
 //dashboard apoteker
 Route::middleware(['auth', 'role:apoteker'])->prefix('apoteker')->name('apoteker.')->group(function () {
+    Route::get('/profile', [ApotekerController::class, 'profile'])->name('profile');
     Route::get('/create-profile', [ApotekerController::class, 'createProfile'])->name('createProfile');
     Route::post('/store-profile', [ApotekerController::class, 'storeProfile'])->name('storeProfile');
     Route::get('/edit-profile', [ApotekerController::class, 'editProfile'])->name('editProfile');
@@ -127,6 +127,7 @@ Route::get('/reses-obat/history', [ResepObatController::class, 'history'])->name
 //role dokter
 //dashboard dokter
 Route::middleware(['auth', 'role:dokter'])->prefix('dokter')->name('dokter.')->group(function () {
+    Route::get('/profile', [DokterDashboardController::class, 'index'])->name('profile');
     Route::get('/dokter/create-profile', [DokterDashboardController::class, 'createProfile'])->name('createProfile');
     Route::post('/dokter/store-profile', [DokterDashboardController::class, 'storeProfile'])->name('storeProfile');
     Route::get('/dokter/edit-profile', [DokterDashboardController::class, 'editProfile'])->name('editProfile');
@@ -163,3 +164,14 @@ Route::middleware(['auth', 'role:pemilik_hewan'])->prefix('pemilik-hewan')->name
 Route::middleware(['auth', 'role:pemilik_hewan'])->prefix('pemilik-hewan')->name('pemilik-hewan.')->group(function () {
     Route::resource('konsultasi', KonsultasiController::class);
 });
+
+Route::middleware(['auth', 'role:kasir'])->prefix('kasir')->name('kasir.')->group(function () {
+    Route::get('/profile', [KasirController::class, 'profile'])->name('profile');
+    Route::resource('konsultasi', KonsultasiController::class);
+    Route::get('/create-profile', [KasirController::class, 'createProfile'])->name('createProfile');
+    Route::post('/store-profile', [KasirController::class, 'storeProfile'])->name('storeProfile');
+    Route::get('/edit-profile', [KasirController::class, 'editProfile'])->name('editProfile');
+    Route::post('/update-profile', [KasirController::class, 'updateProfile'])->name('updateProfile');
+    Route::get('/dashboard', [KasirController::class, 'index'])->name('dashboard');
+});
+

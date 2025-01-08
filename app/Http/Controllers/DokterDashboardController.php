@@ -20,6 +20,29 @@ class DokterDashboardController extends Controller
         $this->middleware('role:dokter');
     }
 
+    public function index()
+{
+    // Cek role pengguna yang sedang login
+    if (auth()->user()->role == 'dokter') {
+        // Ambil data pemilik hewan terkait dengan user yang login
+        $userId = auth()->user()->id;
+
+        // Ambil data pemilik hewan berdasarkan user_id
+        $data = Dokter::with('user')
+            ->where('id_user', $userId)
+            ->get();
+
+        // Tampilkan view untuk pemilik hewan
+        return view('dokter.index', compact('data'));
+    }
+
+    // Jika role adalah admin, ambil semua data pemilik hewan
+    $data = Dokter::with('user')->get();
+
+    // Tampilkan view untuk admin
+    return view('admin.pemilik_hewan.index', compact('data'));
+}
+
     public function dokter()
     {
           // Check if the logged-in user has a doctor profile
@@ -27,7 +50,7 @@ class DokterDashboardController extends Controller
 
           if (!$dokter) {
               // If no doctor profile exists, redirect to the profile creation page
-              return redirect()->route('dokter.createProfile')->with('warning', 'Please complete your profile first.');
+              return redirect()->route('dokter.createProfile')->with('warning', 'Mohon Isi data diri terlebih dahulu.');
           }
   
         // Menampilkan tampilan dashboard pemilik hewan
@@ -185,7 +208,7 @@ class DokterDashboardController extends Controller
     ]);
 
     // Redirect to the dashboard after the profile is updated
-    return redirect()->route('dokter.dashboard')->with('success', 'Your profile has been updated successfully.');
+    return redirect()->route('dokter.dashboard')->with('success', 'Profile Anda Berhasil Di Perbarui.');
 }
 
     

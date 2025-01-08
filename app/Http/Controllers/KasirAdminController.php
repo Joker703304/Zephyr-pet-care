@@ -31,7 +31,7 @@ class KasirAdminController extends Controller
     $user->sendEmailVerificationNotification();
 
 
-    return redirect()->route('admin.kasir.index')->with('success', 'Dokter berhasil terdaftar.');
+    return redirect()->route('admin.kasir.index')->with('success', 'kasir berhasil terdaftar.');
 }
 
 
@@ -39,5 +39,10 @@ public function index()
     {
         $kasir = Kasir::with('user')->get();
         return view('admin.kasir.index', compact('kasir'));
+    }
+
+    public function create()
+    {
+        return view('admin.kasir.create');
     }
 }
