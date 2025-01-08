@@ -44,7 +44,7 @@
                 </div>
                 <div class="card-body text-center">
                     <p class="card-text">Lihat resep obat yang diberikan untuk hewan Anda.</p>
-                    <a href="{{ route('pemilik-hewan.resep_obat.index')}}" class="btn btn-warning btn-sm">Lihat Resep</a>
+                    <a href="#" class="btn btn-warning btn-sm">Lihat Resep</a>
                 </div>
             </div>
         </div>

@@ -149,9 +149,9 @@ Route::middleware(['auth', 'role:pemilik_hewan'])->prefix('pemilik-hewan')->name
     Route::resource('hewan', HewanController::class);
 });
 
-Route::middleware(['auth', 'role:pemilik_hewan'])->prefix('pemilik-hewan')->name('pemilik-hewan.')->group(function () {
-    Route::resource('resep_obat', ResepObat::class);
-});
+ Route::middleware(['auth', 'role:pemilik_hewan'])->prefix('pemilik-hewan')->name('pemilik-hewan.')->group(function () {
+     Route::resource('resep_obat', ResepObat::class);
+ });
 
 //konsumen
 Route::middleware(['auth', 'role:pemilik_hewan'])->prefix('pemilik-hewan')->name('pemilik-hewan.')->group(function () {
