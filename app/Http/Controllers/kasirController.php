@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Kasir;
 use App\Models\konsultasi;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 
@@ -26,7 +27,7 @@ class kasirController extends Controller
             return redirect()->route('kasir.createProfile')->with('warning', 'Mohon Isi data diri terlebih dahulu.');
         }
 
-        $konsultasiCount = konsultasi::count();
+        $konsultasiCount = konsultasi::whereDate('tanggal_konsultasi', Carbon::today())->count();
         // Menampilkan tampilan dashboard pemilik hewan
         return view('kasir.dashboard', compact('konsultasiCount'));;
     }
@@ -71,6 +72,23 @@ class kasirController extends Controller
         //
     }
 
+    public function profile()
+{
+    // Cek role pengguna yang sedang login
+    if (auth()->user()->role == 'kasir') {
+        // Ambil data pemilik hewan terkait dengan user yang login
+        $userId = auth()->user()->id;
+
+        // Ambil data pemilik hewan berdasarkan user_id
+        $data = Kasir::with('user')
+            ->where('id_user', $userId)
+            ->get();
+
+        // Tampilkan view untuk pemilik hewan
+        return view('kasir.profile', compact('data'));
+    }
+}
+
     public function createProfile()
     {
         return view('kasir.createProfile');
@@ -80,7 +98,7 @@ class kasirController extends Controller
     {
         // Validate the incoming data
         $validated = $request->validate([
-            'no_telepon' => 'required|string|max:20|unique:apotekers',
+            'no_telepon' => 'required|string|max:20|unique:kasir',
             'jenkel' => 'required|in:pria,wanita',
             'alamat' => 'nullable|string',
         ]);
@@ -111,7 +129,7 @@ class kasirController extends Controller
         // Validate the incoming data
         $validated = $request->validate([
             'name' => 'required|string|max:255',  // Menambahkan validasi untuk name
-            'no_telepon' => 'required|string|max:20|unique:apotekers,no_telepon,' . Auth::id() . ',id_user',
+            'no_telepon' => 'required|string|max:20|unique:kasir,no_telepon,' . Auth::id() . ',id_user',
             'jenkel' => 'required|in:pria,wanita',
             'alamat' => 'nullable|string',
         ]);
@@ -132,7 +150,7 @@ class kasirController extends Controller
         ]);
 
         // Redirect to the dashboard after the profile is updated
-        return redirect()->route('kasir.dashboard')->with('success', 'Profile anda berhasil di perbarui.');
+        return redirect()->route('kasir.profile')->with('success', 'Profile anda berhasil di perbarui.');
     }
 
     /**

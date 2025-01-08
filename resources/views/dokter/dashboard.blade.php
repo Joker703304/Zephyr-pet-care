@@ -4,30 +4,22 @@
 <div class="container">
     <h1>Doctor Dashboard</h1>
     <div class="row">
-        <div class="col-md-6">
-            <div class="card">
-                <div class="card-header bg-primary text-white">Consultations</div>
-                <div class="card-body">
-                    <a href="{{ route('dokter.konsultasi.index') }}" class="btn btn-sm btn-primary">View Consultations</a>
+        <!-- Medications Card -->
+        <div class="col-md-6 mb-4">
+            <div class="card shadow border-0">
+                <div class="card-header bg-primary text-white text-center">
+                    <h5 class="mb-0">Konsultasi Hari ini</h5>
+                </div>
+                <div class="card-body text-center">
+                    <h3 class="display-6">{{ $medicationsCount ?? 'N/A' }}</h3>
+                    <p class="text-muted">Total Pasien Terdaftar</p>
+                    <a href="{{ route('dokter.konsultasi.index') }}" class="btn btn-sm btn-primary">Lihat</a>
                 </div>
             </div>
         </div>
-        <div class="col-md-6">
-            <div class="card">
-                <div class="card-header bg-success text-white">Diagnoses</div>
-                <div class="card-body">
-                    <a href="#" class="btn btn-sm btn-success">View Diagnoses</a>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-6">
-            <div class="card">
-                <div class="card-header bg-success text-white">Edit Profile</div>
-                <div class="card-body">
-                    <a href="{{ route('dokter.editProfile') }}" class="btn btn-sm btn-success">Edit Profile</a>
-                </div>
-            </div>
-        </div>
-    </div>
+
+        <!-- Prescriptions Card -->
+        
+    </div> 
 </div>
 @endsection
