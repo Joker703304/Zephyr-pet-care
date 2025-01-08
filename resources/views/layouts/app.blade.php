@@ -63,6 +63,24 @@
                                         </a>
                                     @endif
 
+                                    @if (auth()->user()->role === 'dokter')
+                                        <a class="dropdown-item" href="{{ route('dokter.profile') }}">
+                                            <i class="fas fa-user-circle"></i> Profil
+                                        </a>
+                                    @endif
+
+                                    @if (auth()->user()->role === 'apoteker')
+                                        <a class="dropdown-item" href="{{ route('apoteker.profile') }}">
+                                            <i class="fas fa-user-circle"></i> Profil
+                                        </a>
+                                    @endif
+
+                                    @if (auth()->user()->role === 'kasir')
+                                        <a class="dropdown-item" href="{{ route('kasir.profile') }}">
+                                            <i class="fas fa-user-circle"></i> Profil
+                                        </a>
+                                    @endif
+
                                     <!-- Logout with Icon -->
                                     <a class="dropdown-item" href="{{ route('logout') }}"
                                        onclick="event.preventDefault();

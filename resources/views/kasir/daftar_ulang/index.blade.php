@@ -35,7 +35,7 @@
                 <td>{{ $item->status }}</td>
                 <td>
                     @if ($item->status === 'Menunggu')
-                        <a href="{{ route('admin.konsultasi.edit', $item->id_konsultasi) }}" class="btn btn-success btn-sm">Daftar Ulang</a>
+                        <a href="{{ route('kasir.konsultasi.edit', $item->id_konsultasi) }}" class="btn btn-success btn-sm">Daftar Ulang</a>
                     @else
                         <button class="btn btn-secondary btn-sm" disabled>Daftar Ulang</button>
                     @endif

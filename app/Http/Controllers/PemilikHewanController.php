@@ -114,7 +114,7 @@ class PemilikHewanController extends Controller
         ]);
 
         $redirectRoute = auth()->user()->role === 'pemilik_hewan' ? 'pemilik-hewan.pemilik_hewan.index' : 'admin.pemilik_hewan.index';
-        return redirect()->route($redirectRoute)->with('success', 'Hewan berhasil diupdate.');
+        return redirect()->route($redirectRoute)->with('success', 'Data berhasil diupdate.');
     }
 
     // Menghapus data pemilik hewan

@@ -76,7 +76,7 @@ class KonsultasiController extends Controller
 {
         $dokter = Dokter::all();
     $hewan = Hewan::all();
-    return view('kasir.konsultasi.edit', compact('konsultasi', 'dokter', 'hewan'));
+    return view('kasir.daftar_ulang.edit', compact('konsultasi', 'dokter', 'hewan'));
 }
 
 

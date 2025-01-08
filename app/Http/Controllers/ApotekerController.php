@@ -22,7 +22,7 @@ class ApotekerController extends Controller
 
         if (!$apoteker) {
             // If no doctor profile exists, redirect to the profile creation page
-            return redirect()->route('apoteker.createProfile')->with('warning', 'Please complete your profile first.');
+            return redirect()->route('apoteker.createProfile')->with('warning', 'Mohon Isi data diri terlebih dahulu.');
         }
 
         $medicationsCount = obat::count();
@@ -30,6 +30,29 @@ class ApotekerController extends Controller
         // Menampilkan tampilan dashboard pemilik hewan
         return view('apoteker.dashboard', compact('medicationsCount', 'prescriptions'));
     }
+
+    public function profile()
+{
+    // Cek role pengguna yang sedang login
+    if (auth()->user()->role == 'apoteker') {
+        // Ambil data pemilik hewan terkait dengan user yang login
+        $userId = auth()->user()->id;
+
+        // Ambil data pemilik hewan berdasarkan user_id
+        $data = Apoteker::with('user')
+            ->where('id_user', $userId)
+            ->get();
+
+        // Tampilkan view untuk pemilik hewan
+        return view('apoteker.index', compact('data'));
+    }
+
+    // Jika role adalah admin, ambil semua data pemilik hewan
+    $data = Apoteker::with('user')->get();
+
+    // Tampilkan view untuk admin
+    return view('admin.apoteker.index', compact('data'));
+}
 
     public function manageObat()
     {
@@ -85,7 +108,6 @@ class ApotekerController extends Controller
     // Validate the incoming data
     $validated = $request->validate([
         'name' => 'required|string|max:255',  // Menambahkan validasi untuk name
-        'spesialis' => 'required|string|max:50',
         'no_telepon' => 'required|string|max:20|unique:apotekers,no_telepon,' . Auth::id() . ',id_user',
         'jenkel' => 'required|in:pria,wanita',
         'alamat' => 'nullable|string',
@@ -107,7 +129,7 @@ class ApotekerController extends Controller
     ]);
 
     // Redirect to the dashboard after the profile is updated
-    return redirect()->route('apoteker.dashboard')->with('success', 'Your profile has been updated successfully.');
+    return redirect()->route('apoteker.profile')->with('success', 'Profile Anda Berhasil Di Perbarui.');
 }
 
 }

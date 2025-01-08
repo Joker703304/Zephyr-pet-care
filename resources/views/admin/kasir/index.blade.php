@@ -18,7 +18,6 @@
                 <th>No Telepon</th>
                 <th>Jenis Kelamin</th>
                 <th>Alamat</th>
-                <th>Actions</th>
             </tr>
         </thead>
         <tbody>
@@ -27,16 +26,16 @@
                     <td>{{ $loop->iteration }}</td>
                     <td>{{ $kasir->user->name }}</td>
                     <td>{{ $kasir->user->email }}</td>
-                    <td>{{ $$kasir->no_telepon }}</td>
+                    <td>{{ $kasir->no_telepon }}</td>
                     <td>{{ ucfirst($kasir->jenkel) }}</td>
                     <td>{{ $kasir->alamat }}</td>
                     <td>
                         {{-- <a href="{{ route('admin.dokter.edit', $dokter->id) }}" class="btn btn-warning btn-sm">Edit</a> --}}
-                        <form action="{{ route('admin.dokter.destroy',$kasir->id) }}" method="POST" style="display:inline-block;">
+                        {{-- <form action="{{ route('admin.dokter.destroy',$kasir->id) }}" method="POST" style="display:inline-block;">
                             @csrf
                             @method('DELETE')
                             <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure?')">Delete</button>
-                        </form>
+                        </form> --}}
                     </td>
                 </tr>
             @endforeach
