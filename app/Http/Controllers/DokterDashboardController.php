@@ -10,6 +10,7 @@ use App\Models\ResepObat;
 use App\Models\Layanan;
 use Carbon\Carbon;
 use App\Models\DetailResepObat;
+use App\Models\DokterJadwal;
 use Illuminate\Support\Facades\Auth;
 
 class DokterDashboardController extends Controller
@@ -48,13 +49,31 @@ class DokterDashboardController extends Controller
           // Check if the logged-in user has a doctor profile
           $dokter = Dokter::where('id_user', Auth::id())->first();
 
+          // Retrieve the schedules from the database
+    $schedules = DokterJadwal::all();  // Or your sp
+
           if (!$dokter) {
               // If no doctor profile exists, redirect to the profile creation page
               return redirect()->route('dokter.createProfile')->with('warning', 'Mohon Isi data diri terlebih dahulu.');
           }
+
+          $today = now()->toDateString(); // Mendapatkan tanggal hari ini
+
+    $countPerawatan = Konsultasi::where('dokter_id', $dokter->id)
+        ->where('status', 'Diterima')
+        ->whereDate('tanggal_konsultasi', $today)
+        ->count();
+
+        $currentMonth = now()->month; // Mendapatkan bulan saat ini
+        $currentYear = now()->year;  // Mendapatkan tahun saat ini
+    
+        $jadwalBulanIni = DokterJadwal::where('id_dokter', $dokter->id)
+            ->whereMonth('tanggal', $currentMonth) // Filter berdasarkan bulan
+            ->whereYear('tanggal', $currentYear)  // Filter berdasarkan tahun
+            ->count();
   
         // Menampilkan tampilan dashboard pemilik hewan
-        return view('dokter.dashboard');
+        return view('dokter.dashboard', compact('schedules', 'countPerawatan', 'jadwalBulanIni'));
     }
 
     public function konsultasi()
@@ -64,7 +83,7 @@ class DokterDashboardController extends Controller
         // Filter konsultasi to show only those with today's date
         $konsultasi = Konsultasi::with(['hewan', 'dokter', 'resepObat'])
             ->whereDate('tanggal_konsultasi', $today) // Filter by today's date
-            ->where('status', 'Sedang Perawatan')
+            ->where('status', 'Diterima') // Filter by status 'Diterima'
             ->get();
 
         return view('dokter.konsultasi', compact('konsultasi'));

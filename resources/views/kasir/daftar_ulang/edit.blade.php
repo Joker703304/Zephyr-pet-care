@@ -2,52 +2,45 @@
 
 @section('content')
 <div class="container">
-    <h1>Daftar Konsultasi</h1>
+    <h1>Daftar Ulang</h1>
 
-    {{-- <a href="{{ route('admin.konsultasi.create') }}" class="btn btn-primary mb-3">Tambah Konsultasi</a> --}}
+    <form action="{{ route('kasir.konsultasi.update', $konsultasi->id_konsultasi) }}" method="POST">
+        @csrf
+        @method('PUT')
 
-    @if (session('success'))
-        <div class="alert alert-success">{{ session('success') }}</div>
-    @endif
+        <div class="mb-3">
+            <label for="dokter_id" class="form-label">Dokter</label>
+            <input type="text" name="dokter_id" id="dokter_id" class="form-control" 
+                value="{{ $konsultasi->dokter->user->name }}" readonly>
+            <input type="hidden" name="dokter_id" value="{{ $konsultasi->dokter_id }}">
+        </div>
+        
+        
 
-    <table class="table table-bordered">
-        <thead>
-            <tr>
-                <th>ID Konsultasi</th>
-                <th>NO Antrian</th>
-                <th>Nama Dokter</th>
-                <th>Nama Hewan</th>
-                <th>Keluhan</th>
-                <th>Tanggal Konsultasi</th>
-                <th>Status</th>
-                <th>Aksi</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach ($konsultasi as $item)
-            <tr>
-                <td>{{ $loop->iteration }}</td>
-                <td>{{ $item->no_antrian }}</td>
-                <td>{{ $item->dokter->user->name ?? 'Tidak ada' }}</td>
-                <td>{{ $item->hewan->nama_hewan ?? 'Tidak ada' }}</td>
-                <td>{{ $item->keluhan }}</td>
-                <td>{{ $item->tanggal_konsultasi }}</td>
-                <td>{{ $item->status }}</td>
-                <td>
-                    @if ($item->status === 'Menunggu')
-                        <a href="{{ route('admin.konsultasi.edit', $item->id_konsultasi) }}" class="btn btn-success btn-sm">Daftar Ulang</a>
-                    @else
-                        <button class="btn btn-secondary btn-sm" disabled>Daftar Ulang</button>
-                    @endif
-                    {{-- <form action="{{ route('admin.konsultasi.destroy', $item->id_konsultasi) }}" method="POST" style="display:inline;">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Yakin ingin menghapus?')">Hapus</button>
-                    </form> --}}
-                </td>
-            </tr>
-            @endforeach
-        </tbody>
-    </table>
+        <div class="mb-3">
+            <label for="id_hewan" class="form-label">Hewan</label>
+            <input type="text" name="id_hewan_display" id="id_hewan_display" class="form-control" 
+                value="{{ $konsultasi->hewan->nama_hewan }}" readonly>
+            <input type="hidden" name="id_hewan" value="{{ $konsultasi->id_hewan }}">
+        </div>
+        
+
+        <div class="mb-3">
+            <label for="keluhan" class="form-label">Keluhan</label>
+            <textarea name="keluhan" id="keluhan" class="form-control" rows="3">{{ $konsultasi->keluhan }}</textarea>
+        </div>
+
+        <div class="mb-3">
+            <label for="tanggal_konsultasi" class="form-label">Tanggal Konsultasi</label>
+            <input type="date" name="tanggal_konsultasi" id="tanggal_konsultasi" class="form-control" readonly value="{{ $konsultasi->tanggal_konsultasi }}">
+        </div>
+
+        <div class="mb-3">
+    <input type="hidden" name="status" id="status" value="Diterima">
+</div>
+
+        <button type="submit" class="btn btn-success">Daftar Ulang</button>
+        <a href="{{ route('kasir.konsultasi.index') }}" class="btn btn-secondary">Batal</a>
+    </form>
 </div>
 @endsection
