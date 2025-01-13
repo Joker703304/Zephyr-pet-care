@@ -34,11 +34,14 @@
                     <td>{{ $dokter->alamat }}</td>
                     <td>
                         {{-- <a href="{{ route('admin.dokter.edit', $dokter->id) }}" class="btn btn-warning btn-sm">Edit</a> --}}
-                        <form action="{{ route('admin.dokter.destroy', $dokter->id) }}" method="POST" style="display:inline-block;">
+                        {{-- <form action="{{ route('admin.dokter.destroy', $dokter->id) }}" method="POST" style="display:inline-block;">
                             @csrf
                             @method('DELETE')
                             <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure?')">Delete</button>
-                        </form>
+                        </form> --}}
+                        <a href="{{ route('admin.dokter.jadwal', $dokter->id) }}" class="btn btn-info btn-sm">
+                            Lihat Jadwal
+                        </a>
                     </td>
                 </tr>
             @endforeach

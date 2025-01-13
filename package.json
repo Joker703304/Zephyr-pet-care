@@ -5,7 +5,7 @@
         "dev": "vite",
         "build": "vite build",
         "preview": "vite preview"
-      },      
+    },
     "devDependencies": {
         "@popperjs/core": "^2.11.6",
         "autoprefixer": "^10.4.20",
@@ -17,5 +17,10 @@
         "sass": "^1.56.1",
         "tailwindcss": "^3.4.13",
         "vite": "^5.0"
+    },
+    "dependencies": {
+        "@fullcalendar/core": "^6.1.15",
+        "@fullcalendar/daygrid": "^6.1.15",
+        "@fullcalendar/interaction": "^6.1.15"
     }
 }

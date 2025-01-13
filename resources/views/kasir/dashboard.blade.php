@@ -30,7 +30,7 @@
                 <div class="card-body text-center">
                     <h3 class="display-6">{{   'N/A' }}</h3>
                     <p class="text-muted">Total Transaksi</p>
-                    <a href="{{ route('apoteker.resep_obat.index') }}" class="btn btn-success btn-sm">
+                    <a href="#" class="btn btn-success btn-sm">
                         Lihat Transaksi
                     </a>
                 </div>

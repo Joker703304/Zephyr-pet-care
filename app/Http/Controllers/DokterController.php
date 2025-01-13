@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Dokter;
+use App\Models\DokterJadwal;
 use App\Models\User;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Support\Facades\Auth;
@@ -38,6 +39,44 @@ class DokterController extends Controller
     {
         $dokters = Dokter::with('user')->get();
         return view('admin.dokter.index', compact('dokters'));
+    }
+
+    public function jadwal($id)
+    {
+        $dokter = Dokter::findOrFail($id);
+        $schedules = DokterJadwal::where('id_dokter', $id)->get();
+
+        return view('admin.dokter.jadwal', compact('dokter', 'schedules'));
+    }
+
+    public function storeOrUpdate(Request $request)
+    {
+        $request->validate([
+            'id_dokter' => 'required|exists:tbl_dokter,id',
+            'tanggal' => 'required|date',
+            'status' => 'required|in:Praktik,Tidak Praktik',
+            'maksimal_konsultasi' => 'nullable|integer|min:1'
+        ]);
+
+        if ($request->has('schedule_id') && $request->schedule_id) {
+            // Update existing schedule
+            $schedule = DokterJadwal::find($request->schedule_id);
+            if ($schedule) {
+                $schedule->status = $request->status;
+                $schedule->maksimal_konsultasi = $request->status !== 'Tidak Praktik' ? $request->maksimal_konsultasi : null;
+                $schedule->save();
+            }
+        } else {
+            // Create a new schedule
+            DokterJadwal::create([
+                'id_dokter' => $request->id_dokter,
+                'tanggal' => $request->tanggal,
+                'status' => $request->status,
+                'maksimal_konsultasi' => $request->status !== 'Tidak Praktik' ? $request->maksimal_konsultasi : null,
+            ]);
+        }
+
+        return back()->with('success', 'Jadwal berhasil disimpan!');
     }
 
 

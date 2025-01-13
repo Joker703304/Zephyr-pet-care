@@ -90,11 +90,8 @@ class KonsultasiController extends Controller
             'id_hewan' => 'required|exists:hewan,id_hewan',
             'keluhan' => 'required|string',
             'tanggal_konsultasi' => 'required|date',
-            'status' => 'required|in:Menunggu,Sedang Perawatan,Sedang Diproses,Selesai,Dibatalkan',
+            'status' => 'required|in:Menunggu,Sedang Perawatan,Pembuatan Obat,Selesai,Diterima,Dibatalkan',
         ]);
-
-        $dokter = Dokter::findOrFail($request->dokter_id);
-    $dokter->update(['status' => 'Sedang Melakukan Perawatan']);
 
 
         // Hitung nomor antrian untuk tanggal konsultasi
