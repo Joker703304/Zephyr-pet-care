@@ -8,6 +8,23 @@
                 <div class="card-header">{{ __('Reset Password') }}</div>
 
                 <div class="card-body">
+                    <!-- Pemberitahuan jika pengguna mengakses halaman reset password setelah mengklik link di email -->
+                    <div class="alert alert-info" role="alert">
+                        Permintaan pengaturan ulang Password untuk akun Anda. Silakan masukkan Password baru Anda.
+                    </div>
+
+                    <!-- Error Alert -->
+                    @if ($errors->any())
+                        <div class="alert alert-danger" role="alert">
+                            <ul>
+                                @foreach ($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
+
+                <div class="card-body">
                     @if (session('status'))
                         <div class="alert alert-success" role="alert">
                             {{ session('status') }}

@@ -32,6 +32,7 @@
         </div>
 
         <button type="submit" class="btn btn-primary">Ajukan Konsultasi</button>
+        <a href="{{ route('pemilik-hewan.konsultasi_pemilik.index') }}" class="btn btn-secondary btn-primary">Kembali</a>
     </form>
 </div>
 @endsection

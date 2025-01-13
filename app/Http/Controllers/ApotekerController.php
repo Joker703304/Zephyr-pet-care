@@ -18,41 +18,48 @@ class ApotekerController extends Controller
 
     public function index()
     {
+        // Ambil data apoteker berdasarkan id_user yang sedang login
         $apoteker = Apoteker::where('id_user', Auth::id())->first();
 
         if (!$apoteker) {
-            // If no doctor profile exists, redirect to the profile creation page
+            // Jika data apoteker tidak ada, redirect untuk membuat profil
             return redirect()->route('apoteker.createProfile')->with('warning', 'Mohon Isi data diri terlebih dahulu.');
         }
 
+        // Hitung jumlah obat terdaftar
         $medicationsCount = obat::count();
-        $prescriptions = ResepObat::count();
-        // Menampilkan tampilan dashboard pemilik hewan
+
+        // Hitung jumlah resep obat berdasarkan id_konsultasi yang unik dengan status sedang disiapkan
+        $prescriptions = ResepObat::where('status', 'sedang di siapkan') // Filter hanya status sedang disiapkan
+                                    ->distinct('id_konsultasi') // Hanya hitung id_konsultasi unik
+                                    ->count('id_konsultasi'); // Hitung jumlah id_konsultasi
+
+        // Menampilkan tampilan dashboard apoteker
         return view('apoteker.dashboard', compact('medicationsCount', 'prescriptions'));
     }
 
     public function profile()
-{
-    // Cek role pengguna yang sedang login
-    if (auth()->user()->role == 'apoteker') {
-        // Ambil data pemilik hewan terkait dengan user yang login
-        $userId = auth()->user()->id;
+    {
+        // Cek role pengguna yang sedang login
+        if (auth()->user()->role == 'apoteker') {
+            // Ambil data pemilik hewan terkait dengan user yang login
+            $userId = auth()->user()->id;
 
-        // Ambil data pemilik hewan berdasarkan user_id
-        $data = Apoteker::with('user')
-            ->where('id_user', $userId)
-            ->get();
+            // Ambil data pemilik hewan berdasarkan user_id
+            $data = Apoteker::with('user')
+                ->where('id_user', $userId)
+                ->get();
 
-        // Tampilkan view untuk pemilik hewan
-        return view('apoteker.index', compact('data'));
+            // Tampilkan view untuk pemilik hewan
+            return view('apoteker.index', compact('data'));
+        }
+
+        // Jika role adalah admin, ambil semua data pemilik hewan
+        $data = Apoteker::with('user')->get();
+
+        // Tampilkan view untuk admin
+        return view('admin.apoteker.index', compact('data'));
     }
-
-    // Jika role adalah admin, ambil semua data pemilik hewan
-    $data = Apoteker::with('user')->get();
-
-    // Tampilkan view untuk admin
-    return view('admin.apoteker.index', compact('data'));
-}
 
     public function manageObat()
     {
@@ -104,32 +111,32 @@ class ApotekerController extends Controller
     }
 
     public function updateProfile(Request $request)
-{
-    // Validate the incoming data
-    $validated = $request->validate([
-        'name' => 'required|string|max:255',  // Menambahkan validasi untuk name
-        'no_telepon' => 'required|string|max:20|unique:apotekers,no_telepon,' . Auth::id() . ',id_user',
-        'jenkel' => 'required|in:pria,wanita',
-        'alamat' => 'nullable|string',
-    ]);
+    {
+        // Validate the incoming data
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',  // Menambahkan validasi untuk name
+            'no_telepon' => 'required|string|max:20|unique:apotekers,no_telepon,' . Auth::id() . ',id_user',
+            'jenkel' => 'required|in:pria,wanita',
+            'alamat' => 'nullable|string',
+        ]);
 
-    // Temukan dokter berdasarkan id_user (auth)
-    $apoteker = Apoteker::where('id_user', Auth::id())->first();
+        // Temukan dokter berdasarkan id_user (auth)
+        $apoteker = Apoteker::where('id_user', Auth::id())->first();
 
-    // Update nama pengguna
-    $apoteker->user->update([
-        'name' => $validated['name'],
-    ]);
+        // Update nama pengguna
+        $apoteker->user->update([
+            'name' => $validated['name'],
+        ]);
 
-    // Update data dokter
-    $apoteker->update([
-        'no_telepon' => $validated['no_telepon'],
-        'jenkel' => $validated['jenkel'],
-        'alamat' => $validated['alamat'],
-    ]);
+        // Update data dokter
+        $apoteker->update([
+            'no_telepon' => $validated['no_telepon'],
+            'jenkel' => $validated['jenkel'],
+            'alamat' => $validated['alamat'],
+        ]);
 
-    // Redirect to the dashboard after the profile is updated
-    return redirect()->route('apoteker.profile')->with('success', 'Profile Anda Berhasil Di Perbarui.');
-}
+        // Redirect to the dashboard after the profile is updated
+        return redirect()->route('apoteker.profile')->with('success', 'Profile Anda Berhasil Di Perbarui.');
+    }
 
 }

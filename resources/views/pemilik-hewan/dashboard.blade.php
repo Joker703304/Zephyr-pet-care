@@ -13,28 +13,31 @@
                     <h5 class="card-title mb-0">Hewan Peliharaan Anda</h5>
                 </div>
                 <div class="card-body text-center">
-                    <p class="card-text">Lihat daftar hewan peliharaan yang telah terdaftar.</p>
+                    <h3 class="display-6">{{ $animalsCount ?? 'N/A' }}</h3>
+                    <p class="text-mured">Lihat daftar hewan peliharaan yang telah terdaftar.</p>
                     <a href="{{ route('pemilik-hewan.hewan.index') }}" class="btn btn-primary btn-sm">Lihat Hewan</a>
                 </div>
             </div>
         </div>
 
-        <!-- Card: Consultations -->
+        <!-- Card: Consultations --> 
         <div class="col-md-6 col-lg-4">
             <div class="card shadow-sm">
-                <div class="card-header bg-success text-white">
-                    <h5 class="card-title mb-0">Konsultasi</h5>
+                <div class="card-header bg-warning text-white">
+                    <h5 class="card-title mb-0">Total Konsultasi</h5>
                 </div>
                 <div class="card-body text-center">
+                    <h3 class="display-6">{{ $consultationsCount ?? 'N/A' }}</h3>
                     <p class="card-text">Lihat dan kelola riwayat konsultasi Anda.</p>
                     @if($pemilikHewan)
-                        <a href="{{ route('pemilik-hewan.konsultasi_pemilik.index') }}" class="btn btn-success btn-sm">Lihat Konsultasi</a>
+                        <a href="{{ route('pemilik-hewan.konsultasi_pemilik.index') }}" class="btn btn-warning btn-sm">Lihat Konsultasi</a>
                     @else
                         <a href="{{ route('pemilik-hewan.pemilik_hewan.create') }}" class="btn btn-secondary btn-sm">Isi Data</a>
                     @endif
                 </div>
             </div>
         </div>
+        
 
         <!-- Card: Prescriptions -->
         <div class="col-md-6 col-lg-4">

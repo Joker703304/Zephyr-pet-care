@@ -42,76 +42,7 @@
             <hr class="sidebar-divider my-0">
 
             <!-- Nav Item - Dashboard -->
-            <li class="nav-item active">
-                <a class="nav-link" href="{{ route('admin.dashboard') }}">
-                    <i class="fas fa-fw fa-tachometer-alt"></i>
-                    <span>Dashboard</span></a>
-            </li>
-
-            <!-- Divider -->
-            <hr class="sidebar-divider">
-
-            <!-- Heading -->
-            <div class="sidebar-heading">
-                Interface
-            </div>
-
-            {{-- <li class="nav-item">
-                <a class="nav-link" href="{{ route('admin.users.index') }}">
-                    <i class="fas fa-fw fa-table"></i>
-                    <span>User</span></a>
-            </li> --}}
-
-            <!-- Nav Item - Tables -->
-            <li class="nav-item">
-                <a class="nav-link" href="{{ route('admin.pemilik_hewan.index') }}">
-                    <i class="fas fa-fw fa-table"></i>
-                    <span>Pemilik Hewan</span></a>
-            </li>
-
-            <li class="nav-item">
-                <a class="nav-link" href="{{ route('admin.obat.index') }}">
-                    <i class="fas fa-fw fa-table"></i>
-                    <span>Obat</span></a>
-            </li>
-
-            <!-- Nav Item - Tables -->
-            <li class="nav-item">
-                <a class="nav-link" href="{{ route('admin.dokter.index') }}">
-                    <i class="fas fa-fw fa-table"></i>
-                    <span>Dokter Hewan</span></a>
-            </li>
-
-            <li class="nav-item">
-                <a class="nav-link" href="{{ route('admin.kasir.index') }}">
-                    <i class="fas fa-fw fa-table"></i>
-                    <span>kasir</span></a>
-            </li>
-
-            <!-- Nav Item - Tables -->
-            <li class="nav-item">
-                <a class="nav-link" href="{{ route('admin.apoteker.index') }}">
-                    <i class="fas fa-fw fa-table"></i>
-                    <span>Apoteker</span></a>
-            </li>
-
-            <li class="nav-item">
-                <a class="nav-link" href="{{ route('admin.hewan.index') }}">
-                    <i class="fas fa-fw fa-table"></i>
-                    <span>Hewan</span></a>
-            </li>
-
-            {{-- <li class="nav-item">
-                <a class="nav-link" href="{{ route('admin.konsultasi.index') }}">
-                    <i class="fas fa-fw fa-table"></i>
-                    <span>Konsultasi</span></a>
-            </li> --}}
-
-            <li class="nav-item">
-                <a class="nav-link" href="{{ route('admin.layanan.index') }}">
-                    <i class="fas fa-fw fa-table"></i>
-                    <span>Layanan</span></a>
-            </li>
+            z
 
             <!-- Nav Item - Pages Collapse Menu -->
             <li class="nav-item">
