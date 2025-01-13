@@ -21,7 +21,9 @@ use App\Http\Controllers\KonsultasiPemilikController;
 use App\Http\Controllers\KonsumenDashboardController;
 use App\Http\Controllers\ResepObatController;
 use App\Http\Controllers\LayananController;
+use App\Http\Controllers\DokterJadwalController;
 use App\Models\Apoteker;
+use App\Models\DokterJadwal;
 use App\Models\Kasir;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use App\Models\ResepObat;
@@ -82,6 +84,8 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::post('dokter/register', [DokterController::class, 'registerStore'])->name('dokter.register');
     Route::post('apoteker/register', [ApotekerAdminController::class, 'registerStore'])->name('apoteker.register');
     Route::resource('dokter', DokterController::class);
+    Route::get('/dokter/{id}/jadwal', [DokterController::class, 'jadwal'])->name('dokter.jadwal');
+    Route::post('/jadwal/storeOrUpdate', [DokterController::class, 'storeOrUpdate'])->name('jadwal.storeOrUpdate');
     Route::resource('kasir', KasirAdminController::class);
     Route::resource('apoteker', ApotekerAdminController::class);
 });
@@ -127,6 +131,11 @@ Route::get('/reses-obat/history', [ResepObatController::class, 'history'])->name
 //role dokter
 //dashboard dokter
 Route::middleware(['auth', 'role:dokter'])->prefix('dokter')->name('dokter.')->group(function () {
+    Route::get('/jadwal', [DokterJadwalController::class, 'index'])->name('jadwal.dokter');
+    Route::post('/jadwal', [DokterJadwalController::class, 'store'])->name('jadwal.store');
+    Route::put('/jadwal/{id}', [DokterJadwalController::class, 'update'])->name('jadwal.update');
+    Route::post('/jadwal/storeOrUpdate', [DokterJadwalController::class, 'storeOrUpdate'])->name('jadwal.storeOrUpdate');
+
     Route::get('/profile', [DokterDashboardController::class, 'index'])->name('profile');
     Route::get('/dokter/create-profile', [DokterDashboardController::class, 'createProfile'])->name('createProfile');
     Route::post('/dokter/store-profile', [DokterDashboardController::class, 'storeProfile'])->name('storeProfile');
@@ -137,6 +146,9 @@ Route::middleware(['auth', 'role:dokter'])->prefix('dokter')->name('dokter.')->g
     Route::post('/konsultasi/{id}/diagnosis', [DokterDashboardController::class, 'storeDiagnosis'])->name('konsultasi.storeDiagnosis'); // Simpan diagnosis
     Route::get('/diagnosis', [DokterDashboardController::class, 'diagnosis'])->name('admin.konsultasi.index');
     Route::get('/dashboard', [DokterDashboardController::class, 'dokter'])->name('dashboard');
+// API endpoint for storing schedule
+Route::post('/api/dokter/jadwal', [DokterJadwalController::class, 'store'])->middleware('auth');
+
 });
 
 //role konsumen
@@ -158,6 +170,7 @@ Route::middleware(['auth', 'role:pemilik_hewan'])->prefix('pemilik-hewan')->name
 Route::middleware(['auth', 'role:pemilik_hewan'])->prefix('pemilik-hewan')->name('pemilik-hewan.')->group(function () {
     Route::resource('pemilik_hewan', PemilikHewanController::class);
     Route::resource('konsultasi_pemilik', KonsultasiPemilikController::class);
+    Route::get('/konsultasi/get-dokter-by-date', [KonsultasiPemilikController::class, 'getDokterByDate'])->name('konsultasi_pemilik.getDokterByDate');
 });
 
 //konsultasi
