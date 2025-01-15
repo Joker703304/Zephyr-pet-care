@@ -93,24 +93,19 @@ class KonsultasiController extends Controller
             'status' => 'required|in:Menunggu,Sedang Perawatan,Pembuatan Obat,Selesai,Diterima,Dibatalkan',
         ]);
 
+        // Tentukan nomor antrean berikutnya
+        $tanggal_konsultasi = $request->tanggal_konsultasi;
+        $lastQueueNumber = Konsultasi::whereDate('tanggal_konsultasi', $tanggal_konsultasi)
+            ->max('no_antrian');
 
-        // Hitung nomor antrian untuk tanggal konsultasi
-        $today = now()->toDateString();  // Dapatkan tanggal saat ini (atau bisa berdasarkan tanggal yang dipilih)
-        $lastQueueNumber = Konsultasi::whereDate('tanggal_konsultasi', $request->tanggal_konsultasi)
-            ->where('status', 'Menunggu')  // Hanya hitung yang statusnya "Menunggu"
-            ->max('no_antrian');  // Ambil nomor antrian terbesar pada hari tersebut
-
-        // Tentukan nomor antrian berikutnya
-        $nextQueueNumber = $lastQueueNumber ? intval(substr($lastQueueNumber, 3)) + 1 : 1; // Ambil nomor antrian terakhir dan tambah 1
-        $formattedQueueNumber = 'ATR' . str_pad($nextQueueNumber, 4, '0', STR_PAD_LEFT);  // Format dengan 4 digit
+        $nextQueueNumber = $lastQueueNumber ? intval(substr($lastQueueNumber, 3)) + 1 : 1;
+        $formattedQueueNumber = 'ATR' . str_pad($nextQueueNumber, 4, '0', STR_PAD_LEFT);
 
         // Persiapkan data untuk update
         $requestData = $request->all();
-        $requestData['no_antrian'] = $formattedQueueNumber;  // Masukkan nomor antrian ke dalam request data
+        $requestData['no_antrian'] = $formattedQueueNumber;
 
-        // Update konsultasi dengan data yang sudah diperbarui
         $konsultasi->update($requestData);
-
 
         return redirect()->route('kasir.konsultasi.index')->with('success', 'Daftar Ulang Telah Berhasil.');
     }

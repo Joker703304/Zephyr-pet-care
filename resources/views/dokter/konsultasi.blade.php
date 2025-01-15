@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="container">
-    <h1>Daftar Konsultasi</h1>
+    <h1>Daftar Konsultasi Hari Ini</h1>
 
     
 
@@ -30,7 +30,7 @@
                 <td>{{ $item->no_antrian }}</td>
                 <td>{{ $item->dokter->user->name ?? 'Tidak ada' }}</td>
                 <td>{{ $item->hewan->nama_hewan ?? 'Tidak ada' }}</td>
-                <td>{{ $item->diagnosis }}</td>
+                <td>{{ $item->keluhan }}</td>
                 <td>{{ $item->tanggal_konsultasi }}</td>
                 <td>{{ $item->status }}</td>
                 <td>

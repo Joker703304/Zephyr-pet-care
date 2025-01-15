@@ -170,6 +170,7 @@ Route::middleware(['auth', 'role:pemilik_hewan'])->prefix('pemilik-hewan')->name
 Route::middleware(['auth', 'role:pemilik_hewan'])->prefix('pemilik-hewan')->name('pemilik-hewan.')->group(function () {
     Route::resource('pemilik_hewan', PemilikHewanController::class);
     Route::resource('konsultasi_pemilik', KonsultasiPemilikController::class);
+    Route::put('/pemilik-hewan/konsultasi/{id}/cancel', [KonsultasiPemilikController::class, 'cancel'])->name('konsultasi_pemilik.cancel');
     Route::get('/konsultasi/get-dokter-by-date', [KonsultasiPemilikController::class, 'getDokterByDate'])->name('konsultasi_pemilik.getDokterByDate');
 });
 

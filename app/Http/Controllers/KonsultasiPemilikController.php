@@ -38,10 +38,39 @@ class KonsultasiPemilikController extends Controller
         $hewan = Hewan::where('id_pemilik', auth()->user()->pemilikhewan->id_pemilik)->get();
         $hewan = Hewan::whereDoesntHave('konsultasi', function ($query) {
             $query->where('status', '!=', 'Selesai');
+            $query->where('status', '!=', 'Dibatalkan');
         })->get();
         
         return view('pemilik-hewan.konsultasi.create', compact('hewan', 'dokterJadwal'));
     }
+
+    public function cancel($id)
+{
+    // Cari konsultasi berdasarkan ID
+    $konsultasi = Konsultasi::findOrFail($id);
+
+    // Pastikan konsultasi masih dalam status 'Menunggu'
+    if ($konsultasi->status !== 'Menunggu') {
+        return redirect()->back()->with('error', 'Konsultasi tidak dapat dibatalkan.');
+    }
+
+    // Ubah status menjadi 'Dibatalkan'
+    $konsultasi->status = 'Dibatalkan';
+    $konsultasi->save();
+
+    // Kembalikan slot konsultasi dokter
+    $jadwal = DokterJadwal::where('id_dokter', $konsultasi->dokter_id)
+        ->where('tanggal', $konsultasi->tanggal_konsultasi)
+        ->first();
+
+    if ($jadwal) {
+        $jadwal->maksimal_konsultasi += 1; // Tambahkan slot
+        $jadwal->save();
+    }
+
+    return redirect()->route('pemilik-hewan.konsultasi_pemilik.index')->with('success', 'Konsultasi berhasil dibatalkan.');
+}
+
     
 
     /**

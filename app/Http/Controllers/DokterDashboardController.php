@@ -70,6 +70,7 @@ class DokterDashboardController extends Controller
         $jadwalBulanIni = DokterJadwal::where('id_dokter', $dokter->id)
             ->whereMonth('tanggal', $currentMonth) // Filter berdasarkan bulan
             ->whereYear('tanggal', $currentYear)  // Filter berdasarkan tahun
+            ->where('status', 'Praktik')
             ->count();
   
         // Menampilkan tampilan dashboard pemilik hewan
@@ -77,17 +78,27 @@ class DokterDashboardController extends Controller
     }
 
     public function konsultasi()
-    {
-        $today = Carbon::today();
+{
+    $today = Carbon::today();
 
-        // Filter konsultasi to show only those with today's date
-        $konsultasi = Konsultasi::with(['hewan', 'dokter', 'resepObat'])
-            ->whereDate('tanggal_konsultasi', $today) // Filter by today's date
-            ->where('status', 'Diterima') // Filter by status 'Diterima'
-            ->get();
+    // Ambil dokter yang sedang login
+    $dokter = Dokter::where('id_user', Auth::id())->first();
 
-        return view('dokter.konsultasi', compact('konsultasi'));
+    if (!$dokter) {
+        // Jika dokter tidak ditemukan, arahkan ke halaman profil
+        return redirect()->route('dokter.createProfile')->with('warning', 'Mohon isi data diri terlebih dahulu.');
     }
+
+    // Filter konsultasi berdasarkan dokter yang sedang login dan tanggal hari ini
+    $konsultasi = Konsultasi::with(['hewan', 'dokter', 'resepObat'])
+        ->where('dokter_id', $dokter->id) // Filter by dokter ID
+        ->whereDate('tanggal_konsultasi', $today) // Filter by today's date
+        ->where('status', 'Diterima') // Filter by status 'Diterima'
+        ->get();
+
+    return view('dokter.konsultasi', compact('konsultasi'));
+}
+
 
     public function diagnosis($id)
     {
