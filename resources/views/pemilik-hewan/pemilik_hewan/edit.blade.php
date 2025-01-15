@@ -62,8 +62,8 @@
 
         <!-- Buttons -->
         <div class="form-group">
-            <button type="submit" class="btn btn-primary">Update</button>
-            <a href="{{ route('pemilik-hewan.pemilik_hewan.index') }}" class="btn btn-secondary">Cancel</a>
+            <button type="submit" class="btn btn-primary">Simpan</button>
+            <a href="{{ route('pemilik-hewan.pemilik_hewan.index') }}" class="btn btn-secondary">Kembali</a>
         </div>
     </form>
 </div>

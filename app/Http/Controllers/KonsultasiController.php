@@ -46,7 +46,7 @@ class KonsultasiController extends Controller
             'id_hewan' => 'required|exists:hewan,id_hewan',
             'keluhan' => 'required|string',
             'tanggal_konsultasi' => 'required|date',
-            'status' => 'required|in:Menunggu,Sedang Diproses,Selesai,Dibatalkan',
+            'status' => 'required|in:MMenunggu,Sedang Perawatan,Pembuatan Obat,Selesai,Diterima,Dibatalkan',
         ]);
 
         // Hitung nomor antrian untuk tanggal konsultasi

@@ -10,6 +10,7 @@
         <div class="alert alert-success">{{ session('success') }}</div>
     @endif
 
+    <a href="{{ route('dokter.dashboard') }}" class="btn btn-secondary mt-3">Kembali</a>
     <table class="table table-bordered">
         <thead>
             <tr>

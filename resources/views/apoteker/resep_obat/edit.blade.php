@@ -58,14 +58,8 @@
             @enderror
         </div>
 
-        <!-- Dropdown Status -->
-        <div class="mb-3">
-            <label for="status" class="form-label">Status</label>
-            <select name="status" id="status" class="form-control">
-                <option value="sedang disiapkan" {{ $resepGroup->first()->status == 'sedang disiapkan' ? 'selected' : '' }}>Sedang Disiapkan</option>
-                <option value="siap" {{ $resepGroup->first()->status == 'siap' ? 'selected' : '' }}>Siap</option>
-            </select>
-        </div>
+        <!-- Hidden input untuk status -->
+        <input type="hidden" name="status" value="siap">
 
         <button type="submit" class="btn btn-primary">Perbarui Resep Obat</button>
         <a href="{{ route('apoteker.resep_obat.index') }}" class="btn btn-secondary">Batal</a>
