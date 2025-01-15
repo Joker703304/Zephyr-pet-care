@@ -135,7 +135,7 @@ Route::middleware(['auth', 'role:dokter'])->prefix('dokter')->name('dokter.')->g
     Route::post('/jadwal', [DokterJadwalController::class, 'store'])->name('jadwal.store');
     Route::put('/jadwal/{id}', [DokterJadwalController::class, 'update'])->name('jadwal.update');
     Route::post('/jadwal/storeOrUpdate', [DokterJadwalController::class, 'storeOrUpdate'])->name('jadwal.storeOrUpdate');
-
+    Route::patch('/antrian/{antrian}/panggil', [DokterDashboardController::class, 'panggil'])->name('antrian.panggil');
     Route::get('/profile', [DokterDashboardController::class, 'index'])->name('profile');
     Route::get('/dokter/create-profile', [DokterDashboardController::class, 'createProfile'])->name('createProfile');
     Route::post('/dokter/store-profile', [DokterDashboardController::class, 'storeProfile'])->name('storeProfile');

@@ -36,6 +36,13 @@
                 <td>{{ $item->status }}</td>
                 <td>
                     <a href="{{ route('dokter.konsultasi.diagnosis', $item->id_konsultasi) }}" class="btn btn-info btn-sm">Diagnosis</a>
+                    @if ($item->antrian && $item->antrian->status != 'Dipanggil')
+                    <form action="{{ route('dokter.antrian.panggil', $item->antrian->id) }}" method="POST" class="d-inline">
+                        @csrf
+                        @method('PATCH')
+                        <button type="submit" class="btn btn-warning btn-sm">Panggil</button>
+                    </form>
+                @endif
                 </td>
             </tr>
             @endforeach

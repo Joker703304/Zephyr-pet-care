@@ -53,4 +53,10 @@ public function layanan()
     return $this->belongsToMany(Layanan::class, 'konsultasi_layanan', 'id_konsultasi', 'id_layanan');
 }
 
+public function antrian()
+{
+    return $this->hasOne(Antrian::class, 'konsultasi_id', 'id_konsultasi');
+}
+
+
 }

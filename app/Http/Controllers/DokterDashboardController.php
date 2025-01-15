@@ -8,6 +8,7 @@ use App\Models\obat;
 use App\Models\Dokter;
 use App\Models\ResepObat;
 use App\Models\Layanan;
+use App\Models\Antrian;
 use Carbon\Carbon;
 use App\Models\DetailResepObat;
 use App\Models\DokterJadwal;
@@ -43,6 +44,13 @@ class DokterDashboardController extends Controller
     // Tampilkan view untuk admin
     return view('admin.pemilik_hewan.index', compact('data'));
 }
+
+public function panggil(Request $request, Antrian $antrian)
+    {
+        $antrian->update(['status' => 'Dipanggil']);
+
+        return redirect()->back()->with('success', 'Pasien telah dipanggil.');
+    }
 
     public function dokter()
     {
