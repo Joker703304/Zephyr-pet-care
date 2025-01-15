@@ -52,18 +52,15 @@
             @foreach ($konsultasi->resepObat as $index => $resep)
                 <div class="form-group mt-3 d-flex align-items-center" id="obat-field-{{ $resep->id_resep }}">
                     <div class="w-100">
-                        <select name="obat[{{ $resep->id_resep }}][id_obat]" class="form-control obat-select" required>
+                        <select name="obat[{{ $resep->id_resep }}][id_obat]" class="form-control obat-select" required {{ $resep->id_obat ? 'disabled' : '' }}>
+                            <option value="" disabled selected>Pilih Obat</option>
                             @foreach ($obat as $item)
                                 <option value="{{ $item->id_obat }}" {{ $resep->id_obat == $item->id_obat ? 'selected' : '' }}>
                                     {{ $item->nama_obat }}
                                 </option>
                             @endforeach
                         </select>
-                        <input type="number" name="obat[{{ $resep->id_resep }}][jumlah]" class="form-control mt-2" value="{{ $resep->jumlah }}" required>
-                    </div>
-                    <div class="w-100 ml-2">
-                        <label for="keterangan">Keterangan</label>
-                        <input type="text" name="obat[{{ $resep->id_resep }}][keterangan]" class="form-control" value="{{ old('obat.'.$resep->id_resep.'.keterangan', $resep->keterangan) }}">
+                        <input type="number" name="obat[{{ $resep->id_resep }}][jumlah]" class="form-control mt-2" value="{{ $resep->jumlah }}" required {{ $resep->id_obat ? 'disabled' : '' }}>
                     </div>
                     <button type="button" class="btn btn-danger ml-2" onclick="removeObatField('{{ $resep->id_resep }}')">Hapus</button>
                 </div>
@@ -72,9 +69,10 @@
         <input type="hidden" name="deleted_obat_ids" id="deleted-obat-ids" value="">
 
         <button type="button" id="add-obat" class="btn btn-secondary mt-3">Tambah Obat</button>
-        <button type="submit" class="btn btn-primary mt-3">Simpan</button>
-    </form>
-</div>
+                <button type="submit" class="btn btn-primary mt-3">Simpan</button>
+                <a href="{{ route('dokter.konsultasi.index') }}" class="btn btn-secondary mt-3">Kembali</a>
+            </form>
+        </div>
 
 <script>
     let deletedObatIds = [];
@@ -92,27 +90,31 @@
     }
 
     // Tambah resep obat baru
-    document.getElementById('add-obat').addEventListener('click', function() {
-        const container = document.getElementById('resep-obat-container');
-        const newField = `
-            <div class="form-group mt-3 d-flex align-items-center" id="obat-field-new-${countObat}">
-                <div class="w-100">
-                    <select name="obat[new-${countObat}][id_obat]" class="form-control" required>
-                        @foreach ($obat as $item)
-                            <option value="{{ $item->id_obat }}">{{ $item->nama_obat }}</option>
-                        @endforeach
-                    </select>
-                    <input type="number" name="obat[new-${countObat}][jumlah]" class="form-control mt-2" placeholder="Jumlah" required>
-                </div>
-                <div class="w-100 ml-2">
-                    <label for="keterangan">Keterangan</label>
-                    <input type="text" name="obat[new-${countObat}][keterangan]" class="form-control">
-                </div>
-                <button type="button" class="btn btn-danger ml-2" onclick="removeObatField('new-${countObat}')">Hapus</button>
-            </div>`;
-        container.insertAdjacentHTML('beforeend', newField);
-        countObat++;
-    });
+    // Menambahkan resep obat baru
+document.getElementById('add-obat').addEventListener('click', function() {
+    const container = document.getElementById('resep-obat-container');
+    const selectedObatIds = Array.from(document.querySelectorAll('select[name^="obat"]'))
+        .map(select => select.value); // Mendapatkan semua obat yang sudah dipilih
+    
+    const newField = `
+        <div class="form-group mt-3 d-flex align-items-center" id="obat-field-new-${countObat}">
+            <div class="w-100">
+                <select name="obat[new-${countObat}][id_obat]" class="form-control" required>
+                    <option value="" disabled selected>Pilih Obat</option> <!-- Opsi default "Pilih Obat" -->
+                    @foreach ($obat as $item)
+                        <option value="{{ $item->id_obat }}" ${selectedObatIds.includes("{{ $item->id_obat }}") ? 'disabled' : ''}>
+                            {{ $item->nama_obat }}
+                        </option>
+                    @endforeach
+                </select>
+                <input type="number" name="obat[new-${countObat}][jumlah]" class="form-control mt-2" placeholder="Jumlah" required>
+            </div>
+            <button type="button" class="btn btn-danger ml-2" onclick="removeObatField('new-${countObat}')">Hapus</button>
+        </div>`;
+    container.insertAdjacentHTML('beforeend', newField);
+    countObat++;
+});
+
 
     // Hapus layanan
     function removeLayananField(id) {

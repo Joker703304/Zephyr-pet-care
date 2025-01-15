@@ -12,8 +12,15 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('konsultasi', function (Blueprint $table) {
-            
-            DB::statement("ALTER TABLE konsultasi MODIFY COLUMN status ENUM('Menunggu', 'Sedang Perawatan', 'Pembuatan Obat', 'Selesai', 'Dibatalkan', 'Diterima') DEFAULT 'Menunggu'");
+            // Drop kolom status
+            $table->dropColumn('status');
+        });
+
+        Schema::table('konsultasi', function (Blueprint $table) {
+            // Tambahkan kolom status kembali dengan ENUM baru
+            $table->enum('status', ['Menunggu', 'Sedang Perawatan', 'Pembuatan Obat', 'Selesai', 'Dibatalkan', 'Diterima'])
+                  ->default('Menunggu')
+                  ->after('layanan_id'); // Sesuaikan posisi kolom sesuai kebutuhan
         });
     }
 
@@ -23,7 +30,15 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('konsultasi', function (Blueprint $table) {
-            DB::statement("ALTER TABLE konsultasi MODIFY COLUMN status ENUM('Menunggu', 'Sedang Perawatan', 'Pembuatan Obat', 'Selesai', 'Dibatalkan') DEFAULT 'Menunggu'");
+            // Drop kolom status
+            $table->dropColumn('status');
+        });
+
+        Schema::table('konsultasi', function (Blueprint $table) {
+            // Tambahkan kembali kolom status dengan ENUM lama
+            $table->enum('status', ['Menunggu', 'Sedang Diproses', 'Selesai', 'Dibatalkan', 'Diterima'])
+                  ->default('Menunggu')
+                  ->after('layanan_id');
         });
     }
 };

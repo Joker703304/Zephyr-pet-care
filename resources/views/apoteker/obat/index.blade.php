@@ -3,7 +3,8 @@
 @section('content')
 <div class="container">
     
-    <a href="{{ route('apoteker.obat.create') }}" class="btn btn-success mb-3">Add New Drug</a>
+    <a href="{{ route('apoteker.obat.create') }}" class="btn btn-success mb-3">Tambah Obat</a>
+    <a href="{{ route('apoteker.dashboard') }}" class="btn btn-secondary mb-3">Kembali</a>
 
     <!-- Success Message -->
     @if(session('success'))
@@ -37,7 +38,7 @@
                     <form action="{{ route('apoteker.obat.destroy', $obat->id_obat) }}" method="POST" style="display:inline;">
                         @csrf
                         @method('DELETE')
-                        <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this drug?')">Delete</button>
+                        <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this drug?')">Hapus</button>
                     </form>
                 </td>
             </tr>

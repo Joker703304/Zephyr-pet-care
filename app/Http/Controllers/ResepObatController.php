@@ -12,8 +12,8 @@ class ResepObatController extends Controller
 {
     public function index()
     {
-        // Ambil semua resep yang statusnya belum selesai
-        $resep_obat = ResepObat::where('status', '!=', 'selesai') // Hanya yang belum selesai
+        // Ambil semua resep yang statusnya belum siap
+        $resep_obat = ResepObat::where('status', '!=', 'siap') // Hanya yang belum siap
                                 ->with('konsultasi', 'obat')
                                 ->get()
                                 ->groupBy('id_konsultasi'); // Kelompokkan berdasarkan konsultasi
@@ -23,8 +23,8 @@ class ResepObatController extends Controller
     
     public function history()
     {
-        // Ambil semua resep yang statusnya sudah selesai
-        $resep_obat = ResepObat::where('status', 'selesai') // Hanya yang sudah selesai
+        // Ambil semua resep yang statusnya sudah siap
+        $resep_obat = ResepObat::where('status', 'siap') // Hanya yang sudah siap
                                 ->with('konsultasi', 'obat')
                                 ->get()
                                 ->groupBy('id_konsultasi'); // Kelompokkan berdasarkan konsultasi
@@ -88,7 +88,7 @@ public function update(Request $request, $id_konsultasi)
         'jumlah' => 'required|array', // Validasi array untuk jumlah
         'jumlah.*' => 'required|integer|min:1', // Jumlah tiap obat harus valid
         'keterangan' => 'nullable|string|max:255', // Validasi keterangan opsional
-        'status' => 'nullable|string|in:sedang disiapkan,selesai', // Validasi status
+        'status' => 'nullable|string|in:sedang disiapkan,siap', // Validasi status
     ]);
 
     // Hapus semua resep lama terkait konsultasi ini

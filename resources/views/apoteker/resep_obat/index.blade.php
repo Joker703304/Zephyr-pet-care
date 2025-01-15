@@ -11,6 +11,7 @@
     @endif
 
     <a href="{{ route('apoteker.resep_obat.history') }}" class="btn btn-info mb-3">Lihat History Resep Obat</a>
+    <a href="{{ route('apoteker.dashboard') }}" class="btn btn-secondary mb-3">Kembali</a>
     <table class="table table-bordered">
         <thead>
             <tr>

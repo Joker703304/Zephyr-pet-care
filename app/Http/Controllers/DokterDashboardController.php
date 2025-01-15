@@ -77,17 +77,19 @@ class DokterDashboardController extends Controller
     }
 
     public function konsultasi()
-    {
-        $today = Carbon::today();
+{
+    $today = Carbon::today();
 
-        // Filter konsultasi to show only those with today's date
-        $konsultasi = Konsultasi::with(['hewan', 'dokter', 'resepObat'])
-            ->whereDate('tanggal_konsultasi', $today) // Filter by today's date
-            ->where('status', 'Diterima') // Filter by status 'Diterima'
-            ->get();
+    // Filter konsultasi untuk menampilkan hanya yang memiliki tanggal hari ini atau yang akan datang
+    $konsultasi = Konsultasi::with(['hewan', 'dokter', 'resepObat'])
+        ->whereDate('tanggal_konsultasi', '>=', $today) // Menampilkan konsultasi hari ini atau yang akan datang
+        ->where('status', 'Diterima') // Filter dengan status 'Diterima'
+        ->orWhere('status', 'Pembuatan Obat') // Sertakan konsultasi dengan status 'Pembuatan Obat'
+        ->get();
 
-        return view('dokter.konsultasi', compact('konsultasi'));
-    }
+    return view('dokter.konsultasi', compact('konsultasi'));
+}
+
 
     public function diagnosis($id)
     {
@@ -99,68 +101,93 @@ class DokterDashboardController extends Controller
     }
 
     public function storeDiagnosis(Request $request, $id_konsultasi)
-    {
-        $konsultasi = Konsultasi::findOrFail($id_konsultasi);
-    
-        // Update diagnosis
-        $konsultasi->update([
-            'diagnosis' => $request->diagnosis,
-        ]);
-    
-        // Hapus layanan lama
-        $konsultasi->layanan()->detach(); // Menghapus relasi lama
-    
-        // Menambahkan layanan baru yang dipilih
-        if ($request->has('layanan_id')) {
-            $konsultasi->layanan()->attach($request->layanan_id);
-        }
-    
-        // Hapus resep obat yang dihapus oleh user
-        if ($request->filled('deleted_obat_ids')) {
-            $deletedIds = explode(',', $request->deleted_obat_ids);
-            
-            // Hapus dari tabel resep_obat
-            ResepObat::whereIn('id_resep', $deletedIds)->delete();
-            
-            // Hapus juga dari tabel detail_resep_obat
-            DetailResepObat::whereIn('id_resep', $deletedIds)->delete();
-        }
-    
-        // Update atau Tambahkan resep obat baru
-        if ($request->has('obat')) {
-            foreach ($request->obat as $key => $data) {
-                if (str_starts_with($key, 'new')) {
-                    // Tambahkan resep obat baru
-                    $resep = ResepObat::create([
-                        'id_konsultasi' => $konsultasi->id_konsultasi,
-                        'id_obat' => $data['id_obat'],
-                        'jumlah' => $data['jumlah'],
-                    ]);
-    
-                    // Tambahkan detail resep baru
-                    DetailResepObat::create([
-                        'id_resep' => $resep->id_resep,
-                        'id_obat' => $data['id_obat'],
-                        'tanggal_resep' => now(),
-                        'status' => 'belum_diberikan',
-                    ]);
-                } else {
-                    // Update resep obat yang ada
-                    ResepObat::where('id_resep', $key)->update([
-                        'id_obat' => $data['id_obat'],
-                        'jumlah' => $data['jumlah'],
-                    ]);
-    
-                    // Update detail resep
-                    DetailResepObat::where('id_resep', $key)->update([
-                        'id_obat' => $data['id_obat'],
-                    ]);
-                }
+{
+    $konsultasi = Konsultasi::findOrFail($id_konsultasi);
+
+    // Update diagnosis dan status
+    $konsultasi->update([
+        'diagnosis' => $request->diagnosis,
+        'status' => 'Pembuatan Obat',  // Ubah status menjadi Pembuatan Obat
+    ]);
+
+    // Hapus layanan lama
+    $konsultasi->layanan()->detach(); // Menghapus relasi lama
+
+    // Menambahkan layanan baru yang dipilih
+    if ($request->has('layanan_id')) {
+        $konsultasi->layanan()->attach($request->layanan_id);
+    }
+
+    // Hapus resep obat yang dihapus oleh user
+    if ($request->filled('deleted_obat_ids')) {
+        $deletedIds = explode(',', $request->deleted_obat_ids);
+        
+        // Hapus dari tabel resep_obat
+        ResepObat::whereIn('id_resep', $deletedIds)->delete();
+        
+        // Hapus juga dari tabel detail_resep_obat
+        DetailResepObat::whereIn('id_resep', $deletedIds)->delete();
+    }
+
+    // Update atau Tambahkan resep obat baru
+    if ($request->has('obat')) {
+        foreach ($request->obat as $key => $data) {
+            if (str_starts_with($key, 'new')) {
+                // Tambahkan resep obat baru
+                $resep = ResepObat::create([
+                    'id_konsultasi' => $konsultasi->id_konsultasi,
+                    'id_obat' => $data['id_obat'],
+                    'jumlah' => $data['jumlah'],
+                ]);
+
+                // Kurangi stok obat sesuai jumlah yang diberikan
+                $obat = Obat::findOrFail($data['id_obat']);
+                $obat->stok -= $data['jumlah']; // Kurangi stok
+                $obat->save(); // Simpan perubahan stok
+
+                // Tambahkan detail resep baru
+                DetailResepObat::create([
+                    'id_resep' => $resep->id_resep,
+                    'id_obat' => $data['id_obat'],
+                    'tanggal_resep' => now(),
+                    'status' => 'belum_diberikan',
+                ]);
+            } else {
+                // Update resep obat yang ada
+                ResepObat::where('id_resep', $key)->update([
+                    'id_obat' => $data['id_obat'],
+                    'jumlah' => $data['jumlah'],
+                ]);
+
+                // Update stok obat
+                $obat = Obat::findOrFail($data['id_obat']);
+                $stokLama = ResepObat::find($key)->jumlah;
+                $obat->stok += $stokLama - $data['jumlah']; // Mengembalikan stok lama, kemudian mengurangi stok baru
+                $obat->save();
+
+                // Update detail resep
+                DetailResepObat::where('id_resep', $key)->update([
+                    'id_obat' => $data['id_obat'],
+                ]);
             }
         }
-    
-        return redirect()->route("dokter.konsultasi.index")->with('success', 'Diagnosis dan resep berhasil diperbarui.');
     }
+
+    return redirect()->route("dokter.konsultasi.index")->with('success', 'Diagnosis dan resep berhasil diperbarui.');
+}
+
+
+public function deleteExpiredConsultations()
+{
+    $today = Carbon::today();
+
+    // Hapus konsultasi yang sudah lewat dan memiliki status 'Pembuatan Obat'
+    Konsultasi::whereDate('tanggal_konsultasi', '<', $today)
+        ->where('status', 'Pembuatan Obat')
+        ->delete();
+
+    return redirect()->route("dokter.konsultasi.index")->with('success', 'Konsultasi yang sudah lewat telah dihapus.');
+}
 
     public function createProfile()
     {

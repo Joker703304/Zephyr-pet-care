@@ -27,4 +27,16 @@ class pemilik_hewan extends Model
 {
     return $this->hasOne(hewan::class, 'id_pemilik', 'id_pemilik');
 }
+
+public function konsultasi()
+{
+    return $this->hasMany(Konsultasi::class);
+}
+
+public function konsultasiMenunggu()
+{
+    return $this->konsultasi()->where('status', 'menunggu');
+}
+
+
 }

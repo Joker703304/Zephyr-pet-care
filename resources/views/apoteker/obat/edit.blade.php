@@ -16,7 +16,7 @@
     @endif
 
     <!-- Edit Drug Form -->
-    {{-- <form action="{{ route('apoteker.obat.update', $obat->id_obat) }}" method="POST">
+    <form action="{{ route('apoteker.obat.update', $obat->id_obat) }}" method="POST">
         @csrf
         @method('PUT')
         <div class="form-group mb-3">
@@ -39,13 +39,13 @@
             <input type="text" name="harga" id="harga" class="form-control" placeholder="Enter price" value="{{ old('harga', $obat->harga) }}" required>
         </div>
 
-        <button type="submit" class="btn btn-primary">Update Drug</button>
-        <a href="{{ route('apoteker.obat.index') }}" class="btn btn-secondary">Cancel</a>
-    </form> --}}
+        <button type="submit" class="btn btn-primary">Update Obat</button>
+        <a href="{{ route('apoteker.obat.index') }}" class="btn btn-secondary">Kembali</a>
+    </form>
 </div>
 
 <!-- DataTales Example -->
-<div class="card shadow mb-4">
+{{-- <div class="card shadow mb-4">
     <div class="card-header py-3">
         <h6 class="m-0 font-weight-bold text-primary">Edit Drug</h6>
     </div>
@@ -79,5 +79,5 @@
             </form>
         </div>
     </div>
-</div>
+</div> --}}
 @endsection

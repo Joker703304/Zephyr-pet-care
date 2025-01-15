@@ -18,7 +18,11 @@
         </div>
         <div class="card-body">
             @if($data->isNotEmpty())
-                @foreach($data as $apoteker)
+            @php
+            $filteredData = $data->unique('email');
+                @endphp
+                
+                @foreach($filteredData as $apoteker)
                     <table class="table table-bordered">
                         {{-- <tr>
                             <th>ID Pemilik</th>
