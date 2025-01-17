@@ -12,15 +12,38 @@ class ResepObatController extends Controller
 {
     public function index()
     {
-        // Ambil semua resep yang statusnya belum siap
-        $resep_obat = ResepObat::where('status', '!=', 'siap') // Hanya yang belum siap
+        // Get the logged-in user
+        $user = auth()->user();
+
+        // Check if the logged-in user is 'pemilik_hewan' or 'apoteker'
+        if ($user->role == 'pemilik_hewan') {
+            // Ambil semua resep obat milik pemilik hewan, tanpa memfilter status
+            $resep_obat = ResepObat::whereHas('konsultasi', function ($query) use ($user) {
+                // Ambil konsultasi berdasarkan hewan yang dimiliki oleh pemilik hewan
+                $query->whereIn('id_hewan', function ($subQuery) use ($user) {
+                    $subQuery->select('id_hewan')
+                        ->from('hewan')
+                        ->where('id_pemilik', $user->pemilikHewan->id_pemilik);  // Relasi dengan pemilik hewan
+                });
+            })
+            ->with('konsultasi', 'obat') // Sertakan relasi konsultasi dan obat
+            ->get()
+            ->groupBy('id_konsultasi'); // Kelompokkan berdasarkan id_konsultasi
+
+            // Tampilkan halaman untuk pemilik_hewan
+            return view('pemilik-hewan.resep_obat.index', compact('resep_obat'));
+        }
+
+        // Untuk apoteker: Ambil resep dengan status selain 'siap'
+        $resep_obat = ResepObat::where('status', '!=', 'siap')
                                 ->with('konsultasi', 'obat')
                                 ->get()
                                 ->groupBy('id_konsultasi'); // Kelompokkan berdasarkan konsultasi
-        
+
+        // Tampilkan halaman untuk apoteker
         return view('apoteker.resep_obat.index', compact('resep_obat'));
     }
-    
+
     public function history()
     {
         // Ambil semua resep yang statusnya sudah siap
