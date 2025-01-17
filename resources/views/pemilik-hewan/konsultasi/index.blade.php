@@ -23,6 +23,7 @@
                 <th>Keluhan</th>
                 <th>Tanggal Konsultasi</th>
                 <th>Status</th>
+                <th>Aksi</th> <!-- Kolom baru -->
             </tr>
         </thead>
         <tbody>
@@ -35,6 +36,15 @@
                 <td>{{ $item->keluhan }}</td>
                 <td>{{ $item->tanggal_konsultasi }}</td>
                 <td>{{ $item->status }}</td>
+                <td>
+                    @if ($item->status === 'Menunggu')
+                    <form action="{{ route('pemilik-hewan.konsultasi_pemilik.cancel', $item->id_konsultasi) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin membatalkan konsultasi ini?')">
+                        @csrf
+                        @method('PUT')
+                        <button type="submit" class="btn btn-danger btn-sm">Cancel</button>
+                    </form>
+                    @endif
+                </td>
             </tr>
             @empty
             <tr>

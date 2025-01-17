@@ -71,7 +71,7 @@
         minDate: "today", // Disable hari kemarin
         onChange: function(selectedDates, dateStr) {
             const selectedDate = dateStr;
-            const availableDoctors = dokterJadwal.filter(jadwal => jadwal.tanggal === selectedDate && jadwal.maksimal_konsultasi > 0);
+            const availableDoctors = dokterJadwal.filter(jadwal => jadwal.tanggal === selectedDate && jadwal.maksimal_konsultasi !== null);
 
             // Reset dropdown dokter
             dokterSelect.innerHTML = '<option value="">Pilih Dokter</option>';
@@ -79,12 +79,20 @@
             // Enable the doctor dropdown after a valid date is selected
             dokterSelect.disabled = false;
 
-            // Jika ada dokter yang tersedia, tambahkan ke dropdown
+            // Jika ada dokter yang tersedia
             if (availableDoctors.length > 0) {
                 availableDoctors.forEach(jadwal => {
                     const option = document.createElement('option');
                     option.value = jadwal.id_dokter;
-                    option.textContent = `${jadwal.dokter.user.name} (Maksimal Konsultasi: ${jadwal.maksimal_konsultasi})`;
+
+                    // Jika kuota konsultasi sudah habis
+                    if (jadwal.maksimal_konsultasi === 0) {
+                        option.textContent = `${jadwal.dokter.user.name} (Kuota Konsultasi Telah Habis)`;
+                        option.disabled = true; // Nonaktifkan opsi ini
+                    } else {
+                        option.textContent = `${jadwal.dokter.user.name} (Maksimal Konsultasi: ${jadwal.maksimal_konsultasi})`;
+                    }
+
                     dokterSelect.appendChild(option);
                 });
             } else {
@@ -109,6 +117,7 @@
     // Disable the dokter select initially
     dokterSelect.disabled = true;
 </script>
+
 
 
 

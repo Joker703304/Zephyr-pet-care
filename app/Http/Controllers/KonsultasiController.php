@@ -84,36 +84,45 @@ class KonsultasiController extends Controller
      * Update the specified resource in storage.
      */
     public function update(Request $request, Konsultasi $konsultasi)
-    {
-        $request->validate([
-            'dokter_id' => 'required|exists:tbl_dokter,id',
-            'id_hewan' => 'required|exists:hewan,id_hewan',
-            'keluhan' => 'required|string',
-            'tanggal_konsultasi' => 'required|date',
-            'status' => 'required|in:Menunggu,Sedang Perawatan,Pembuatan Obat,Selesai,Diterima,Dibatalkan',
+{
+    $request->validate([
+        'dokter_id' => 'required|exists:tbl_dokter,id',
+        'id_hewan' => 'required|exists:hewan,id_hewan',
+        'keluhan' => 'required|string',
+        'tanggal_konsultasi' => 'required|date',
+        'status' => 'required|in:Menunggu,Sedang Perawatan,Pembuatan Obat,Selesai,Diterima,Dibatalkan',
+    ]);
+
+    // Tentukan nomor antrean berikutnya
+    $tanggal_konsultasi = $request->tanggal_konsultasi;
+    $lastQueueNumber = Konsultasi::whereDate('tanggal_konsultasi', $tanggal_konsultasi)
+        ->max('no_antrian');
+
+    $nextQueueNumber = $lastQueueNumber ? intval(substr($lastQueueNumber, 3)) + 1 : 1;
+    $formattedQueueNumber = 'ATR' . str_pad($nextQueueNumber, 4, '0', STR_PAD_LEFT);
+
+    // Persiapkan data untuk update
+    $requestData = $request->all();
+    $requestData['no_antrian'] = $formattedQueueNumber;
+
+    // Update data konsultasi
+    $konsultasi->update($requestData);
+
+    // Setelah update, tambahkan data ke tabel antrian
+    // Cek apakah sudah ada antrian yang berhubungan dengan konsultasi
+    $antrian = $konsultasi->antrian()->first();
+
+    if (!$antrian) {
+        // Jika belum ada antrian, buat data antrian baru
+        $konsultasi->antrian()->create([
+            'no_antrian' => $formattedQueueNumber,
+            'status' => 'Menunggu', // Status awal adalah Menunggu
         ]);
-
-
-        // Hitung nomor antrian untuk tanggal konsultasi
-        $today = now()->toDateString();  // Dapatkan tanggal saat ini (atau bisa berdasarkan tanggal yang dipilih)
-        $lastQueueNumber = Konsultasi::whereDate('tanggal_konsultasi', $request->tanggal_konsultasi)
-            ->where('status', 'Menunggu')  // Hanya hitung yang statusnya "Menunggu"
-            ->max('no_antrian');  // Ambil nomor antrian terbesar pada hari tersebut
-
-        // Tentukan nomor antrian berikutnya
-        $nextQueueNumber = $lastQueueNumber ? intval(substr($lastQueueNumber, 3)) + 1 : 1; // Ambil nomor antrian terakhir dan tambah 1
-        $formattedQueueNumber = 'ATR' . str_pad($nextQueueNumber, 4, '0', STR_PAD_LEFT);  // Format dengan 4 digit
-
-        // Persiapkan data untuk update
-        $requestData = $request->all();
-        $requestData['no_antrian'] = $formattedQueueNumber;  // Masukkan nomor antrian ke dalam request data
-
-        // Update konsultasi dengan data yang sudah diperbarui
-        $konsultasi->update($requestData);
-
-
-        return redirect()->route('kasir.konsultasi.index')->with('success', 'Daftar Ulang Telah Berhasil.');
     }
+
+    return redirect()->route('kasir.konsultasi.index')->with('success', 'Daftar Ulang Telah Berhasil.');
+}
+
 
     /**
      * Remove the specified resource from storage.

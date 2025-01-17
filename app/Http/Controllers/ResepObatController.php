@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\ResepObat;
 use App\Models\konsultasi;
+use App\Models\Transaksi;
 use App\Models\obat;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -78,46 +79,69 @@ class ResepObatController extends Controller
     }
 
     public function update(Request $request, $id_konsultasi)
-    {
-        $request->validate([
-            'id_obat' => 'required|array|min:1', // Validasi array untuk obat
-            'id_obat.*' => 'exists:obat,id_obat', // Setiap ID obat harus valid
-            'jumlah' => 'required|array', // Validasi array untuk jumlah
-            'jumlah.*' => 'required|integer|min:1', // Jumlah tiap obat harus valid
-            'keterangan' => 'nullable|string|max:255', // Validasi keterangan opsional
-            'status' => 'nullable|string|in:sedang disiapkan,siap', // Validasi status
-        ]);
+{
+    $request->validate([
+        'id_obat' => 'required|array|min:1', // Validasi array untuk obat
+        'id_obat.*' => 'exists:obat,id_obat', // Setiap ID obat harus valid
+        'jumlah' => 'required|array', // Validasi array untuk jumlah
+        'jumlah.*' => 'required|integer|min:1', // Jumlah tiap obat harus valid
+        'keterangan' => 'nullable|string|max:255', // Validasi keterangan opsional
+        'status' => 'nullable|string|in:sedang disiapkan,siap', // Validasi status
+    ]);
 
-        // Hapus semua resep lama terkait konsultasi ini
-        ResepObat::where('id_konsultasi', $id_konsultasi)->delete();
+    // Hapus semua resep lama terkait konsultasi ini
+    ResepObat::where('id_konsultasi', $id_konsultasi)->delete();
 
-        // Tambahkan resep baru dan langsung kurangi stok obat
-        foreach ($request->id_obat as $index => $id_obat) {
-            $jumlah = $request->jumlah[$index];
+    $totalHargaObat = 0; // Variabel untuk menghitung total harga obat
 
-            // Kurangi stok obat di tabel obat
-            $obat = Obat::find($id_obat);
-            if ($obat) {
-                if ($obat->stok < $jumlah) {
-                    return redirect()->back()->withErrors(['stok' => "Stok obat {$obat->nama_obat} tidak mencukupi."]);
-                }
+    // Tambahkan resep baru dan langsung kurangi stok obat
+    foreach ($request->id_obat as $index => $id_obat) {
+        $jumlah = $request->jumlah[$index];
 
-                $obat->stok -= $jumlah; // Kurangi stok langsung
-                $obat->save();
+        // Ambil data obat dan validasi stok
+        $obat = Obat::find($id_obat);
+        if ($obat) {
+            if ($obat->stok < $jumlah) {
+                return redirect()->back()->withErrors(['stok' => "Stok obat {$obat->nama_obat} tidak mencukupi."]);
             }
 
-            // Buat resep baru
-            ResepObat::create([
-                'id_konsultasi' => $id_konsultasi,
-                'id_obat' => $id_obat,
-                'jumlah' => $jumlah,
-                'keterangan' => $request->keterangan,
-                'status' => $request->status ?? 'sedang disiapkan', // Set status default
-            ]);
+            $obat->stok -= $jumlah; // Kurangi stok langsung
+            $obat->save();
+
+            // Hitung subtotal untuk obat ini
+            $subtotal = $obat->harga * $jumlah;
+            $totalHargaObat += $subtotal; // Tambahkan ke total harga obat
         }
 
-        return redirect()->route('apoteker.resep_obat.index')->with('success', 'Resep Obat berhasil diperbarui dan stok telah diperbarui.');
+        // Buat resep baru
+        ResepObat::create([
+            'id_konsultasi' => $id_konsultasi,
+            'id_obat' => $id_obat,
+            'jumlah' => $jumlah,
+            'keterangan' => $request->keterangan,
+            'status' => $request->status ?? 'sedang disiapkan', // Set status default
+        ]);
     }
+
+    // Hitung total harga layanan terkait konsultasi
+    $konsultasi = Konsultasi::with('layanan')->find($id_konsultasi);
+    $totalHargaLayanan = $konsultasi->layanan->sum('harga');
+
+    $totalHarga = $totalHargaObat + $totalHargaLayanan; // Total keseluruhan
+
+    // Buat atau update transaksi di tabel transaksi
+    Transaksi::updateOrCreate(
+        ['id_konsultasi' => $id_konsultasi], // Cari berdasarkan id_konsultasi
+        [
+            'total_harga' => $totalHarga,
+            'status_pembayaran' => 'belum dibayar', // Status default
+        ]
+    );
+
+    return redirect()->route('apoteker.resep_obat.index')->with('success', 'Resep Obat dan Transaksi berhasil diperbarui.');
+}
+
+
 
     public function destroy(ResepObat $resepObat)
     {

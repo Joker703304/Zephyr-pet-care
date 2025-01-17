@@ -8,6 +8,7 @@ use App\Models\obat;
 use App\Models\Dokter;
 use App\Models\ResepObat;
 use App\Models\Layanan;
+use App\Models\Antrian;
 use Carbon\Carbon;
 use App\Models\DetailResepObat;
 use App\Models\DokterJadwal;
@@ -44,6 +45,13 @@ class DokterDashboardController extends Controller
         return view('admin.pemilik_hewan.index', compact('data'));
     }
 
+public function panggil(Request $request, Antrian $antrian)
+    {
+        $antrian->update(['status' => 'Dipanggil']);
+
+        return redirect()->back()->with('success', 'Pasien telah dipanggil.');
+    }
+
     public function dokter()
     {
           // Check if the logged-in user has a doctor profile
@@ -70,6 +78,7 @@ class DokterDashboardController extends Controller
         $jadwalBulanIni = DokterJadwal::where('id_dokter', $dokter->id)
             ->whereMonth('tanggal', $currentMonth) // Filter berdasarkan bulan
             ->whereYear('tanggal', $currentYear)  // Filter berdasarkan tahun
+            ->where('status', 'Praktik')
             ->count();
   
         // Menampilkan tampilan dashboard pemilik hewan
@@ -77,18 +86,26 @@ class DokterDashboardController extends Controller
     }
 
     public function konsultasi()
-    {
-        $today = Carbon::today();
+{
+    $today = Carbon::today();
 
-        // Filter konsultasi untuk menampilkan hanya yang memiliki tanggal hari ini atau yang akan datang
-        $konsultasi = Konsultasi::with(['hewan', 'dokter', 'resepObat'])
-            ->whereDate('tanggal_konsultasi', '>=', $today) // Menampilkan konsultasi hari ini atau yang akan datang
-            ->where('status', 'Diterima') // Filter dengan status 'Diterima'
-            ->orWhere('status', 'Pembuatan Obat') // Sertakan konsultasi dengan status 'Pembuatan Obat'
-            ->get();
+    // Ambil dokter yang sedang login
+    $dokter = Dokter::where('id_user', Auth::id())->first();
 
-        return view('dokter.konsultasi', compact('konsultasi'));
+    if (!$dokter) {
+        // Jika dokter tidak ditemukan, arahkan ke halaman profil
+        return redirect()->route('dokter.createProfile')->with('warning', 'Mohon isi data diri terlebih dahulu.');
     }
+
+    // Filter konsultasi berdasarkan dokter yang sedang login dan tanggal hari ini
+    $konsultasi = Konsultasi::with(['hewan', 'dokter', 'resepObat'])
+        ->where('dokter_id', $dokter->id) // Filter by dokter ID
+        ->whereDate('tanggal_konsultasi', $today) // Filter by today's date
+        ->where('status', 'Diterima') // Filter by status 'Diterima'
+        ->get();
+
+    return view('dokter.konsultasi', compact('konsultasi'));
+}
 
     public function diagnosis($id)
     {
@@ -175,17 +192,17 @@ class DokterDashboardController extends Controller
         return redirect()->route("dokter.konsultasi.index")->with('success', 'Diagnosis dan resep berhasil diperbarui.');
     }
 
-    public function deleteExpiredConsultations()
-    {
-        $today = Carbon::today();
+    // public function deleteExpiredConsultations()
+    // {
+    //     $today = Carbon::today();
 
-        // Hapus konsultasi yang sudah lewat dan memiliki status 'Pembuatan Obat'
-        Konsultasi::whereDate('tanggal_konsultasi', '<', $today)
-            ->where('status', 'Pembuatan Obat')
-            ->delete();
+    //     // Hapus konsultasi yang sudah lewat dan memiliki status 'Pembuatan Obat'
+    //     Konsultasi::whereDate('tanggal_konsultasi', '<', $today)
+    //         ->where('status', 'Pembuatan Obat')
+    //         ->delete();
 
-        return redirect()->route("dokter.konsultasi.index")->with('success', 'Konsultasi yang sudah lewat telah dihapus.');
-    }
+    //     return redirect()->route("dokter.konsultasi.index")->with('success', 'Konsultasi yang sudah lewat telah dihapus.');
+    // }
 
     public function createProfile()
     {

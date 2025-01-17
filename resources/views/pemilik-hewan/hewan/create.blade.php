@@ -29,12 +29,12 @@
         </div>
 
         <div class="form-group">
-            <label for="umur">Umur</label>
+            <label for="umur">Umur (Bulan)</label>
             <input type="number" name="umur" id="umur" class="form-control" value="{{ old('umur') }}">
         </div>
 
         <div class="form-group">
-            <label for="berat">Berat</label>
+            <label for="berat">Berat (Gram)</label>
             <input type="number" step="0.01" name="berat" id="berat" class="form-control" value="{{ old('berat') }}">
         </div>
 
