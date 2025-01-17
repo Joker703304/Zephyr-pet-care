@@ -45,13 +45,6 @@ class DokterDashboardController extends Controller
         return view('admin.pemilik_hewan.index', compact('data'));
     }
 
-    // Jika role adalah admin, ambil semua data pemilik hewan
-    $data = Dokter::with('user')->get();
-
-    // Tampilkan view untuk admin
-    return view('admin.pemilik_hewan.index', compact('data'));
-}
-
 public function panggil(Request $request, Antrian $antrian)
     {
         $antrian->update(['status' => 'Dipanggil']);
@@ -93,10 +86,9 @@ public function panggil(Request $request, Antrian $antrian)
     }
 
     public function konsultasi()
-    {
-        $today = Carbon::today();
+{
+    $today = Carbon::today();
 
-<<<<<<< HEAD
     // Ambil dokter yang sedang login
     $dokter = Dokter::where('id_user', Auth::id())->first();
 
@@ -114,17 +106,6 @@ public function panggil(Request $request, Antrian $antrian)
 
     return view('dokter.konsultasi', compact('konsultasi'));
 }
-=======
-        // Filter konsultasi untuk menampilkan hanya yang memiliki tanggal hari ini atau yang akan datang
-        $konsultasi = Konsultasi::with(['hewan', 'dokter', 'resepObat'])
-            ->whereDate('tanggal_konsultasi', '>=', $today) // Menampilkan konsultasi hari ini atau yang akan datang
-            ->where('status', 'Diterima') // Filter dengan status 'Diterima'
-            ->orWhere('status', 'Pembuatan Obat') // Sertakan konsultasi dengan status 'Pembuatan Obat'
-            ->get();
->>>>>>> 5824bba21aef52b571b76695498e93a6a4e3c34a
-
-        return view('dokter.konsultasi', compact('konsultasi'));
-    }
 
     public function diagnosis($id)
     {
@@ -211,17 +192,17 @@ public function panggil(Request $request, Antrian $antrian)
         return redirect()->route("dokter.konsultasi.index")->with('success', 'Diagnosis dan resep berhasil diperbarui.');
     }
 
-    public function deleteExpiredConsultations()
-    {
-        $today = Carbon::today();
+    // public function deleteExpiredConsultations()
+    // {
+    //     $today = Carbon::today();
 
-        // Hapus konsultasi yang sudah lewat dan memiliki status 'Pembuatan Obat'
-        Konsultasi::whereDate('tanggal_konsultasi', '<', $today)
-            ->where('status', 'Pembuatan Obat')
-            ->delete();
+    //     // Hapus konsultasi yang sudah lewat dan memiliki status 'Pembuatan Obat'
+    //     Konsultasi::whereDate('tanggal_konsultasi', '<', $today)
+    //         ->where('status', 'Pembuatan Obat')
+    //         ->delete();
 
-        return redirect()->route("dokter.konsultasi.index")->with('success', 'Konsultasi yang sudah lewat telah dihapus.');
-    }
+    //     return redirect()->route("dokter.konsultasi.index")->with('success', 'Konsultasi yang sudah lewat telah dihapus.');
+    // }
 
     public function createProfile()
     {

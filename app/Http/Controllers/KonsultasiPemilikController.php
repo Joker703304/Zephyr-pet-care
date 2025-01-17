@@ -16,13 +16,14 @@ class KonsultasiPemilikController extends Controller
      * Display a listing of the resource.
      */
     public function index()
-    {
-        $konsultasi = Konsultasi::whereHas('hewan', function ($query) {
-            $query->where('id_pemilik', auth()->user()->pemilikhewan->id_pemilik);
-        })->get();
-    
-        return view('pemilik-hewan.konsultasi.index', compact('konsultasi'));
-    }
+{
+    $konsultasi = Konsultasi::whereHas('hewan', function ($query) {
+        $query->where('id_pemilik', auth()->user()->pemilikHewan->id_pemilik);
+    })->with(['hewan', 'dokter.user'])->get();
+
+    return view('pemilik-hewan.konsultasi.index', compact('konsultasi'));
+}
+
 
     /**
      * Show the form for creating a new resource.
@@ -35,11 +36,12 @@ class KonsultasiPemilikController extends Controller
             ->get();
 
         // Ambil data hewan milik pengguna yang sedang login
-        $hewan = Hewan::where('id_pemilik', auth()->user()->pemilikhewan->id_pemilik)->get();
-        $hewan = Hewan::whereDoesntHave('konsultasi', function ($query) {
-            $query->where('status', '!=', 'Selesai');
-            $query->where('status', '!=', 'Dibatalkan');
-        })->get();
+        $hewan = Hewan::where('id_pemilik', auth()->user()->pemilikHewan->id_pemilik) // Filter hewan milik pengguna login
+    ->whereDoesntHave('konsultasi', function ($query) {
+        $query->where('status', '!=', 'Selesai')
+              ->where('status', '!=', 'Dibatalkan');
+    })
+    ->get();
         
         return view('pemilik-hewan.konsultasi.create', compact('hewan', 'dokterJadwal'));
     }

@@ -43,6 +43,11 @@
                         <a href="{{ route('pemilik-hewan.konsultasi_pemilik.index') }}">| Lihat Konsultasi |</a>
                         <a href="#">| Lihat Resep</a>
                     @endif
+                    @if (auth()->user()->role === 'kasir')
+                        <a href="{{ route('kasir.konsultasi.index') }}">Daftar Ulang |</a>
+                        <a href="{{ route('kasir.antrian.index') }}">| Antrian |</a>
+                        <a href="{{ route('kasir.transaksi.list') }}">| Transaksi</a>
+                    @endif
 
                 @endguest
 

@@ -182,10 +182,15 @@ Route::middleware(['auth', 'role:pemilik_hewan'])->prefix('pemilik-hewan')->name
 Route::middleware(['auth', 'role:kasir'])->prefix('kasir')->name('kasir.')->group(function () {
     Route::get('/profile', [KasirController::class, 'profile'])->name('profile');
     Route::resource('konsultasi', KonsultasiController::class);
+    Route::patch('/antrian/{antrian}/selesai', [KasirController::class, 'selesai'])->name('antrian.selesai');
+    Route::get('/antrian', [KasirController::class, 'antrian'])->name('antrian.index');
     Route::get('/create-profile', [KasirController::class, 'createProfile'])->name('createProfile');
     Route::post('/store-profile', [KasirController::class, 'storeProfile'])->name('storeProfile');
     Route::get('/edit-profile', [KasirController::class, 'editProfile'])->name('editProfile');
     Route::post('/update-profile', [KasirController::class, 'updateProfile'])->name('updateProfile');
     Route::get('/dashboard', [KasirController::class, 'index'])->name('dashboard');
+    Route::get('/transaksi', [KasirController::class, 'listTransaksi'])->name('transaksi.list');
+    Route::post('kasir/transaksi/{id}/bayar', [KasirController::class, 'bayar'])->name('transaksi.bayar');
+Route::get('kasir/transaksi/{id}/rincian', [KasirController::class, 'rincian'])->name('transaksi.rincian');
 });
 

@@ -44,19 +44,17 @@ class konsultasi extends Model
     }
 
     public function user()
-{
-    return $this->hasOneThrough(User::class, hewan::class);
-}
+    {
+        return $this->hasOneThrough(User::class, hewan::class);
+    }
 
-public function layanan()
-{
-    return $this->belongsToMany(Layanan::class, 'konsultasi_layanan', 'id_konsultasi', 'id_layanan');
-}
+    public function layanan()
+    {
+        return $this->belongsToMany(Layanan::class, 'konsultasi_layanan', 'id_konsultasi', 'id_layanan');
+    }
 
-public function antrian()
-{
-    return $this->hasOne(Antrian::class, 'konsultasi_id', 'id_konsultasi');
-}
-
-
+    public function antrian()
+    {
+        return $this->hasOne(Antrian::class, 'konsultasi_id', 'id_konsultasi');
+    }
 }
