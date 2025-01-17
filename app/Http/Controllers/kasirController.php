@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Kasir;
 use App\Models\konsultasi;
+use App\Models\Antrian;
+use App\Models\Transaksi;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
@@ -21,15 +23,41 @@ class kasirController extends Controller
     public function index()
     {
         $kasir = kasir::where('id_user', Auth::id())->first();
+        $today = Carbon::today();
 
         if (!$kasir) {
             // If no doctor profile exists, redirect to the profile creation page
             return redirect()->route('kasir.createProfile')->with('warning', 'Mohon Isi data diri terlebih dahulu.');
         }
 
-        $konsultasiCount = konsultasi::whereDate('tanggal_konsultasi', Carbon::today())->count();
+        $konsultasiCount = konsultasi::whereDate('tanggal_konsultasi', Carbon::today())->where('status', 'Menunggu')->count();
         // Menampilkan tampilan dashboard pemilik hewan
-        return view('kasir.dashboard', compact('konsultasiCount'));;
+
+        $antrianCount = Antrian::whereDate('created_at', $today)->count();
+
+        $counttransaksi = Transaksi::whereDate('created_at', $today)
+        ->where('status_pembayaran', 'Belum Dibayar')
+        ->count();
+
+
+        return view('kasir.dashboard', compact('konsultasiCount', 'antrianCount', 'counttransaksi'));;
+    }
+
+    public function antrian()
+    {
+        $today = Carbon::today();
+
+        // Ambil semua antrian hari ini
+        $antrian = Antrian::whereDate('created_at', $today)->get();
+
+        return view('kasir.antrian', compact('antrian'));
+    }
+
+    public function selesai(Request $request, Antrian $antrian)
+    {
+        $antrian->update(['status' => 'Selesai']);
+
+        return redirect()->back()->with('success', 'Pasien telah dipanggil.');
     }
 
     /**
@@ -73,21 +101,21 @@ class kasirController extends Controller
     }
 
     public function profile()
-{
-    // Cek role pengguna yang sedang login
-    if (auth()->user()->role == 'kasir') {
-        // Ambil data pemilik hewan terkait dengan user yang login
-        $userId = auth()->user()->id;
+    {
+        // Cek role pengguna yang sedang login
+        if (auth()->user()->role == 'kasir') {
+            // Ambil data pemilik hewan terkait dengan user yang login
+            $userId = auth()->user()->id;
 
-        // Ambil data pemilik hewan berdasarkan user_id
-        $data = Kasir::with('user')
-            ->where('id_user', $userId)
-            ->get();
+            // Ambil data pemilik hewan berdasarkan user_id
+            $data = Kasir::with('user')
+                ->where('id_user', $userId)
+                ->get();
 
-        // Tampilkan view untuk pemilik hewan
-        return view('kasir.profile', compact('data'));
+            // Tampilkan view untuk pemilik hewan
+            return view('kasir.profile', compact('data'));
+        }
     }
-}
 
     public function createProfile()
     {
@@ -152,6 +180,65 @@ class kasirController extends Controller
         // Redirect to the dashboard after the profile is updated
         return redirect()->route('kasir.profile')->with('success', 'Profile anda berhasil di perbarui.');
     }
+
+    public function listTransaksi()
+    {
+        $today = Carbon::today();
+        $transaksi = Transaksi::orderBy('created_at', 'asc')->whereDate('created_at', $today)->get();
+
+        // $konsultasi = Konsultasi::with(['hewan', 'dokter', 'resepObat'])
+        // ->where('dokter_id', $dokter->id) // Filter by dokter ID
+        // ->whereDate('tanggal_konsultasi', $today) // Filter by today's date
+        // ->where('status', 'Diterima') // Filter by status 'Diterima'
+        // ->get();
+
+        return view('kasir.transaksi.index', compact('transaksi'));
+    }
+
+    public function bayar(Request $request, $id)
+{
+    $transaksi = Transaksi::findOrFail($id);
+
+    $request->validate([
+        'jumlah_bayar' => 'required|numeric|min:' . $transaksi->total_harga,
+    ]);
+
+    $jumlahBayar = $request->jumlah_bayar;
+    $kembalian = $jumlahBayar - $transaksi->total_harga;
+
+    // Update the transaction with payment details
+    $transaksi->update([
+        'jumlah_bayar' => $jumlahBayar,
+        'kembalian' => $kembalian,
+        'status_pembayaran' => 'Sudah Dibayar',
+    ]);
+
+    // Update related konsultasi status to "Selesai"
+    $konsultasi = $transaksi->konsultasi;
+    if ($konsultasi) {
+        $konsultasi->update([
+            'status' => 'Selesai',
+        ]);
+    }
+
+    return redirect()->route('kasir.transaksi.list')
+        ->with('success', 'Pembayaran berhasil dilakukan. Status konsultasi telah diperbarui menjadi Selesai.')
+        ->with('jumlah_bayar', $jumlahBayar)
+        ->with('kembalian', $kembalian);
+}
+
+
+
+    public function rincian($id)
+    {
+        $transaksi = Transaksi::with([
+            'konsultasi.layanan',
+            'konsultasi.resepObat.obat',
+        ])->findOrFail($id);
+
+        return view('kasir.transaksi.rincian', compact('transaksi'));
+    }
+
 
     /**
      * Remove the specified resource from storage.

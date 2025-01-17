@@ -16,13 +16,14 @@ class KonsultasiPemilikController extends Controller
      * Display a listing of the resource.
      */
     public function index()
-    {
-        $konsultasi = Konsultasi::whereHas('hewan', function ($query) {
-            $query->where('id_pemilik', auth()->user()->pemilikhewan->id_pemilik);
-        })->get();
-    
-        return view('pemilik-hewan.konsultasi.index', compact('konsultasi'));
-    }
+{
+    $konsultasi = Konsultasi::whereHas('hewan', function ($query) {
+        $query->where('id_pemilik', auth()->user()->pemilikHewan->id_pemilik);
+    })->with(['hewan', 'dokter.user'])->get();
+
+    return view('pemilik-hewan.konsultasi.index', compact('konsultasi'));
+}
+
 
     /**
      * Show the form for creating a new resource.
@@ -35,13 +36,43 @@ class KonsultasiPemilikController extends Controller
             ->get();
 
         // Ambil data hewan milik pengguna yang sedang login
-        $hewan = Hewan::where('id_pemilik', auth()->user()->pemilikhewan->id_pemilik)->get();
-        $hewan = Hewan::whereDoesntHave('konsultasi', function ($query) {
-            $query->where('status', '!=', 'Selesai');
-        })->get();
+        $hewan = Hewan::where('id_pemilik', auth()->user()->pemilikHewan->id_pemilik) // Filter hewan milik pengguna login
+    ->whereDoesntHave('konsultasi', function ($query) {
+        $query->where('status', '!=', 'Selesai')
+              ->where('status', '!=', 'Dibatalkan');
+    })
+    ->get();
         
         return view('pemilik-hewan.konsultasi.create', compact('hewan', 'dokterJadwal'));
     }
+
+    public function cancel($id)
+{
+    // Cari konsultasi berdasarkan ID
+    $konsultasi = Konsultasi::findOrFail($id);
+
+    // Pastikan konsultasi masih dalam status 'Menunggu'
+    if ($konsultasi->status !== 'Menunggu') {
+        return redirect()->back()->with('error', 'Konsultasi tidak dapat dibatalkan.');
+    }
+
+    // Ubah status menjadi 'Dibatalkan'
+    $konsultasi->status = 'Dibatalkan';
+    $konsultasi->save();
+
+    // Kembalikan slot konsultasi dokter
+    $jadwal = DokterJadwal::where('id_dokter', $konsultasi->dokter_id)
+        ->where('tanggal', $konsultasi->tanggal_konsultasi)
+        ->first();
+
+    if ($jadwal) {
+        $jadwal->maksimal_konsultasi += 1; // Tambahkan slot
+        $jadwal->save();
+    }
+
+    return redirect()->route('pemilik-hewan.konsultasi_pemilik.index')->with('success', 'Konsultasi berhasil dibatalkan.');
+}
+
     
 
     /**

@@ -1,5 +1,6 @@
 <!doctype html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -17,6 +18,7 @@
     <!-- Scripts -->
     @vite(['resources/sass/app.scss', 'resources/js/app.js'])
 </head>
+
 <body>
     <div id="app">
         <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm">
@@ -24,9 +26,31 @@
                 <a class="navbar-brand" href="{{ url('/') }}">
                     {{ config('app.name', 'Laravel') }}
                 </a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="{{ __('Toggle navigation') }}">
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+                    aria-expanded="false" aria-label="{{ __('Toggle navigation') }}">
                     <span class="navbar-toggler-icon"></span>
                 </button>
+
+                @guest
+                @else
+                    @if (auth()->user()->role === 'dokter')
+                        <a href="{{ route('dokter.jadwal.dokter') }}">Lihat Jadwal |</a>
+                        <a href="{{ route('dokter.konsultasi.index') }}">| Lihat Konsultasi</a>
+                    @endif
+                    @if (auth()->user()->role === 'pemilik_hewan')
+                        <a href="{{ route('pemilik-hewan.hewan.index') }}">Lihat Hewan |</a>
+                        <a href="{{ route('pemilik-hewan.konsultasi_pemilik.index') }}">| Lihat Konsultasi |</a>
+                        <a href="#">| Lihat Resep</a>
+                    @endif
+                    @if (auth()->user()->role === 'kasir')
+                        <a href="{{ route('kasir.konsultasi.index') }}">Daftar Ulang |</a>
+                        <a href="{{ route('kasir.antrian.index') }}">| Antrian |</a>
+                        <a href="{{ route('kasir.transaksi.list') }}">| Transaksi</a>
+                    @endif
+
+                @endguest
+
 
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <!-- Left Side Of Navbar -->
@@ -51,7 +75,8 @@
                             @endif
                         @else
                             <li class="nav-item dropdown">
-                                <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
+                                <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button"
+                                    data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
                                     {{ Auth::user()->name }}
                                 </a>
 
@@ -83,7 +108,7 @@
 
                                     <!-- Logout with Icon -->
                                     <a class="dropdown-item" href="{{ route('logout') }}"
-                                       onclick="event.preventDefault();
+                                        onclick="event.preventDefault();
                                                      document.getElementById('logout-form').submit();">
                                         <i class="fas fa-sign-out-alt"></i> {{ __('Logout') }}
                                     </a>
@@ -104,4 +129,5 @@
         </main>
     </div>
 </body>
+
 </html>

@@ -135,7 +135,7 @@ Route::middleware(['auth', 'role:dokter'])->prefix('dokter')->name('dokter.')->g
     Route::post('/jadwal', [DokterJadwalController::class, 'store'])->name('jadwal.store');
     Route::put('/jadwal/{id}', [DokterJadwalController::class, 'update'])->name('jadwal.update');
     Route::post('/jadwal/storeOrUpdate', [DokterJadwalController::class, 'storeOrUpdate'])->name('jadwal.storeOrUpdate');
-
+    Route::patch('/antrian/{antrian}/panggil', [DokterDashboardController::class, 'panggil'])->name('antrian.panggil');
     Route::get('/profile', [DokterDashboardController::class, 'index'])->name('profile');
     Route::get('/dokter/create-profile', [DokterDashboardController::class, 'createProfile'])->name('createProfile');
     Route::post('/dokter/store-profile', [DokterDashboardController::class, 'storeProfile'])->name('storeProfile');
@@ -170,6 +170,7 @@ Route::middleware(['auth', 'role:pemilik_hewan'])->prefix('pemilik-hewan')->grou
 Route::middleware(['auth', 'role:pemilik_hewan'])->prefix('pemilik-hewan')->name('pemilik-hewan.')->group(function () {
     Route::resource('pemilik_hewan', PemilikHewanController::class);
     Route::resource('konsultasi_pemilik', KonsultasiPemilikController::class);
+    Route::put('/pemilik-hewan/konsultasi/{id}/cancel', [KonsultasiPemilikController::class, 'cancel'])->name('konsultasi_pemilik.cancel');
     Route::get('/konsultasi/get-dokter-by-date', [KonsultasiPemilikController::class, 'getDokterByDate'])->name('konsultasi_pemilik.getDokterByDate');
 });
 
@@ -181,10 +182,15 @@ Route::middleware(['auth', 'role:pemilik_hewan'])->prefix('pemilik-hewan')->name
 Route::middleware(['auth', 'role:kasir'])->prefix('kasir')->name('kasir.')->group(function () {
     Route::get('/profile', [KasirController::class, 'profile'])->name('profile');
     Route::resource('konsultasi', KonsultasiController::class);
+    Route::patch('/antrian/{antrian}/selesai', [KasirController::class, 'selesai'])->name('antrian.selesai');
+    Route::get('/antrian', [KasirController::class, 'antrian'])->name('antrian.index');
     Route::get('/create-profile', [KasirController::class, 'createProfile'])->name('createProfile');
     Route::post('/store-profile', [KasirController::class, 'storeProfile'])->name('storeProfile');
     Route::get('/edit-profile', [KasirController::class, 'editProfile'])->name('editProfile');
     Route::post('/update-profile', [KasirController::class, 'updateProfile'])->name('updateProfile');
     Route::get('/dashboard', [KasirController::class, 'index'])->name('dashboard');
+    Route::get('/transaksi', [KasirController::class, 'listTransaksi'])->name('transaksi.list');
+    Route::post('kasir/transaksi/{id}/bayar', [KasirController::class, 'bayar'])->name('transaksi.bayar');
+Route::get('kasir/transaksi/{id}/rincian', [KasirController::class, 'rincian'])->name('transaksi.rincian');
 });
 
