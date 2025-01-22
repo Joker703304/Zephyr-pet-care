@@ -33,12 +33,16 @@
                         <span>{{ $resep->obat->nama_obat }} ({{ $resep->jumlah }})</span><br>
                     @endforeach
                 </td>
-                <td>{{ $resepGroup->first()->keterangan }}</td>
+                <td>
+                    @foreach ($resepGroup as $resep)
+                    <span>{{ $resep->keterangan }}</span><br>
+                    @endforeach
+                </td>
                 <td>
                     <!-- Menampilkan status resep -->
                     <span class="badge 
                         @if($resepGroup->first()->status == 'sedang disiapkan') badge-warning 
-                        @elseif($resepGroup->first()->status == 'selesai') badge-success
+                        @elseif($resepGroup->first()->status == 'siap') badge-success
                         @else badge-secondary
                         @endif status-badge">
                         {{ ucfirst($resepGroup->first()->status) ?? 'Sedang di Siapkan' }}

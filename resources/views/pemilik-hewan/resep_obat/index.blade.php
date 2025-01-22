@@ -19,8 +19,8 @@
                 <th>Konsultasi</th>
                 <th>Obat</th>
                 <th>Keterangan</th>
-                <th>Status</th>  <!-- Kolom Status -->
-                {{-- <th>Aksi</th> --}}
+                {{-- <th>Status</th>  <!-- Kolom Status --> --}}
+                <th>Aksi</th>
             </tr>
         </thead>
         <tbody>
@@ -33,8 +33,12 @@
                         <span>{{ $resep->obat->nama_obat }} ({{ $resep->jumlah }})</span><br>
                     @endforeach
                 </td>
-                <td>{{ $resepGroup->first()->keterangan }}</td>
                 <td>
+                    @foreach ($resepGroup as $resep)
+                    <span>{{ $resep->keterangan }}</span><br>
+                    @endforeach
+                </td>
+                {{-- <td>
                     <!-- Menampilkan status resep -->
                     <span class="badge 
                         @if($resepGroup->first()->status == 'sedang disiapkan') badge-warning 
@@ -43,10 +47,10 @@
                         @endif status-badge">
                         {{ ucfirst($resepGroup->first()->status) ?? 'Sedang di Siapkan' }}
                     </span>
-                </td>
-                {{-- <td>
-                    <a href="{{ route('apoteker.resep_obat.edit', $id_konsultasi) }}" class="btn btn-warning">Edit</a>
                 </td> --}}
+                <td>
+                    <a href="{{ route('pemilik-hewan.resep_obat.show', $resep->id_konsultasi) }}" class="btn btn-info">Lihat Rincian</a>
+                </td>
             </tr>
             @endforeach
         </tbody>

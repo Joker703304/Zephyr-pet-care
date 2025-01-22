@@ -104,22 +104,24 @@ class ResepObatController extends Controller
     public function update(Request $request, $id_konsultasi)
 {
     $request->validate([
-        'id_obat' => 'required|array|min:1', // Validasi array untuk obat
-        'id_obat.*' => 'exists:obat,id_obat', // Setiap ID obat harus valid
-        'jumlah' => 'required|array', // Validasi array untuk jumlah
-        'jumlah.*' => 'required|integer|min:1', // Jumlah tiap obat harus valid
-        'keterangan' => 'nullable|string|max:255', // Validasi keterangan opsional
-        'status' => 'nullable|string|in:sedang disiapkan,siap', // Validasi status
+        'id_obat' => 'required|array|min:1',
+        'id_obat.*' => 'exists:obat,id_obat',
+        'jumlah' => 'required|array',
+        'jumlah.*' => 'required|integer|min:1',
+        'keterangan' => 'nullable|array', // Keterangan harus berupa array
+        'keterangan.*' => 'nullable|string|max:255', // Validasi tiap keterangan
+        'status' => 'nullable|string|in:sedang disiapkan,siap',
     ]);
 
     // Hapus semua resep lama terkait konsultasi ini
     ResepObat::where('id_konsultasi', $id_konsultasi)->delete();
 
-    $totalHargaObat = 0; // Variabel untuk menghitung total harga obat
+    $totalHargaObat = 0;
 
-    // Tambahkan resep baru dan langsung kurangi stok obat
+    // Menyimpan resep dan keterangan per obat
     foreach ($request->id_obat as $index => $id_obat) {
         $jumlah = $request->jumlah[$index];
+        $keterangan = $request->keterangan[$index]; // Ambil keterangan untuk setiap obat
 
         // Ambil data obat dan validasi stok
         $obat = Obat::find($id_obat);
@@ -128,21 +130,21 @@ class ResepObatController extends Controller
                 return redirect()->back()->withErrors(['stok' => "Stok obat {$obat->nama_obat} tidak mencukupi."]);
             }
 
-            $obat->stok -= $jumlah; // Kurangi stok langsung
+            $obat->stok -= $jumlah;
             $obat->save();
 
             // Hitung subtotal untuk obat ini
             $subtotal = $obat->harga * $jumlah;
-            $totalHargaObat += $subtotal; // Tambahkan ke total harga obat
+            $totalHargaObat += $subtotal;
         }
 
-        // Buat resep baru
+        // Simpan resep obat dengan keterangan per obat
         ResepObat::create([
             'id_konsultasi' => $id_konsultasi,
             'id_obat' => $id_obat,
             'jumlah' => $jumlah,
-            'keterangan' => $request->keterangan,
-            'status' => $request->status ?? 'sedang disiapkan', // Set status default
+            'keterangan' => $keterangan, // Simpan keterangan per obat
+            'status' => $request->status ?? 'sedang disiapkan',
         ]);
     }
 
@@ -150,15 +152,12 @@ class ResepObatController extends Controller
     $konsultasi = Konsultasi::with('layanan')->find($id_konsultasi);
     $totalHargaLayanan = $konsultasi->layanan->sum('harga');
 
-    $totalHarga = $totalHargaObat + $totalHargaLayanan; // Total keseluruhan
+    $totalHarga = $totalHargaObat + $totalHargaLayanan;
 
-    // Buat atau update transaksi di tabel transaksi
+    // Update atau buat transaksi
     Transaksi::updateOrCreate(
-        ['id_konsultasi' => $id_konsultasi], // Cari berdasarkan id_konsultasi
-        [
-            'total_harga' => $totalHarga,
-            'status_pembayaran' => 'belum dibayar', // Status default
-        ]
+        ['id_konsultasi' => $id_konsultasi],
+        ['total_harga' => $totalHarga, 'status_pembayaran' => 'belum dibayar']
     );
 
     return redirect()->route('apoteker.resep_obat.index')->with('success', 'Resep Obat dan Transaksi berhasil diperbarui.');
@@ -170,6 +169,20 @@ class ResepObatController extends Controller
     {
         $resepObat->delete();
         return redirect()->route('apoteker.resep_obat.index')->with('success', 'Resep Obat berhasil dihapus.');
+    }
+
+    public function show($id_konsultasi)
+    {
+        // Ambil resep obat berdasarkan id_konsultasi
+        $resepGroup = ResepObat::with('obat', 'konsultasi')->where('id_konsultasi', $id_konsultasi)->get();
+    
+        // Pastikan resep ditemukan
+        if ($resepGroup->isEmpty()) {
+            return redirect()->route('pemilik-hewan.resep_obat.index')->with('error', 'Resep obat tidak ditemukan.');
+        }
+    
+        // Tampilkan rincian resep obat
+        return view('pemilik-hewan.resep_obat.show', compact('resepGroup', 'id_konsultasi'));
     }
 }
 
