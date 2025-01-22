@@ -23,40 +23,38 @@
             <div class="row mb-3 obat-row">
                 <div class="col-md-6">
                     <label for="id_obat_{{ $index }}" class="form-label">Obat</label>
-                    <select name="id_obat[]" id="id_obat_{{ $index }}" class="form-control @error('id_obat.' . $index) is-invalid @enderror">
+                    <select name="id_obat[]" id="id_obat_{{ $index }}" class="form-control">
                         <option value="">Pilih Obat</option>
                         @foreach ($obat as $item)
                             <option value="{{ $item->id_obat }}" {{ $resep->id_obat == $item->id_obat ? 'selected' : '' }}>{{ $item->nama_obat }} ({{ $item->jenis_obat }})</option>
                         @endforeach
                     </select>
-                    @error('id_obat.' . $index)
-                        <div class="invalid-feedback">{{ $message }}</div>
-                    @enderror
                 </div>
                 <div class="col-md-3">
                     <label for="jumlah_{{ $index }}" class="form-label">Jumlah</label>
-                    <input type="number" name="jumlah[]" id="jumlah_{{ $index }}" class="form-control @error('jumlah.' . $index) is-invalid @enderror" value="{{ $resep->jumlah }}">
-                    @error('jumlah.' . $index)
-                        <div class="invalid-feedback">{{ $message }}</div>
-                    @enderror
+                    <input type="number" name="jumlah[]" id="jumlah_{{ $index }}" class="form-control" value="{{ $resep->jumlah }}">
                 </div>
                 <div class="col-md-3">
+                    <label for="keterangan_{{ $index }}" class="form-label">Keterangan</label>
+                    <input type="text" name="keterangan[]" id="keterangan_{{ $index }}" class="form-control" value="{{ $resep->keterangan }}">
+                </div>
+                {{-- <div class="col-md-3">
                     <label for="hapus_{{ $index }}" class="form-label d-block">Aksi</label>
                     <button type="button" class="btn btn-danger remove-obat">Hapus</button>
-                </div>
+                </div> --}}
             </div>
             @endforeach
-        </div>
+        </div>        
 
-        <button type="button" id="add-obat" class="btn btn-success mb-3">Tambah Obat</button>
+        {{-- <button type="button" id="add-obat" class="btn btn-success mb-3">Tambah Obat</button> --}}
 
-        <div class="mb-3">
+        {{-- <div class="mb-3">
             <label for="keterangan" class="form-label">Keterangan</label>
             <textarea name="keterangan" id="keterangan" class="form-control @error('keterangan') is-invalid @enderror">{{ $resepGroup->first()->keterangan }}</textarea>
             @error('keterangan')
                 <div class="invalid-feedback">{{ $message }}</div>
             @enderror
-        </div>
+        </div> --}}
 
         <!-- Hidden input untuk status -->
         <input type="hidden" name="status" value="siap">

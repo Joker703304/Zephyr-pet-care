@@ -4,7 +4,7 @@
 <div class="container">
     <h1>History Resep Obat</h1>
 
-    <a href="{{ route('apoteker.resep_obat.index') }}" class="btn btn-secondary">Kembali</a>
+    <a href="{{ route('apoteker.resep_obat.index') }}" class="btn btn-secondary mb-3">Kembali</a>
     <table class="table table-bordered">
         <thead>
             <tr>
@@ -25,7 +25,11 @@
                         <span>{{ $resep->obat->nama_obat }} ({{ $resep->jumlah }})</span><br>
                     @endforeach
                 </td>
-                <td>{{ $resepGroup->first()->keterangan }}</td>
+                <td>
+                    @foreach ($resepGroup as $resep)
+                    <span>{{ $resep->keterangan }}</span><br>
+                    @endforeach
+                </td>
                 <td>
                     <!-- Menampilkan status resep -->
                     <span class="badge 
