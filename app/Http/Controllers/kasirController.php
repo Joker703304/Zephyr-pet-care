@@ -47,11 +47,45 @@ class kasirController extends Controller
     {
         $today = Carbon::today();
 
-        // Ambil semua antrian hari ini
-        $antrian = Antrian::whereDate('created_at', $today)->get();
-
-        return view('kasir.antrian', compact('antrian'));
+        // Antrian dengan status "Dipanggil"
+        $antrianDipanggil = Antrian::with(['konsultasi.dokter.user'])
+            ->whereDate('created_at', $today)
+            ->where('status', 'Dipanggil')
+            ->get();
+    
+        // Antrian dengan status "Menunggu"
+        $antrianMenunggu = Antrian::with(['konsultasi.dokter.user'])
+            ->whereDate('created_at', $today)
+            ->where('status', 'Menunggu')
+            ->get();
+    
+        return view('kasir.antrian', compact('antrianDipanggil', 'antrianMenunggu'));
     }
+
+    public function getAntrian()
+{
+    $today = Carbon::today();
+
+    // Ambil antrian dengan status "Dipanggil"
+    $antrianDipanggil = Antrian::with(['konsultasi.dokter.user'])
+        ->whereDate('created_at', $today)
+        ->where('status', 'Dipanggil')
+        ->get();
+
+    // Ambil antrian dengan status "Menunggu"
+    $antrianMenunggu = Antrian::with(['konsultasi.dokter.user'])
+        ->whereDate('created_at', $today)
+        ->where('status', 'Menunggu')
+        ->get();
+
+    // Kirim data dalam bentuk JSON
+    return response()->json([
+        'antrianDipanggil' => $antrianDipanggil,
+        'antrianMenunggu' => $antrianMenunggu,
+    ]);
+}
+
+
 
     public function selesai(Request $request, Antrian $antrian)
     {
@@ -184,9 +218,9 @@ class kasirController extends Controller
     public function listTransaksi()
     {
         $today = Carbon::today();
-        $transaksi = Transaksi::orderBy('created_at', 'asc')->whereDate('created_at', $today)->get();
-
-        // $konsultasi = Konsultasi::with(['hewan', 'dokter', 'resepObat'])
+        $transaksi = Transaksi::orderBy('created_at', 'asc')->get();
+        
+        // $konsultasi = Konsultasi::with(['hewan', 'dokter', 'resepObat'])->whereDate('created_at', $today)
         // ->where('dokter_id', $dokter->id) // Filter by dokter ID
         // ->whereDate('tanggal_konsultasi', $today) // Filter by today's date
         // ->where('status', 'Diterima') // Filter by status 'Diterima'
@@ -221,11 +255,13 @@ class kasirController extends Controller
         ]);
     }
 
-    return redirect()->route('kasir.transaksi.list')
+    return redirect()->route('kasir.transaksi.rincian', $transaksi->id_transaksi)
         ->with('success', 'Pembayaran berhasil dilakukan. Status konsultasi telah diperbarui menjadi Selesai.')
         ->with('jumlah_bayar', $jumlahBayar)
-        ->with('kembalian', $kembalian);
+        ->with('kembalian', $kembalian)
+        ->with('autoPrint', true);  // Trigger auto print only when payment is completed
 }
+
 
 
 

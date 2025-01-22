@@ -161,7 +161,7 @@
                             <select name="layanan_id[new-${countLayanan}]" class="form-control" required onchange="updateLayananDropdowns()">
                                 <option value="" disabled selected>Pilih Layanan</option>
                                 @foreach ($layanan as $item)
-                                    <option value="{{ $item->id_layanan }}">{{ $item->nama_layanan }} ({{ $item->harga }})</option>
+                                    <option value="{{ $item->id_layanan }}">{{ $item->nama_layanan }}</option>
                                 @endforeach
                             </select>
                         </div>

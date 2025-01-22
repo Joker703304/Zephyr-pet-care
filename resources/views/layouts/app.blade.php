@@ -106,6 +106,12 @@
                                         </a>
                                     @endif
 
+                                    @if (auth()->user()->role === 'security')
+                                        <a class="dropdown-item" href="{{ route('security.profile') }}">
+                                            <i class="fas fa-user-circle"></i> Profil
+                                        </a>
+                                    @endif
+
                                     <!-- Logout with Icon -->
                                     <a class="dropdown-item" href="{{ route('logout') }}"
                                         onclick="event.preventDefault();

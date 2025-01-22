@@ -88,6 +88,12 @@
                     <span>kasir</span></a>
             </li>
 
+            <li class="nav-item">
+                <a class="nav-link" href="{{ route('admin.security.index') }}">
+                    <i class="fas fa-fw fa-table"></i>
+                    <span>security</span></a>
+            </li>
+
             <!-- Nav Item - Tables -->
             <li class="nav-item">
                 <a class="nav-link" href="{{ route('admin.apoteker.index') }}">

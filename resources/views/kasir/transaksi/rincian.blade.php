@@ -26,7 +26,7 @@
 
                 @forelse ($transaksi->konsultasi->resepObat as $index => $resep)
                     <li>
-                        <span>{{ $index + 1 + count($transaksi->konsultasi->layanan) }}. {{ $resep->obat->nama_obat }}   ({{ $resep->jumlah }})</span>
+                        <span>{{ $index + 1 + count($transaksi->konsultasi->layanan) }}. {{ $resep->obat->nama_obat }} ({{ $resep->jumlah }})</span>
                         <span class="price">Rp {{ number_format($resep->jumlah * $resep->obat->harga, 0, ',', '.') }}</span>
                     </li>
                 @empty
@@ -61,11 +61,19 @@
     </div>
 </div>
 
+<script>
+    // Cek apakah session autoPrint ada dan benar
+    @if(session('autoPrint'))
+        window.addEventListener('load', function() {
+            window.print();  // Menjalankan print setelah halaman sepenuhnya dimuat
+        });
+    @endif
+</script>
+
 <style>
     .receipt {
         font-family: Arial, sans-serif;
-        width: 100%;
-        max-width: 400px;
+        width: 48mm;
         margin: auto;
         padding: 15px;
         border: 1px solid #ddd;
@@ -74,24 +82,28 @@
 
     .header {
         display: flex;
-        justify-content: space-between;
-    }
-
-    .store-info, .transaction-info {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
         font-size: 8px;
     }
 
-    .store-info h3 {
-        margin-bottom: 0;
+    .header h3 {
+        margin: 0;
+    }
+
+    .transaction-info {
+        font-size: 8px;
+        margin-top: 5px;
     }
 
     .dashed-line {
-        margin: 8px 0;
-        border-bottom: 1px dashed #ddd;
+        border-bottom: 1px dashed #000;
+        margin: 5px 0;
     }
 
     .items ul {
-        list-style-type: none;
+        list-style: none;
         padding: 0;
         font-size: 8px;
     }
@@ -99,71 +111,35 @@
     .items ul li {
         display: flex;
         justify-content: space-between;
-        padding: 3px 0;
-    }
-
-    .items ul li span {
-        display: inline-block;
-    }
-
-    .price {
-        text-align: right;
+        margin-bottom: 2px;
     }
 
     .totals p {
         font-size: 8px;
+        margin: 2px 0;
         display: flex;
         justify-content: space-between;
     }
 
     .footer {
         font-size: 8px;
-        margin-top: 15px;
-    }
-
-    .footer a {
-        text-decoration: none;
+        margin-top: 5px;
     }
 
     @media print {
-        /* Hide print button */
         button {
-            display: none !important;
+            display: none;
         }
 
-        /* Adjust receipt width and font size for print */
         .receipt {
+            border: none;
             width: 100%;
-            max-width: 300px;
-            font-size: 6px;
-            margin: 0 !important;
-            padding: 10px;
-            border: none !important; /* Remove border when printing */
-            box-sizing: border-box;
         }
 
-        /* Prevent clipping on sides */
         @page {
-            size: auto;
             margin: 0;
-        }
-
-        /* Ensure dashed line is consistent for print */
-        .dashed-line {
-            border-bottom: 1px dashed #ddd !important;
-        }
-
-        /* Ensure all sections look clean in print */
-        .header, .items, .totals, .footer {
-            font-size: 6px !important;
-        }
-
-        .items ul li {
-            padding: 2px 0 !important;
-        }
-
-        .footer {
-            margin-top: 10px !important;
+            size: 48mm;
         }
     }
 </style>
+
