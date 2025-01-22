@@ -19,7 +19,7 @@ class KonsultasiPemilikController extends Controller
 {
     $konsultasi = Konsultasi::whereHas('hewan', function ($query) {
         $query->where('id_pemilik', auth()->user()->pemilikHewan->id_pemilik);
-    })->with(['hewan', 'dokter.user'])->get();
+    })->with(['hewan', 'dokter.user'])->orderBy('created_at', 'desc')->get();
 
     return view('pemilik-hewan.konsultasi.index', compact('konsultasi'));
 }

@@ -16,9 +16,10 @@
         <thead>
             <tr>
                 <th>ID Resep</th>
+                <th>Hewan</th>
                 <th>Konsultasi</th>
+                <th>Diagnosis</th>
                 <th>Obat</th>
-                <th>Keterangan</th>
                 {{-- <th>Status</th>  <!-- Kolom Status --> --}}
                 <th>Aksi</th>
             </tr>
@@ -27,17 +28,19 @@
             @foreach ($resep_obat as $id_konsultasi => $resepGroup)
             <tr>
                 <td>{{ $loop->iteration }}</td>
+                <td>{{ $resepGroup->first()->konsultasi->hewan->nama_hewan }}</td>
                 <td>{{ $resepGroup->first()->konsultasi->keluhan }}</td>
+                <td>{{ $resepGroup->first()->konsultasi->diagnosis }}</td>
                 <td>
                     @foreach ($resepGroup as $resep)
                         <span>{{ $resep->obat->nama_obat }} ({{ $resep->jumlah }})</span><br>
                     @endforeach
                 </td>
-                <td>
+                {{-- <td>
                     @foreach ($resepGroup as $resep)
                     <span>{{ $resep->keterangan }}</span><br>
                     @endforeach
-                </td>
+                </td> --}}
                 {{-- <td>
                     <!-- Menampilkan status resep -->
                     <span class="badge 

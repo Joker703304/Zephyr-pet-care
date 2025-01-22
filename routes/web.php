@@ -178,6 +178,8 @@ Route::middleware(['auth', 'role:pemilik_hewan'])->prefix('pemilik-hewan')->name
     Route::resource('konsultasi_pemilik', KonsultasiPemilikController::class);
     Route::put('/pemilik-hewan/konsultasi/{id}/cancel', [KonsultasiPemilikController::class, 'cancel'])->name('konsultasi_pemilik.cancel');
     Route::get('/konsultasi/get-dokter-by-date', [KonsultasiPemilikController::class, 'getDokterByDate'])->name('konsultasi_pemilik.getDokterByDate');
+    Route::get('/transaksi', [KonsumenDashboardController::class, 'listTransaksi'])->name('transaksi.list');
+    Route::get('kasir/transaksi/{id}/rincian', [KonsumenDashboardController::class, 'rincian'])->name('transaksi.rincian');
 });
 
 //konsultasi
