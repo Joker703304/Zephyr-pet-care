@@ -82,7 +82,7 @@
     <script>
         const fetchAntrian = () => {
             $.ajax({
-                url: "{{ route('kasir.getAntrian') }}", // URL untuk mengambil data
+                url: "{{ route('security.getAntrian') }}", // URL untuk mengambil data
                 method: "GET",
                 success: function (data) {
                     // Update the 'Dipanggil' antrian

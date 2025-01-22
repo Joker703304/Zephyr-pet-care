@@ -41,11 +41,12 @@
                     @if (auth()->user()->role === 'pemilik_hewan')
                         <a href="{{ route('pemilik-hewan.hewan.index') }}">Lihat Hewan |</a>
                         <a href="{{ route('pemilik-hewan.konsultasi_pemilik.index') }}">| Lihat Konsultasi |</a>
-                        <a href="#">| Lihat Resep</a>
+                        <a href="{{ route ('pemilik-hewan.resep_obat.index')}}">| Lihat Resep |</a>
+                        <a href="{{ route('pemilik-hewan.transaksi.list') }}">| Lihat Transaksi</a>
                     @endif
                     @if (auth()->user()->role === 'kasir')
                         <a href="{{ route('kasir.konsultasi.index') }}">Daftar Ulang |</a>
-                        <a href="{{ route('kasir.antrian.index') }}">| Antrian |</a>
+                        {{-- <a href="{{ route('kasir.antrian.index') }}">| Antrian |</a> --}}
                         <a href="{{ route('kasir.transaksi.list') }}">| Transaksi</a>
                     @endif
 
@@ -102,6 +103,12 @@
 
                                     @if (auth()->user()->role === 'kasir')
                                         <a class="dropdown-item" href="{{ route('kasir.profile') }}">
+                                            <i class="fas fa-user-circle"></i> Profil
+                                        </a>
+                                    @endif
+
+                                    @if (auth()->user()->role === 'security')
+                                        <a class="dropdown-item" href="{{ route('security.profile') }}">
                                             <i class="fas fa-user-circle"></i> Profil
                                         </a>
                                     @endif

@@ -22,11 +22,14 @@ use App\Http\Controllers\KonsumenDashboardController;
 use App\Http\Controllers\ResepObatController;
 use App\Http\Controllers\LayananController;
 use App\Http\Controllers\DokterJadwalController;
+use App\Http\Controllers\SecurityAdminController;
+use App\Http\Controllers\SecurityController;
 use App\Models\Apoteker;
 use App\Models\DokterJadwal;
 use App\Models\Kasir;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use App\Models\ResepObat;
+use App\Models\Security;
 
 Route::get('/', function () {
     return view('welcome');
@@ -83,10 +86,12 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::post('kasir/register', [KasirAdminController::class, 'registerStore'])->name('kasir.register');
     Route::post('dokter/register', [DokterController::class, 'registerStore'])->name('dokter.register');
     Route::post('apoteker/register', [ApotekerAdminController::class, 'registerStore'])->name('apoteker.register');
+    Route::post('security/register', [SecurityAdminController::class, 'registerStore'])->name('security.register');
     Route::resource('dokter', DokterController::class);
     Route::get('/dokter/{id}/jadwal', [DokterController::class, 'jadwal'])->name('dokter.jadwal');
     Route::post('/jadwal/storeOrUpdate', [DokterController::class, 'storeOrUpdate'])->name('jadwal.storeOrUpdate');
     Route::resource('kasir', KasirAdminController::class);
+    Route::resource('security', SecurityAdminController::class);
     Route::resource('apoteker', ApotekerAdminController::class);
 });
 Route::post('/admin/dokter/find-user', [DokterController::class, 'findUserByEmail'])->name('admin.dokter.findUser');
@@ -173,6 +178,8 @@ Route::middleware(['auth', 'role:pemilik_hewan'])->prefix('pemilik-hewan')->name
     Route::resource('konsultasi_pemilik', KonsultasiPemilikController::class);
     Route::put('/pemilik-hewan/konsultasi/{id}/cancel', [KonsultasiPemilikController::class, 'cancel'])->name('konsultasi_pemilik.cancel');
     Route::get('/konsultasi/get-dokter-by-date', [KonsultasiPemilikController::class, 'getDokterByDate'])->name('konsultasi_pemilik.getDokterByDate');
+    Route::get('/transaksi', [KonsumenDashboardController::class, 'listTransaksi'])->name('transaksi.list');
+    Route::get('kasir/transaksi/{id}/rincian', [KonsumenDashboardController::class, 'rincian'])->name('transaksi.rincian');
 });
 
 //konsultasi
@@ -185,6 +192,7 @@ Route::middleware(['auth', 'role:kasir'])->prefix('kasir')->name('kasir.')->grou
     Route::resource('konsultasi', KonsultasiController::class);
     Route::patch('/antrian/{antrian}/selesai', [KasirController::class, 'selesai'])->name('antrian.selesai');
     Route::get('/antrian', [KasirController::class, 'antrian'])->name('antrian.index');
+    Route::get('/kasir/antrian/live', [KasirController::class, 'getAntrian'])->name('getAntrian');
     Route::get('/create-profile', [KasirController::class, 'createProfile'])->name('createProfile');
     Route::post('/store-profile', [KasirController::class, 'storeProfile'])->name('storeProfile');
     Route::get('/edit-profile', [KasirController::class, 'editProfile'])->name('editProfile');
@@ -194,4 +202,16 @@ Route::middleware(['auth', 'role:kasir'])->prefix('kasir')->name('kasir.')->grou
     Route::post('kasir/transaksi/{id}/bayar', [KasirController::class, 'bayar'])->name('transaksi.bayar');
 Route::get('kasir/transaksi/{id}/rincian', [KasirController::class, 'rincian'])->name('transaksi.rincian');
 });
+
+
+Route::middleware(['auth', 'role:security'])->prefix('security')->name('security.')->group(function () {
+    Route::get('/profile', [SecurityController::class, 'profile'])->name('profile');
+    Route::get('/antrian/live', [SecurityController::class, 'getAntrian'])->name('getAntrian');
+    Route::get('/create-profile', [SecurityController::class, 'createProfile'])->name('createProfile');
+    Route::post('/store-profile', [SecurityController::class, 'storeProfile'])->name('storeProfile');
+    Route::get('/edit-profile', [SecurityController::class, 'editProfile'])->name('editProfile');
+    Route::post('/update-profile', [SecurityController::class, 'updateProfile'])->name('updateProfile');
+    Route::get('/dashboard', [SecurityController::class, 'index'])->name('dashboard');
+});
+
 

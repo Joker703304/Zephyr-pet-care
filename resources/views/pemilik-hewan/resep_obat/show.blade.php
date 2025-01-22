@@ -14,6 +14,16 @@
         <input type="hidden" name="id_konsultasi" value="{{ $id_konsultasi }}">
     </div>
 
+    <div class="mb-3">
+        <label for="diagnosis" class="form-label">Diagnosis</label>
+        <select name="id_diagnosis" id="diagnosis" class="form-control" disabled>
+            <option value="{{ $id_konsultasi }}">
+                {{ $resepGroup->first()->konsultasi->diagnosis }}
+            </option>
+        </select>
+        <input type="hidden" name="id_konsultasi" value="{{ $id_konsultasi }}">
+    </div>
+
     <!-- Tabel untuk rincian resep obat -->
     <table class="table table-bordered">
         <thead>

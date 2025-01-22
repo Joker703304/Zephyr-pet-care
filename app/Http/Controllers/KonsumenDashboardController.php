@@ -6,6 +6,8 @@ use App\Models\hewan;
 use App\Models\konsultasi;
 use App\Models\pemilik_hewan;
 use App\Models\ResepObat;
+use App\Models\Transaksi;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 
 class KonsumenDashboardController extends Controller
@@ -38,6 +40,16 @@ class KonsumenDashboardController extends Controller
                 ->where('id_pemilik', $pemilikHewan->id_pemilik);
         })->where('status', 'menunggu')->count();
 
+        $transaksiCount = Transaksi::whereHas('konsultasi', function ($query) use ($pemilikHewan) {
+            $query->whereIn('id_hewan', function ($subQuery) use ($pemilikHewan) {
+                $subQuery->select('id_hewan')
+                    ->from('hewan')
+                    ->where('id_pemilik', $pemilikHewan->id_pemilik);
+            });
+        })
+        ->distinct('id_konsultasi')
+        ->count('id_konsultasi');
+
         // Count prescriptions for the logged-in user's animals
         $prescriptions = ResepObat::whereHas('konsultasi', function ($query) use ($pemilikHewan) {
             $query->whereIn('id_hewan', function ($subQuery) use ($pemilikHewan) {
@@ -50,7 +62,7 @@ class KonsumenDashboardController extends Controller
         ->count('id_konsultasi');
 
         // Return the dashboard view
-        return view('pemilik-hewan.dashboard', compact('pemilikHewan', 'animalsCount', 'consultationsCount', 'prescriptions'));
+        return view('pemilik-hewan.dashboard', compact('pemilikHewan', 'animalsCount', 'consultationsCount', 'prescriptions', 'transaksiCount'));
     }
 
     public function manageHewan()
@@ -59,5 +71,39 @@ class KonsumenDashboardController extends Controller
         $hewan = hewan::all();
         return view('pemilik-hewan.hewan', compact('hewan'));
     }
+
+    public function listTransaksi()
+{
+    // Ambil data pemilik berdasarkan email user yang login
+    $pemilik = pemilik_hewan::where('email', Auth::user()->email)->first();
+
+    // Jika pemilik tidak ditemukan
+    if (!$pemilik) {
+        return redirect()->back()->withErrors(['error' => 'Pemilik Hewan tidak ditemukan.']);
+    }
+
+    // Ambil transaksi berdasarkan id_pemilik melalui relasi ke hewan -> konsultasi -> transaksi
+    $transaksi = Transaksi::with(['konsultasi.hewan.pemilik'])
+        ->whereHas('konsultasi.hewan', function ($query) use ($pemilik) {
+            $query->where('id_pemilik', $pemilik->id_pemilik);
+        })
+        ->orderBy('created_at', 'asc')
+        ->get();
+
+    return view('pemilik-hewan.riwayat_transaksi.index', compact('transaksi'));
+}
+
+public function rincian($id)
+    {
+        $transaksi = Transaksi::with([
+            'konsultasi.layanan',
+            'konsultasi.resepObat.obat',
+        ])->findOrFail($id);
+
+        return view('kasir.transaksi.rincian', compact('transaksi'));
+    }
+
+    
+
 
 }

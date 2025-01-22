@@ -52,6 +52,19 @@
                 </div>
             </div>
         </div>
+
+        <div class="col-md-6 col-lg-4">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="card-title mb-0">Riwayat Transaksi Anda</h5>
+                </div>
+                <div class="card-body text-center">
+                    <h3 class="display-6">{{ $transaksiCount ?? 'N/A' }}</h3>
+                    <p class="text-mured">Lihat daftar Teransaksi anda yang telah terdaftar.</p>
+                    <a href="{{ route('pemilik-hewan.transaksi.list') }}" class="btn btn-primary btn-sm">Lihat Transaksi</a>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 @endsection

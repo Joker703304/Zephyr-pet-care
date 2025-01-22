@@ -21,7 +21,7 @@
             </div>
         </div>
 
-        <div class="col-md-6 mb-4">
+        {{-- <div class="col-md-6 mb-4">
             <div class="card shadow border-0">
                 <div class="card-header bg-primary text-white text-center">
                     <h5 class="mb-0">Antrian Hari ini</h5>
@@ -34,7 +34,7 @@
                     </a>
                 </div>
             </div>
-        </div>
+        </div> --}}
 
          
 
