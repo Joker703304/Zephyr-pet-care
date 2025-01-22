@@ -167,9 +167,10 @@ Route::middleware(['auth', 'role:pemilik_hewan'])->prefix('pemilik-hewan')->name
     Route::resource('hewan', HewanController::class);
 });
 
- Route::middleware(['auth', 'role:pemilik_hewan'])->prefix('pemilik-hewan')->name('pemilik-hewan.')->group(function () {
-     Route::resource('resep_obat', ResepObat::class);
- });
+Route::middleware(['auth', 'role:pemilik_hewan'])->prefix('pemilik-hewan')->group(function () {
+    Route::get('/resep-obat', [ResepObatController::class, 'index'])->name('pemilik-hewan.resep_obat.index');
+    Route::get('/resep-obat/{id_konsultasi}/rincian', [ResepObatController::class, 'show'])->name('pemilik-hewan.resep_obat.show');
+});
 
 //konsumen
 Route::middleware(['auth', 'role:pemilik_hewan'])->prefix('pemilik-hewan')->name('pemilik-hewan.')->group(function () {

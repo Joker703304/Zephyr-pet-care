@@ -10,6 +10,8 @@
         </div>
     @endif
 
+    {{-- <a href="{{ route('apoteker.resep_obat.history') }}" class="btn btn-info mb-3">Lihat History Resep Obat</a> --}}
+    <a href="{{ route('pemilik-hewan.dashboard') }}" class="btn btn-secondary mb-3">Kembali</a>
     <table class="table table-bordered">
         <thead>
             <tr>
@@ -17,22 +19,48 @@
                 <th>Konsultasi</th>
                 <th>Obat</th>
                 <th>Keterangan</th>
+                {{-- <th>Status</th>  <!-- Kolom Status --> --}}
+                <th>Aksi</th>
             </tr>
         </thead>
         <tbody>
-            @foreach ($resep_obat as $resep)
+            @foreach ($resep_obat as $id_konsultasi => $resepGroup)
             <tr>
-                <td>{{ $resep->id_resep }}</td>
-                <td>{{ $resep->konsultasi->keluhan }}</td>
+                <td>{{ $loop->iteration }}</td>
+                <td>{{ $resepGroup->first()->konsultasi->keluhan }}</td>
                 <td>
-                    @foreach ($resep->obats as $obat)
-                        <span>{{ $obat->nama_obat }} ({{ $obat->pivot->jumlah }})</span><br>
+                    @foreach ($resepGroup as $resep)
+                        <span>{{ $resep->obat->nama_obat }} ({{ $resep->jumlah }})</span><br>
                     @endforeach
                 </td>
-                <td>{{ $resep->keterangan }}</td>
+                <td>
+                    @foreach ($resepGroup as $resep)
+                    <span>{{ $resep->keterangan }}</span><br>
+                    @endforeach
+                </td>
+                {{-- <td>
+                    <!-- Menampilkan status resep -->
+                    <span class="badge 
+                        @if($resepGroup->first()->status == 'sedang disiapkan') badge-warning 
+                        @elseif($resepGroup->first()->status == 'selesai') badge-success
+                        @else badge-secondary
+                        @endif status-badge">
+                        {{ ucfirst($resepGroup->first()->status) ?? 'Sedang di Siapkan' }}
+                    </span>
+                </td> --}}
+                <td>
+                    <a href="{{ route('pemilik-hewan.resep_obat.show', $resep->id_konsultasi) }}" class="btn btn-info">Lihat Rincian</a>
+                </td>
             </tr>
             @endforeach
         </tbody>
     </table>
 </div>
+
+<!-- Tambahkan style di sini -->
+<style>
+    .status-badge {
+        color: black;  /* Set warna teks menjadi hitam */
+    }
+</style>
 @endsection

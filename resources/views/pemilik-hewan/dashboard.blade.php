@@ -14,7 +14,7 @@
                 </div>
                 <div class="card-body text-center">
                     <h3 class="display-6">{{ $animalsCount ?? 'N/A' }}</h3>
-                    <p class="text-mured">Lihat daftar hewan peliharaan yang telah terdaftar.</p>
+                    <p class="text-mured">Lihat daftar hewan peliharaan anda yang telah terdaftar.</p>
                     <a href="{{ route('pemilik-hewan.hewan.index') }}" class="btn btn-primary btn-sm">Lihat Hewan</a>
                 </div>
             </div>
@@ -28,7 +28,7 @@
                 </div>
                 <div class="card-body text-center">
                     <h3 class="display-6">{{ $consultationsCount ?? 'N/A' }}</h3>
-                    <p class="card-text">Lihat dan kelola riwayat konsultasi Anda.</p>
+                    <p class="card-text">Lihat dan ajukan konsultasi hewan Anda.</p>
                     @if($pemilikHewan)
                         <a href="{{ route('pemilik-hewan.konsultasi_pemilik.index') }}" class="btn btn-warning btn-sm">Lihat Konsultasi</a>
                     @else
@@ -46,8 +46,9 @@
                     <h5 class="card-title mb-0">Resep Obat</h5>
                 </div>
                 <div class="card-body text-center">
+                    <h3 class="display-6">{{ $prescriptions ?? 'N/A' }}</h3>
                     <p class="card-text">Lihat resep obat yang diberikan untuk hewan Anda.</p>
-                    <a href="#" class="btn btn-warning btn-sm">Lihat Resep</a>
+                    <a href="{{ route ('pemilik-hewan.resep_obat.index')}}" class="btn btn-warning btn-sm">Lihat Resep</a>
                 </div>
             </div>
         </div>
