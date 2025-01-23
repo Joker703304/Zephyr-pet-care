@@ -9,6 +9,7 @@ use App\Models\Transaksi;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 
 class kasirController extends Controller
 {
@@ -275,7 +276,19 @@ class kasirController extends Controller
         return view('kasir.transaksi.rincian', compact('transaksi'));
     }
 
-
+    public function updatePassword(Request $request, $id)
+    {
+        $request->validate([
+            'password' => 'required|min:8|confirmed',
+        ]);
+    
+        $kasir = kasir::findOrFail($id); // Pastikan model sesuai
+        $kasir->user->update([
+            'password' => Hash::make($request->password),
+        ]);
+    
+        return redirect()->back()->with('success', 'Password berhasil diperbarui.');
+    }
     /**
      * Remove the specified resource from storage.
      */

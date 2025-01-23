@@ -9,6 +9,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ApotekerController;
 use App\Http\Controllers\ApotekerAdminController;
+use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\PemilikHewanController;
 use App\Http\Controllers\ObatController;
 use App\Http\Controllers\DokterController;
@@ -53,6 +54,30 @@ Route::post('logout', [LoginController::class, 'logout'])->name('logout');
 Route::get('/email/verify', function () {
     return view('auth.verify-email');
 })->name('verification.notice');
+
+// Reset Password Bawaan Laravel
+Route::get('password/reset/{token}', [ResetPasswordController::class, 'showResetForm'])->name('password.reset');
+Route::post('password/reset', [ResetPasswordController::class, 'reset'])->name('password.update');
+
+Route::middleware('auth')->group(function () {
+    Route::patch('/pemilik-hewan/{id}/update-password', [PemilikHewanController::class, 'updatePassword'])->name('pemilik-hewan.update-password');
+});
+
+Route::middleware('auth')->group(function () {
+    Route::patch('/dokter/{id}/update-password', [DokterDashboardController::class, 'updatePassword'])->name('dokter.update-password');
+});
+
+Route::middleware('auth')->group(function () {
+    Route::patch('/apoteker/{id}/update-password', [ApotekerController::class, 'updatePassword'])->name('apoteker.update-password');
+});
+
+Route::middleware('auth')->group(function () {
+    Route::patch('/kasir/{id}/update-password', [KasirController::class, 'updatePassword'])->name('kasir.update-password');
+});
+
+Route::middleware('auth')->group(function () {
+    Route::patch('/security/{id}/update-password', [SecurityController::class, 'updatePassword'])->name('security.update-password');
+});
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/pemilik-hewan/dashboard', [PemilikHewanController::class, 'index'])
