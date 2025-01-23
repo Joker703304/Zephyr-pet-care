@@ -79,70 +79,71 @@
             let countLayanan = {{ $konsultasi->layanan->count() }};
             let countObat = {{ $konsultasi->resepObat->count() }};
             
-            // Mengupdate opsi dropdown obat untuk menghindari duplikasi dan stok habis
-            function updateObatDropdowns() {
-                const selectedObatIds = Array.from(document.querySelectorAll('select[name^="obat"]'))
-                    .map(select => select.value);
-        
-                document.querySelectorAll('select[name^="obat"]').forEach(select => {
-                    Array.from(select.options).forEach(option => {
-                        const obatId = option.value;
-                        const obat = @json($obat).find(obat => obat.id_obat == obatId); // Menemukan data obat berdasarkan ID
-                        const stock = obat ? obat.stok : 0; // Mendapatkan stok obat
-        
-                        // Mengubah label untuk opsi pertama jika belum memilih obat
-                        if (obatId === "" && option.text === "Pilih Obat (Stok Habis)") {
-                            option.text = "Pilih Obat"; // Reset ke "Pilih Obat" jika belum memilih
+           // Mengupdate opsi dropdown obat untuk menghindari duplikasi dan stok habis
+        function updateObatDropdowns() {
+            const selectedObatIds = Array.from(document.querySelectorAll('select[name^="obat"]'))
+                .map(select => select.value); // Ambil ID obat yang sudah dipilih
+
+            // Menonaktifkan opsi obat yang sudah dipilih
+            document.querySelectorAll('select[name^="obat"]').forEach(select => {
+                Array.from(select.options).forEach(option => {
+                    const obatId = option.value;
+                    const obat = @json($obat).find(obat => obat.id_obat == obatId); // Temukan data obat berdasarkan ID
+                    const stock = obat ? obat.stok : 0; // Dapatkan stok obat
+
+                    if (obatId === "" && option.text.includes("(Stok Habis)")) {
+                        option.text = "Pilih Obat"; // Reset teks opsi default
+                    }
+
+                    if (stock <= 0) {
+                        option.disabled = true;
+                        if (option.value !== "") {
+                            option.text = option.text.replace("(Stok Habis)", "") + " (Stok Habis)";
                         }
-        
-                        // Jika stok habis, disable opsi dan tambahkan keterangan
-                        if (stock <= 0) {
-                            option.disabled = true;
-                            if (option.value !== "") {
-                                option.text = option.text.replace("(Stok Habis)", "") + " (Stok Habis)";
-                            }
-                        } else {
-                            option.disabled = false; // Aktifkan opsi jika stok tersedia
-                            option.text = option.text.replace(" (Stok Habis)", ""); // Kembalikan teks normal
-                        }
-                    });
+                    } else if (selectedObatIds.includes(obatId) && obatId !== select.value) {
+                        option.disabled = true; // Disable jika obat sudah dipilih di dropdown lain
+                    } else {
+                        option.disabled = false; // Aktifkan kembali opsi jika belum dipilih
+                        option.text = option.text.replace(" (Stok Habis)", "");
+                    }
                 });
-            }
-        
-            // Hapus resep obat
-            function removeObatField(id) {
-                const field = document.getElementById(`obat-field-${id}`);
-                if (field) {
-                    field.remove();
-                    deletedObatIds.push(id); // Simpan ID resep yang dihapus
-                    document.getElementById('deleted-obat-ids').value = deletedObatIds.join(',');
-                }
-                updateObatDropdowns(); // Perbarui dropdown obat
-            }
-        
-            // Tambah resep obat baru
-            document.getElementById('add-obat').addEventListener('click', function () {
-                const container = document.getElementById('resep-obat-container');
-                const newField = `
-                    <div class="form-group mt-3 d-flex align-items-center" id="obat-field-new-${countObat}">
-                        <div class="w-100">
-                            <select name="obat[new-${countObat}][id_obat]" class="form-control obat-select" required onchange="updateObatDropdowns()">
-                                <option value="" disabled selected>Pilih Obat</option>
-                                @foreach ($obat as $item)
-                                    <option value="{{ $item->id_obat }}" {{ $item->stok <= 0 ? 'disabled' : '' }}>
-                                        {{ $item->nama_obat }} 
-                                        {{ $item->stok <= 0 ? '(Stok Habis)' : '' }}
-                                    </option>
-                                @endforeach
-                            </select>
-                            <input type="number" name="obat[new-${countObat}][jumlah]" class="form-control mt-2" placeholder="Jumlah" required>
-                        </div>
-                        <button type="button" class="btn btn-danger ml-2" onclick="removeObatField('new-${countObat}')">Hapus</button>
-                    </div>`;
-                container.insertAdjacentHTML('beforeend', newField);
-                countObat++;
-                updateObatDropdowns();
             });
+        }
+
+        // Hapus resep obat
+        function removeObatField(id) {
+            const field = document.getElementById(`obat-field-${id}`);
+            if (field) {
+                field.remove();
+                deletedObatIds.push(id); // Simpan ID resep yang dihapus
+                document.getElementById('deleted-obat-ids').value = deletedObatIds.join(',');
+            }
+            updateObatDropdowns(); // Perbarui dropdown obat
+        }
+
+        // Tambah resep obat baru
+        document.getElementById('add-obat').addEventListener('click', function () {
+            const container = document.getElementById('resep-obat-container');
+            const newField = `
+                <div class="form-group mt-3 d-flex align-items-center" id="obat-field-new-${countObat}">
+                    <div class="w-100">
+                        <select name="obat[new-${countObat}][id_obat]" class="form-control obat-select" required onchange="updateObatDropdowns()">
+                            <option value="" disabled selected>Pilih Obat</option>
+                            @foreach ($obat as $item)
+                                <option value="{{ $item->id_obat }}" {{ $item->stok <= 0 ? 'disabled' : '' }}>
+                                    {{ $item->nama_obat }} 
+                                    {{ $item->stok <= 0 ? '(Stok Habis)' : '' }}
+                                </option>
+                            @endforeach
+                        </select>
+                        <input type="number" name="obat[new-${countObat}][jumlah]" class="form-control mt-2" placeholder="Jumlah" required>
+                    </div>
+                    <button type="button" class="btn btn-danger ml-2" onclick="removeObatField('new-${countObat}')">Hapus</button>
+                </div>`;
+            container.insertAdjacentHTML('beforeend', newField);
+            countObat++;
+            updateObatDropdowns();
+        });
         
             // Mengupdate opsi dropdown layanan untuk menghindari duplikasi layanan yang sudah dipilih
 function updateLayananDropdowns() {
