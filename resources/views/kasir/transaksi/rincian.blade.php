@@ -56,7 +56,8 @@
 
         <!-- Print Button -->
         <div class="text-center mt-3">
-            <button onclick="window.print()">Print Receipt</button>
+            <button onclick="window.print()">Print Struk</button>
+            <button onclick="history.back()">Kembali</button>
         </div>
     </div>
 </div>
