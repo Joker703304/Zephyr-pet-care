@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\obat;
 use App\Models\ResepObat;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 
 class ApotekerController extends Controller
 {
@@ -139,4 +140,17 @@ class ApotekerController extends Controller
         return redirect()->route('apoteker.profile')->with('success', 'Profile Anda Berhasil Di Perbarui.');
     }
 
+    public function updatePassword(Request $request, $id)
+    {
+        $request->validate([
+            'password' => 'required|min:8|confirmed',
+        ]);
+    
+        $apoteker = apoteker::findOrFail($id); // Pastikan model sesuai
+        $apoteker->user->update([
+            'password' => Hash::make($request->password),
+        ]);
+    
+        return redirect()->back()->with('success', 'Password berhasil diperbarui.');
+    }
 }

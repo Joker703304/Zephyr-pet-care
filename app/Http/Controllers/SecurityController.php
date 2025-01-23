@@ -7,6 +7,7 @@ use App\Models\Security;
 use App\Models\Antrian;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 
 class SecurityController extends Controller
 {
@@ -14,15 +15,15 @@ class SecurityController extends Controller
     {
         // Cek role pengguna yang sedang login
         if (auth()->user()->role == 'security') {
-            // Ambil data pemilik hewan terkait dengan user yang login
+            // Ambil data security hewan terkait dengan user yang login
             $userId = auth()->user()->id;
 
-            // Ambil data pemilik hewan berdasarkan user_id
+            // Ambil data security hewan berdasarkan user_id
             $data = Security::with('user')
                 ->where('id_user', $userId)
                 ->get();
 
-            // Tampilkan view untuk pemilik hewan
+            // Tampilkan view untuk security hewan
             return view('security.profile', compact('data'));
         }
     }
@@ -138,4 +139,17 @@ class SecurityController extends Controller
         'antrianMenunggu' => $antrianMenunggu,
     ]);
 }
+public function updatePassword(Request $request, $id)
+    {
+        $request->validate([
+            'password' => 'required|min:8|confirmed',
+        ]);
+    
+        $security = Security::findOrFail($id); // Pastikan model sesuai
+        $security->user->update([
+            'password' => Hash::make($request->password),
+        ]);
+    
+        return redirect()->back()->with('success', 'Password berhasil diperbarui.');
+    }
 }

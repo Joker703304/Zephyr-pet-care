@@ -5,32 +5,32 @@ namespace App\Http\Controllers;
 use App\Models\pemilik_hewan;
 use App\Models\user;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 
 class PemilikHewanController extends Controller
 {
     public function index()
-{
-    // Cek role pengguna yang sedang login
-    if (auth()->user()->role == 'pemilik_hewan') {
-        // Ambil data pemilik hewan terkait dengan user yang login
-        $userId = auth()->user()->email;
+    {
+        // Cek role pengguna yang sedang login
+        if (auth()->user()->role == 'pemilik_hewan') {
+            // Ambil data pemilik hewan terkait dengan user yang login
+            $userId = auth()->user()->email;
 
-        // Ambil data pemilik hewan berdasarkan user_id
-        $data = pemilik_hewan::with('user')
-            ->where('email', $userId)
-            ->get();
+            // Ambil data pemilik hewan berdasarkan user_id
+            $data = pemilik_hewan::with('user')
+                ->where('email', $userId)
+                ->get();
 
-        // Tampilkan view untuk pemilik hewan
-        return view('pemilik-hewan.pemilik_hewan.index', compact('data'));
+            // Tampilkan view untuk pemilik hewan
+            return view('pemilik-hewan.pemilik_hewan.index', compact('data'));
+        }
+
+        // Jika role adalah admin, ambil semua data pemilik hewan
+        $data = pemilik_hewan::with('user')->get();
+
+        // Tampilkan view untuk admin
+        return view('admin.pemilik_hewan.index', compact('data'));
     }
-
-    // Jika role adalah admin, ambil semua data pemilik hewan
-    $data = pemilik_hewan::with('user')->get();
-
-    // Tampilkan view untuk admin
-    return view('admin.pemilik_hewan.index', compact('data'));
-}
-
 
     // Menampilkan form untuk menambah pemilik hewan baru
     public function create()
@@ -126,4 +126,18 @@ class PemilikHewanController extends Controller
 
         return redirect()->route('admin.pemilik_hewan.index')->with('success', 'Pemilik Hewan berhasil dihapus.');
     }
+    public function updatePassword(Request $request, $id)
+    {
+        $request->validate([
+            'password' => 'required|min:8|confirmed',
+        ]);
+    
+        $pemilik = pemilik_hewan::findOrFail($id); // Pastikan model sesuai
+        $pemilik->user->update([
+            'password' => Hash::make($request->password),
+        ]);
+    
+        return redirect()->back()->with('success', 'Password berhasil diperbarui.');
+    }
+    
 }
