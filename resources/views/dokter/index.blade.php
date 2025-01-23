@@ -53,11 +53,88 @@
                     <!-- Action Buttons -->
                     <a href="{{ route('dokter.editProfile', $dokter->id_dokter) }}" class="btn btn-warning btn-sm">Edit</a>
                     <a href="javascript:history.back()" class="btn btn-secondary btn-sm">Kembali</a>
+                    <!-- Button to Open Password Modal -->
+                    <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#changePasswordModal">
+                        Ubah Password
+                    </button> 
                 @endforeach
             @else
                 <p class="text-center">Data diri tidak ditemukan.</p>
             @endif
         </div>
     </div>
+     <!-- Modal Ubah Password -->
+    @if($data->isNotEmpty())
+    @foreach($data as $dokter)
+    <div class="modal fade" id="changePasswordModal" tabindex="-1" aria-labelledby="changePasswordModalLabel" aria-hidden="true">
+       <div class="modal-dialog">
+           <div class="modal-content">
+               <form method="POST" action="{{ route('dokter.update-password', $dokter->id) }}">
+                   @csrf
+                   @method('PATCH')
+                   <div class="modal-header">
+                       <h5 class="modal-title" id="modalUbahPasswordLabel">Ubah Password</h5>
+                       <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                   </div>
+                   <div class="modal-body">
+                       <div class="mb-3">
+                           <label for="password" class="form-label">Password Baru</label>
+                           <div class="input-group">
+                               <input type="password" name="password" id="password" class="form-control" required>
+                               <button type="button" class="btn btn-outline-secondary" id="togglePassword">
+                                   <i class="fa fa-eye-slash"></i>
+                               </button>
+                           </div>
+                       </div>
+                       <div class="mb-3">
+                           <label for="password_confirmation" class="form-label">Konfirmasi Password</label>
+                           <div class="input-group">
+                               <input type="password" name="password_confirmation" id="password_confirmation" class="form-control" required>
+                               <button type="button" class="btn btn-outline-secondary" id="toggleConfirmPassword">
+                                   <i class="fa fa-eye-slash"></i>
+                               </button>
+                           </div>
+                       </div>   
+                   <div class="modal-footer">
+                       <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                       <button type="submit" class="btn btn-primary">Simpan</button>
+                   </div>
+               </form>
+           </div>
+       </div>
+   </div>    
+    @endforeach
+@endif
 </div>
+<script>
+    // Toggle Password Visibility
+    document.getElementById('togglePassword').addEventListener('click', function () {
+        const passwordField = document.getElementById('password');
+        const icon = this.querySelector('i');
+        if (passwordField.type === 'password') {
+            passwordField.type = 'text';
+            icon.classList.remove('fa-eye-slash');
+            icon.classList.add('fa-eye');
+        } else {
+            passwordField.type = 'password';
+            icon.classList.remove('fa-eye');
+            icon.classList.add('fa-eye-slash');
+        }
+    });
+
+    // Toggle Confirm Password Visibility
+    document.getElementById('toggleConfirmPassword').addEventListener('click', function () {
+        const confirmPasswordField = document.getElementById('password_confirmation');
+        const icon = this.querySelector('i');
+        if (confirmPasswordField.type === 'password') {
+            confirmPasswordField.type = 'text';
+            icon.classList.remove('fa-eye-slash');
+            icon.classList.add('fa-eye');
+        } else {
+            confirmPasswordField.type = 'password';
+            icon.classList.remove('fa-eye');
+            icon.classList.add('fa-eye-slash');
+        }
+    });
+</script>
 @endsection

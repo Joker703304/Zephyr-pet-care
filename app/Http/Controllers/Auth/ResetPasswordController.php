@@ -11,42 +11,30 @@ class ResetPasswordController extends Controller
 {
     use ResetsPasswords;
 
-    /**
-     * Where to redirect users after resetting their password.
-     *
-     * @var string
-     */
-    protected $redirectTo = '/login'; // Ubah jika perlu
+    protected $redirectTo = '/dashboard'; // Ganti sesuai kebutuhan
 
-    /**
-     * Reset the user password.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\RedirectResponse
-     */
     public function reset(Request $request)
     {
-        // Validasi input
-        $this->validate($request, [
-            'email' => 'required|email',
+        // Validasi data input
+        $request->validate([
+            'email' => 'required|email|exists:users,email',
             'password' => 'required|confirmed|min:8',
+            'token' => 'required',
         ]);
 
-        // Ambil data pengguna berdasarkan email dan token
-        $credentials = $request->only('email', 'password', 'password_confirmation', 'token');
+        // Reset password
+        $response = Password::reset(
+            $request->only('email', 'password', 'password_confirmation', 'token'),
+            function ($user, $password) {
+                $user->password = bcrypt($password);
+                $user->save();
+            }
+        );
 
-        // Lakukan reset password menggunakan token
-        $response = Password::reset($credentials, function ($user) use ($request) {
-            // Set password baru untuk pengguna
-            $user->password = bcrypt($request->password);
-            $user->save();
-        });
-
-        // Tangani hasil dari proses reset
         if ($response == Password::PASSWORD_RESET) {
-            return redirect()->route('login')->with('status', 'Password telah berhasil direset, silakan login.');
-        } else {
-            return back()->withErrors(['email' => 'Gagal mereset password. Pastikan token valid.']);
+            return redirect()->route('login')->with('status', 'Password berhasil diubah!');
         }
+
+        return back()->withErrors(['email' => 'Token tidak valid atau sudah kadaluarsa.']);
     }
 }

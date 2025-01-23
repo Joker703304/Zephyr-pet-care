@@ -13,6 +13,7 @@ use Carbon\Carbon;
 use App\Models\DetailResepObat;
 use App\Models\DokterJadwal;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 
 class DokterDashboardController extends Controller
 {
@@ -281,5 +282,17 @@ public function panggil(Request $request, Antrian $antrian)
         return redirect()->route('dokter.dashboard')->with('success', 'Profile Anda Berhasil Di Perbarui.');
     }
 
+    public function updatePassword(Request $request, $id)
+    {
+        $request->validate([
+            'password' => 'required|min:8|confirmed',
+        ]);
     
+        $dokter = Dokter::findOrFail($id); // Pastikan model sesuai
+        $dokter->user->update([
+            'password' => Hash::make($request->password),
+        ]);
+    
+        return redirect()->back()->with('success', 'Password berhasil diperbarui.');
+    }
 }
