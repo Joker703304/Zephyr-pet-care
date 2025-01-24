@@ -33,6 +33,7 @@
         <div class="form-group">
             <label for="jenkel">Jenis Kelamin</label>
             <select name="jenkel" id="jenkel" class="form-control" required>
+                <option value="" disabled selected>Pilih Jenis Kelamin</option> <!-- Opsi default -->
                 <option value="jantan" {{ $hewan->jenkel == 'jantan' ? 'selected' : '' }}>Jantan</option>
                 <option value="betina" {{ $hewan->jenkel == 'betina' ? 'selected' : '' }}>Betina</option>
             </select>

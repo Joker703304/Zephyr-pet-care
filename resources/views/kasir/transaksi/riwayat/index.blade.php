@@ -4,7 +4,8 @@
 <div class="container py-4">
     <h1 class="text-center mb-4">Daftar Transaksi</h1>
 
-    <a href="{{ route('kasir.dashboard') }}" class="btn btn-secondary mb-3">Kembali</a>
+    <a href="{{ route('kasir.transaksi.list') }}" class="btn btn-secondary mb-3">Kembali</a>
+    
 
 
     <table class="table table-bordered">

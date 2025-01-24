@@ -38,7 +38,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="2" class="text-center">BELUM ADA ANTRIAN MENUNGGU.</td>
+                                <td colspan="2" class="text-center">BELUM ADA ANTRIAN UNTUK SAAT INI.</td>
                             </tr>
                         @endforelse
                     </tbody>
@@ -49,8 +49,8 @@
 
     <style>
         .kotak-antrian {
-            width: 150px;
-            height: 150px;
+            width: 230px;
+            height: 230px;
             background-color: #f8f9fa;
             border: 3px solid #007bff;
             font-weight: bold;
@@ -64,7 +64,7 @@
         }
     
         .kotak-antrian h1 {
-            font-size: 2rem;
+            font-size: 2.5rem;
             color: #007bff;
             font-weight: bold;
             margin: 0;
@@ -73,7 +73,7 @@
         }
     
         .kotak-antrian p {
-            font-size: 1.5rem;
+            font-size: 2rem;
             color: #333;
             margin: 0;
             white-space: nowrap;
@@ -136,7 +136,7 @@
                             menungguTableBody.append(row);
                         });
                     } else {
-                        menungguTableBody.append('<tr><td colspan="2" class="text-center">BELUM ADA ANTRIAN MENUNGGU.</td></tr>');
+                        menungguTableBody.append('<tr><td colspan="2" class="text-center">BELUM ADA ANTRIAN UNTUK SAAT INI.</td></tr>');
                     }
                 },
                 error: function () {

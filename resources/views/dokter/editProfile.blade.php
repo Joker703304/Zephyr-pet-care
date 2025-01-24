@@ -22,7 +22,7 @@
         </div>
     @endif
 
-    <form action="{{ route('apoteker.updateProfile') }}" method="POST">
+    <form action="{{ route('dokter.updateProfile') }}" method="POST">
         @csrf
 
         <div class="form-group">

@@ -5,6 +5,7 @@
     <h1 class="text-center mb-4">Daftar Transaksi</h1>
 
     <a href="{{ route('kasir.dashboard') }}" class="btn btn-secondary mb-3">Kembali</a>
+    <a href="{{ route('kasir.transaksi.riwayat') }}" class="btn btn-success mb-3">Riwayat Transaksi</a>
 
 
     <table class="table table-bordered">

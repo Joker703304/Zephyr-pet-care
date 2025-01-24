@@ -4,6 +4,12 @@
 <div class="container">
     <h1>Doctor Dashboard</h1>
 
+    {{-- <button class="btn btn-secondary mb-4" href="{{ route('admin.dashboard') }}">Kembali</button> --}}
+    <a href="{{ route('admin.dokter.index') }}" class="btn btn-success btn-sm">
+        Kembali
+    </a>
+
+
     <!-- Full Calendar with new ID -->
     <div id="doctor-calendar"></div>  <!-- Changed the ID to 'doctor-calendar' -->
 

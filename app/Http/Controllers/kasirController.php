@@ -219,7 +219,7 @@ class kasirController extends Controller
     public function listTransaksi()
     {
         $today = Carbon::today();
-        $transaksi = Transaksi::orderBy('created_at', 'asc')->get();
+        $transaksi = Transaksi::orderBy('created_at', 'asc')->where('status_pembayaran', 'Belum Dibayar')->get();
         
         // $konsultasi = Konsultasi::with(['hewan', 'dokter', 'resepObat'])->whereDate('created_at', $today)
         // ->where('dokter_id', $dokter->id) // Filter by dokter ID
@@ -228,6 +228,20 @@ class kasirController extends Controller
         // ->get();
 
         return view('kasir.transaksi.index', compact('transaksi'));
+    }
+
+    public function riwayatTransaksi()
+    {
+        $today = Carbon::today();
+        $transaksi = Transaksi::orderBy('created_at', 'asc')->where('status_pembayaran', 'Sudah Dibayar')->get();
+        
+        // $konsultasi = Konsultasi::with(['hewan', 'dokter', 'resepObat'])->whereDate('created_at', $today)
+        // ->where('dokter_id', $dokter->id) // Filter by dokter ID
+        // ->whereDate('tanggal_konsultasi', $today) // Filter by today's date
+        // ->where('status', 'Diterima') // Filter by status 'Diterima'
+        // ->get();
+
+        return view('kasir.transaksi.riwayat.index', compact('transaksi'));
     }
 
     public function bayar(Request $request, $id)
