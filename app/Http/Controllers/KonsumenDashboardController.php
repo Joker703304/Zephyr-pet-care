@@ -27,7 +27,7 @@ class KonsumenDashboardController extends Controller
         $pemilikHewan = pemilik_hewan::where('email', $user->email)->first();
 
         if (!$pemilikHewan) {
-            return redirect()->route('pemilik-hewan.pemilik_hewan.create')->with('warning', 'Silakan lengkapi data pemilik hewan terlebih dahulu.');
+            return redirect()->route('pemilik-hewan.pemilik_hewan.create')->with('warning', 'Mohon Isi data diri terlebih dahulu.');
         }
 
         // Count animals owned by the logged-in user

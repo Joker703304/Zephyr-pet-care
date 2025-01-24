@@ -204,7 +204,7 @@ Route::middleware(['auth', 'role:pemilik_hewan'])->prefix('pemilik-hewan')->name
     Route::put('/pemilik-hewan/konsultasi/{id}/cancel', [KonsultasiPemilikController::class, 'cancel'])->name('konsultasi_pemilik.cancel');
     Route::get('/konsultasi/get-dokter-by-date', [KonsultasiPemilikController::class, 'getDokterByDate'])->name('konsultasi_pemilik.getDokterByDate');
     Route::get('/transaksi', [KonsumenDashboardController::class, 'listTransaksi'])->name('transaksi.list');
-    Route::get('kasir/transaksi/{id}/rincian', [KonsumenDashboardController::class, 'rincian'])->name('transaksi.rincian');
+    Route::get('/transaksi/{id}/rincian', [KonsumenDashboardController::class, 'rincian'])->name('transaksi.rincian');
 });
 
 //konsultasi
@@ -224,6 +224,7 @@ Route::middleware(['auth', 'role:kasir'])->prefix('kasir')->name('kasir.')->grou
     Route::post('/update-profile', [KasirController::class, 'updateProfile'])->name('updateProfile');
     Route::get('/dashboard', [KasirController::class, 'index'])->name('dashboard');
     Route::get('/transaksi', [KasirController::class, 'listTransaksi'])->name('transaksi.list');
+    Route::get('/transaksi/riwayat', [KasirController::class, 'riwayatTransaksi'])->name('transaksi.riwayat');
     Route::post('kasir/transaksi/{id}/bayar', [KasirController::class, 'bayar'])->name('transaksi.bayar');
 Route::get('kasir/transaksi/{id}/rincian', [KasirController::class, 'rincian'])->name('transaksi.rincian');
 });

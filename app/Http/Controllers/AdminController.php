@@ -7,6 +7,7 @@ use App\Models\hewan;
 use App\Models\konsultasi;
 use App\Models\obat;
 use App\Models\pemilik_hewan;
+use App\Models\Transaksi;
 use App\Models\User;
 use Illuminate\Http\Request;
 
@@ -26,6 +27,7 @@ class AdminController extends Controller
     public function index()
     {
         $today = now()->toDateString();
+        $currentMonth = now()->format('Y-m');
 
         // Cari antrian berikutnya
         $nextQueue = Konsultasi::whereDate('tanggal_konsultasi', $today)
@@ -40,9 +42,12 @@ class AdminController extends Controller
         $doctorsCount = Dokter::count();
         $animalsCount = hewan::count();
         $consultationsCount = konsultasi::count();
+        $totalThisMonth = Transaksi::where('status_pembayaran', 'dibayar')
+        ->where('created_at', 'like', "$currentMonth%")
+        ->sum('total_harga');
 
 
-        return view('admin.dashboard', compact('usersCount', 'ownersCount', 'medicationsCount', 'doctorsCount', 'animalsCount', 'consultationsCount', 'nextQueue'));
+        return view('admin.dashboard', compact('usersCount', 'ownersCount', 'medicationsCount', 'doctorsCount', 'animalsCount', 'consultationsCount', 'nextQueue', 'totalThisMonth'));
     }
 
     // Menampilkan pengguna yang belum diverifikasi

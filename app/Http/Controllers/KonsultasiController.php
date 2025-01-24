@@ -17,6 +17,7 @@ class KonsultasiController extends Controller
         $today = now()->toDateString();  // Dapatkan tanggal hari ini
     $konsultasi = Konsultasi::with(['dokter', 'hewan'])
         ->whereDate('tanggal_konsultasi', $today)  // Filter hanya untuk tanggal konsultasi hari ini
+        ->where('status', 'Menunggu')  // Filter hanya untuk status "Menunggu"
         ->get();
 
     if (auth()->user()->role == 'pemilik_hewan') {

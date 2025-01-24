@@ -4,8 +4,8 @@
 <div class="container py-4">
     <h1 class="text-center mb-4">Daftar Transaksi</h1>
 
-    <a href="{{ route('kasir.dashboard') }}" class="btn btn-secondary mb-3">Kembali</a>
-    <a href="{{ route('kasir.transaksi.riwayat') }}" class="btn btn-success mb-3">Riwayat Transaksi</a>
+    <a href="{{ route('kasir.transaksi.list') }}" class="btn btn-secondary mb-3">Kembali</a>
+    
 
 
     <table class="table table-bordered">
@@ -30,9 +30,7 @@
                     <td>
                         @if ($item->status_pembayaran === 'Belum Dibayar')
                             <!-- Tombol Bayar -->
-                            <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#bayarModal{{ $item->id_transaksi }}">
-                                Bayar
-                            </button>
+                            
 
                             <!-- Modal Bayar -->
                             <div class="modal fade" id="bayarModal{{ $item->id_transaksi }}" tabindex="-1" aria-labelledby="bayarModalLabel{{ $item->id_transaksi }}" aria-hidden="true">

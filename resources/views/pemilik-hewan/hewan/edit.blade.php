@@ -33,6 +33,7 @@
         <div class="form-group">
             <label for="jenkel">Jenis Kelamin</label>
             <select name="jenkel" id="jenkel" class="form-control" required>
+                <option value="" disabled selected>Pilih Jenis Kelamin</option> <!-- Opsi default -->
                 <option value="jantan" {{ $hewan->jenkel == 'jantan' ? 'selected' : '' }}>Jantan</option>
                 <option value="betina" {{ $hewan->jenkel == 'betina' ? 'selected' : '' }}>Betina</option>
             </select>
@@ -40,12 +41,12 @@
 
         <div class="form-group">
             <label for="umur">Umur (Bulan)</label>
-            <input type="number" name="umur" id="umur" class="form-control" value="{{ old('umur', $hewan->umur) }}">
+            <input type="number" name="umur" id="umur" class="form-control" value="{{ old('umur', $hewan->umur) }}" min="0">
         </div>
 
         <div class="form-group">
             <label for="berat">Berat (Gram)</label>
-            <input type="number" step="0.01" name="berat" id="berat" class="form-control" value="{{ old('berat', $hewan->berat) }}">
+            <input type="number" step="0.01" name="berat" id="berat" class="form-control" value="{{ old('berat', $hewan->berat) }}" min="0">
         </div>
 
         <div class="form-group">
@@ -60,4 +61,29 @@
         <a href="{{ route('pemilik-hewan.hewan.index') }}" class="btn btn-secondary mt-3">Kembali</a>
     </form>
 </div>
+<script>
+    // Fungsi untuk memblokir input karakter negatif
+    function blockNegativeInput(event) {
+        if (event.key === '-' || event.key === 'e' || event.key === 'E') {
+            event.preventDefault(); // Blokir karakter yang tidak diizinkan
+        }
+    }
+
+    // Terapkan fungsi pada input Umur dan Berat
+    document.getElementById('umur').addEventListener('keydown', blockNegativeInput);
+    document.getElementById('berat').addEventListener('keydown', blockNegativeInput);
+
+    // Pastikan nilai tetap positif meskipun ada input paste
+    document.getElementById('umur').addEventListener('input', function (e) {
+        if (e.target.value < 0) {
+            e.target.value = e.target.value.replace(/[^0-9]/g, '');
+        }
+    });
+    document.getElementById('berat').addEventListener('input', function (e) {
+        if (e.target.value < 0) {
+            e.target.value = e.target.value.replace(/[^0-9.]/g, '');
+        }
+    });
+</script>
+
 @endsection
