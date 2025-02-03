@@ -15,10 +15,10 @@ class ResepObatController extends Controller
     {
         // Get the logged-in user
         $user = auth()->user();
-
-        // Check if the logged-in user is 'pemilik_hewan' or 'apoteker'
+    
+        // Check if the logged-in user is 'pemilik_hewan'
         if ($user->role == 'pemilik_hewan') {
-            // Ambil semua resep obat milik pemilik hewan, tanpa memfilter status
+            // Ambil semua resep obat yang terkait dengan konsultasi hewan yang dimiliki oleh pemilik hewan
             $resep_obat = ResepObat::whereHas('konsultasi', function ($query) use ($user) {
                 // Ambil konsultasi berdasarkan hewan yang dimiliki oleh pemilik hewan
                 $query->whereIn('id_hewan', function ($subQuery) use ($user) {
@@ -28,28 +28,31 @@ class ResepObatController extends Controller
                 });
             })
             ->with('konsultasi', 'obat') // Sertakan relasi konsultasi dan obat
+            ->orderByDesc('created_at') // Urutkan berdasarkan waktu terbaru
             ->get()
             ->groupBy('id_konsultasi'); // Kelompokkan berdasarkan id_konsultasi
-
+    
             // Tampilkan halaman untuk pemilik_hewan
             return view('pemilik-hewan.resep_obat.index', compact('resep_obat'));
         }
-
-        // Untuk apoteker: Ambil resep dengan status selain 'siap'
+    
+        // Untuk apoteker: Ambil resep dengan status selain 'siap' dan urutkan berdasarkan tanggal terbaru
         $resep_obat = ResepObat::where('status', '!=', 'siap')
                                 ->with('konsultasi', 'obat')
+                                ->orderByDesc('created_at') // Urutkan berdasarkan waktu terbaru
                                 ->get()
-                                ->groupBy('id_konsultasi'); // Kelompokkan berdasarkan konsultasi
-
+                                ->groupBy('id_konsultasi'); // Kelompokkan berdasarkan id_konsultasi
+    
         // Tampilkan halaman untuk apoteker
         return view('apoteker.resep_obat.index', compact('resep_obat'));
-    }
+    }    
 
     public function history()
     {
         // Ambil semua resep yang statusnya sudah siap
         $resep_obat = ResepObat::where('status', 'siap') // Hanya yang sudah siap
                                 ->with('konsultasi', 'obat')
+                                ->orderByDesc('created_at')
                                 ->get()
                                 ->groupBy('id_konsultasi'); // Kelompokkan berdasarkan konsultasi
         
@@ -108,9 +111,11 @@ class ResepObatController extends Controller
         'id_obat.*' => 'exists:obat,id_obat',
         'jumlah' => 'required|array',
         'jumlah.*' => 'required|integer|min:1',
-        'keterangan' => 'nullable|array', // Keterangan harus berupa array
-        'keterangan.*' => 'nullable|string|max:255', // Validasi tiap keterangan
+        'keterangan' => 'required|array', // Keterangan wajib diisi sebagai array
+        'keterangan.*' => 'required|string|max:255', // Validasi tiap keterangan harus wajib diisi
         'status' => 'nullable|string|in:sedang disiapkan,siap',
+    ], [
+        'keterangan.*.required' => 'Keterangan pada setiap obat wajib diisi.', // Pesan kesalahan khusus
     ]);
 
     // Hapus semua resep lama terkait konsultasi ini
@@ -118,10 +123,9 @@ class ResepObatController extends Controller
 
     $totalHargaObat = 0;
 
-    // Menyimpan resep dan keterangan per obat
     foreach ($request->id_obat as $index => $id_obat) {
         $jumlah = $request->jumlah[$index];
-        $keterangan = $request->keterangan[$index]; // Ambil keterangan untuk setiap obat
+        $keterangan = $request->keterangan[$index];
 
         // Ambil data obat dan validasi stok
         $obat = Obat::find($id_obat);
@@ -143,7 +147,7 @@ class ResepObatController extends Controller
             'id_konsultasi' => $id_konsultasi,
             'id_obat' => $id_obat,
             'jumlah' => $jumlah,
-            'keterangan' => $keterangan, // Simpan keterangan per obat
+            'keterangan' => $keterangan,
             'status' => $request->status ?? 'sedang disiapkan',
         ]);
     }
