@@ -8,7 +8,7 @@
     <table class="table table-bordered">
         <thead>
             <tr>
-                <th>ID Resep</th>
+                {{-- <th>ID Resep</th> --}}
                 <th>Konsultasi</th>
                 <th>Obat</th>
                 <th>Keterangan</th>
@@ -18,7 +18,7 @@
         <tbody>
             @foreach ($resep_obat as $id_konsultasi => $resepGroup)
             <tr>
-                <td>{{ $loop->iteration }}</td>
+                {{-- <td>{{ $loop->iteration }}</td> --}}
                 <td>{{ $resepGroup->first()->konsultasi->keluhan }}</td>
                 <td>
                     @foreach ($resepGroup as $resep)
