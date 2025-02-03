@@ -36,8 +36,16 @@
                 </div>
                 <div class="col-md-3">
                     <label for="keterangan_{{ $index }}" class="form-label">Keterangan</label>
-                    <input type="text" name="keterangan[]" id="keterangan_{{ $index }}" class="form-control" value="{{ $resep->keterangan }}">
-                </div>
+                    <input 
+                        type="text" 
+                        name="keterangan[]" 
+                        id="keterangan_{{ $index }}" 
+                        class="form-control @error('keterangan.' . $index) is-invalid @enderror" 
+                        value="{{ old('keterangan.' . $index, $resep->keterangan) }}">
+                    @error('keterangan.' . $index)
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>                
                 {{-- <div class="col-md-3">
                     <label for="hapus_{{ $index }}" class="form-label d-block">Aksi</label>
                     <button type="button" class="btn btn-danger remove-obat">Hapus</button>
