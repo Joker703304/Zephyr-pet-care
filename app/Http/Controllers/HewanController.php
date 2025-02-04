@@ -13,40 +13,87 @@ class HewanController extends Controller
     {
         // Mendapatkan user yang sedang login
         $user = auth()->user();
-
+    
         // Jika role user adalah pemilik_hewan, filter berdasarkan nama pemilik
         if ($user->role == 'pemilik_hewan') {
-            // Mengambil data hewan yang dimiliki oleh pemilik yang sedang login berdasarkan nama pemilik
+            // Mengambil data hewan yang dimiliki oleh pemilik yang sedang login berdasarkan email
             $hewan = Hewan::with('pemilik')
                         ->whereHas('pemilik', function ($query) use ($user) {
-                            $query->where('email', $user->email); // Menyaring berdasarkan nama pemilik yang login
+                            $query->where('email', $user->email); // Menyaring berdasarkan email pemilik yang login
                         })
+                        // Menyaring hewan yang lengkap (nama_hewan, jenis, jenkel, umur, berat, dan foto tidak boleh null)
+                        ->whereNotNull('nama_hewan')
+                        ->whereNotNull('jenis')
+                        ->whereNotNull('jenkel')
+                        ->whereNotNull('umur')
+                        ->whereNotNull('berat')
+                        ->whereNotNull('foto')
                         ->get();
         } else {
-            // Jika role user bukan pemilik_hewan (misalnya admin), tampilkan semua hewan
-            $hewan = Hewan::with('pemilik')->get();
+            // Jika role user bukan pemilik_hewan (misalnya admin), tampilkan semua hewan yang lengkap
+            $hewan = Hewan::with('pemilik')
+                        ->whereNotNull('nama_hewan')
+                        ->whereNotNull('jenis')
+                        ->whereNotNull('jenkel')
+                        ->whereNotNull('umur')
+                        ->whereNotNull('berat')
+                        ->whereNotNull('foto')
+                        ->get();
         }
-
+    
         // Menampilkan view sesuai dengan role user
         if ($user->role == 'pemilik_hewan') {
             return view('pemilik-hewan.hewan.index', compact('hewan'));
         }
-        
+    
         return view('admin.hewan.index', compact('hewan'));
+    }
+    
+    // Menampilkan form tambah jenis hewan
+    public function createJenis()
+    {
+        return view('admin.hewan.create-jenis');
+    }
+
+    // Menyimpan jenis hewan baru
+    public function storeJenis(Request $request)
+    {
+        // Validasi input
+        $request->validate([
+            'jenis' => 'required|string|max:255',
+        ]);
+
+        // Menyimpan jenis hewan ke dalam database
+        Hewan::create([
+            'jenis' => $request->jenis,
+            'nama_hewan' => 'Nama Hewan Default',  // Nama hewan default
+        ]);
+
+        // Redirect ke halaman daftar jenis hewan setelah berhasil menyimpan
+        return redirect()->route('admin.hewan.show-jenis')->with('success', 'Jenis Hewan berhasil ditambahkan!');
+    }
+
+    // Menampilkan daftar jenis hewan yang unik
+    public function showJenis()
+    {
+        $jenisHewan = Hewan::select('jenis')->distinct()->get();
+        return view('admin.hewan.show-jenis', compact('jenisHewan'));
     }
 
     public function create()
     {
         $pemilik = pemilik_hewan::all();
+        $jenisHewan = Hewan::select('jenis')->distinct()->get(); // Ambil semua jenis hewan yang ada
 
         if (auth()->user()->role === 'pemilik_hewan') {
             $pemilikId = auth()->user()->pemilikhewan->id_pemilik;
 
-            // Pass pemilikId to the view
-            return view('pemilik-hewan.hewan.create', compact('pemilikId'));
+            // Pass pemilikId dan jenisHewan ke view untuk pemilik_hewan
+            return view('pemilik-hewan.hewan.create', compact('pemilikId', 'jenisHewan'));
         }
 
-        return view('admin.hewan.create', compact('pemilik'));
+        // Pass pemilik dan jenisHewan ke view untuk admin
+        return view('admin.hewan.create', compact('pemilik', 'jenisHewan'));
     }
 
     public function store(Request $request)
@@ -73,17 +120,12 @@ class HewanController extends Controller
         return redirect()->route($redirectRoute)->with('success', 'Hewan berhasil ditambahkan.');
     }
 
-    public function edit(Hewan $hewan)
+    public function edit($id)
     {
-        $pemilik = pemilik_hewan::all();
-        if (!in_array(auth()->user()->role, ['admin', 'pemilik_hewan'])) {
-            abort(403, 'Unauthorized action.');
-        }
+        $hewan = Hewan::findOrFail($id);
+        $jenisHewan = Hewan::select('jenis')->distinct()->get(); // Ambil semua jenis hewan yang ada
 
-        if (auth()->user()->role === 'pemilik_hewan') {
-            return view('pemilik-hewan.hewan.edit', compact('hewan', 'pemilik'));
-        }
-        return view('admin.hewan.edit', compact('hewan', 'pemilik'));
+        return view('pemilik-hewan.hewan.edit', compact('hewan', 'jenisHewan'));
     }
 
     public function update(Request $request, Hewan $hewan)

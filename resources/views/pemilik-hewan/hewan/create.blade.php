@@ -17,8 +17,15 @@
 
         <div class="form-group">
             <label for="jenis">Jenis Hewan</label>
-            <input type="text" name="jenis" id="jenis" class="form-control" value="{{ old('jenis') }}" required>
-        </div>
+            <select name="jenis" id="jenis" class="form-control" required>
+                <option value="">Pilih Jenis Hewan</option>
+                @foreach ($jenisHewan as $jenis)
+                    <option value="{{ $jenis->jenis }}" {{ old('jenis') == $jenis->jenis ? 'selected' : '' }}>
+                        {{ $jenis->jenis }}
+                    </option>
+                @endforeach
+            </select>
+        </div>        
 
         <div class="form-group">
             <label for="jenkel">Jenis Kelamin</label>
