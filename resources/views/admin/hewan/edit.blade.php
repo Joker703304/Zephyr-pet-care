@@ -27,7 +27,14 @@
 
         <div class="form-group">
             <label for="jenis">Jenis Hewan</label>
-            <input type="text" name="jenis" id="jenis" class="form-control" value="{{ old('jenis', $hewan->jenis) }}" required>
+            <select name="jenis" id="jenis" class="form-control" required>
+                <option value="">Pilih Jenis Hewan</option>
+                @foreach ($jenisHewan as $jenis)
+                    <option value="{{ $jenis->jenis }}" {{ old('jenis', $hewan->jenis) == $jenis->jenis ? 'selected' : '' }}>
+                        {{ $jenis->jenis }}
+                    </option>
+                @endforeach
+            </select>
         </div>
 
         <div class="form-group">
@@ -57,6 +64,7 @@
         </div>
 
         <button type="submit" class="btn btn-warning mt-3">Update</button>
+        <a href="{{ route('admin.hewan.index') }}" class="btn btn-secondary mt-3">Kembali</a>
     </form>
 </div>
 @endsection

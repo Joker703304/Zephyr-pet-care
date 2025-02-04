@@ -128,7 +128,15 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
 
 //hewan
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
-    Route::resource('hewan', HewanController::class);
+    // Definisikan route resource untuk hewan
+    Route::resource('hewan', HewanController::class)->except(['show']);
+
+    // Route untuk menampilkan daftar jenis hewan
+    Route::get('hewan/show-jenis', [HewanController::class, 'showJenis'])->name('hewan.show-jenis');
+
+    // Route untuk menambah jenis hewan
+    Route::get('hewan/create-jenis', [HewanController::class, 'createJenis'])->name('hewan.create-jenis');
+    Route::post('hewan/store-jenis', [HewanController::class, 'storeJenis'])->name('hewan.store-jenis');
 });
 
 //konsultasi
