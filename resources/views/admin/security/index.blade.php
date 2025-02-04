@@ -27,7 +27,7 @@
                     <td>{{ $security->user->name }}</td>
                     <td>{{ $security->user->email }}</td>
                     <td>{{ $security->no_telepon }}</td>
-                    <td>{{ ucfirst($securityr->jenkel) }}</td>
+                    <td>{{ ucfirst($security->jenkel) }}</td>
                     <td>{{ $security->alamat }}</td>
                     <td>
                         {{-- <a href="{{ route('admin.dokter.edit', $dokter->id) }}" class="btn btn-warning btn-sm">Edit</a> --}}
