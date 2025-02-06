@@ -16,16 +16,14 @@
         </div>
 
         <div class="form-group">
-            <label for="jenis">Jenis Hewan</label>
-            <select name="jenis" id="jenis" class="form-control" required>
+            <label for="jenis_id">Jenis Hewan</label>
+            <select name="jenis_id" id="jenis_id" class="form-control" required>
                 <option value="">Pilih Jenis Hewan</option>
-                @foreach ($jenisHewan as $jenis)
-                    <option value="{{ $jenis->jenis }}" {{ old('jenis') == $jenis->jenis ? 'selected' : '' }}>
-                        {{ $jenis->jenis }}
-                    </option>
+                @foreach($jenisHewan as $jenis)
+                    <option value="{{ $jenis->id }}">{{ $jenis->nama_jenis }}</option> <!-- Menggunakan nama_jenis -->
                 @endforeach
             </select>
-        </div>        
+        </div>                    
 
         <div class="form-group">
             <label for="jenkel">Jenis Kelamin</label>

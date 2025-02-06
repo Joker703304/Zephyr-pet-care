@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id('id_hewan');
             $table->unsignedBigInteger('id_pemilik'); // Tipe data harus cocok dengan tabel pemilik_hewan
             $table->string('nama_hewan');
-            $table->string('jenis');
+            $table->foreignId('jenis_id')->constrained('jenis_hewan')->onDelete('cascade');
             $table->enum('jenkel', ['jantan', 'betina']);
             $table->integer('umur')->nullable();
             $table->decimal('berat', 8, 2)->nullable();
