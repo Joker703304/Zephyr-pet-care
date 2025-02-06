@@ -3,23 +3,29 @@
 @section('content')
 <div class="container">
     <h1>Tambah Jenis Hewan</h1>
-    
     <a href="{{ route('admin.hewan.show-jenis') }}" class="btn btn-secondary mb-3">Kembali ke Daftar Jenis Hewan</a>
 
-    <!-- Menampilkan pesan sukses jika ada -->
     @if(session('success'))
         <div class="alert alert-success">{{ session('success') }}</div>
     @endif
 
-    <!-- Form untuk menambah jenis hewan -->
+    @if ($errors->any())
+        <div class="alert alert-danger">
+            <ul>
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+
     <form action="{{ route('admin.hewan.store-jenis') }}" method="POST">
         @csrf
         <div class="form-group">
-            <label for="jenis">Jenis Hewan</label>
-            <input type="text" name="jenis" id="jenis" class="form-control" value="{{ old('jenis') }}" required>
+            <label for="nama_jenis">Nama Jenis Hewan</label>
+            <input type="text" name="nama_jenis" id="nama_jenis" class="form-control" required>
         </div>
-        
-        <button type="submit" class="btn btn-primary">Simpan Jenis Hewan</button>
+        <button type="submit" class="btn btn-primary mt-3">Simpan</button>
     </form>
 </div>
 @endsection
