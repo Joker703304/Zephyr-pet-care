@@ -23,7 +23,7 @@
             @foreach($jenisHewan as $index => $jenis)
             <tr>
                 <td>{{ $index + 1 }}</td>
-                <td>{{ $jenis->jenis }}</td>
+                <td>{{ $jenis->nama_jenis }}</td>
             </tr>
             @endforeach
         </tbody>

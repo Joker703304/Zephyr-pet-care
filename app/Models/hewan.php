@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class hewan extends Model
+class Hewan extends Model
 {
     use HasFactory;
 
@@ -16,7 +16,7 @@ class hewan extends Model
     protected $fillable = [
         'id_pemilik',
         'nama_hewan',
-        'jenis',
+        'jenis_id', // Ganti 'jenis' dengan 'jenis_id' karena ini adalah foreign key
         'jenkel',
         'umur',
         'berat',
@@ -31,5 +31,11 @@ class hewan extends Model
     public function konsultasi()
     {
         return $this->hasMany(Konsultasi::class, 'id_hewan');
+    }
+
+    // Mengubah nama method relasi menjadi 'jenis' agar lebih konsisten dengan konvensi
+    public function jenis()
+    {
+        return $this->belongsTo(JenisHewan::class, 'jenis_id');
     }
 }

@@ -26,7 +26,7 @@
             <tr>
                 <td>{{ $item->pemilik->nama ?? '-' }}</td>
                 <td>{{ $item->nama_hewan }}</td>
-                <td>{{ $item->jenis }}</td>
+                <td>{{ $item->jenis->nama_jenis ?? 'Jenis tidak ditemukan' }}</td>
                 <td>{{ $item->jenkel }}</td>
                 <td>{{ $item->umur }}</td>
                 <td>{{ $item->berat }}</td>

@@ -27,10 +27,9 @@
         <tbody>
             @foreach($hewan as $item)
             <tr>
-                {{-- <td>{{ $loop->iteration }}</td> --}}
                 <td>{{ $item->pemilik->nama ?? '-' }}</td>
                 <td>{{ $item->nama_hewan }}</td>
-                <td>{{ $item->jenis }}</td>
+                <td>{{ $item->jenis->nama_jenis ?? 'Jenis tidak ditemukan' }}</td>
                 <td>{{ $item->jenkel }}</td>
                 <td>{{ $item->umur }}</td>
                 <td>{{ $item->berat }}</td>
@@ -43,15 +42,10 @@
                 </td>
                 <td>
                     <a href="{{ route('pemilik-hewan.hewan.edit', $item->id_hewan) }}" class="btn btn-warning btn-sm">Edit</a>
-                    {{-- <form action="{{ route('pemilik-hewan.hewan.destroy', $item->id_hewan) }}" method="POST" style="display:inline;">
-                        @csrf
-                        @method('DELETE')
-                        <button class="btn btn-danger btn-sm" onclick="return confirm('Yakin hapus?')">Hapus</button>
-                    </form> --}}
                 </td>
             </tr>
             @endforeach
-        </tbody>
+        </tbody>        
     </table>
 </div>
 @endsection
