@@ -16,6 +16,8 @@
         <thead>
             <tr>
                 <th>ID Resep</th>
+                <th>Nama Pemilik</th>
+                <th>Nama Hewan</th>
                 <th>Konsultasi</th>
                 <th>Obat</th>
                 <th>Keterangan</th>
@@ -27,6 +29,8 @@
             @foreach ($resep_obat as $id_konsultasi => $resepGroup)
             <tr>
                 <td>{{ $loop->iteration }}</td>
+                <td>{{ $resepGroup->first()->konsultasi->hewan->pemilik->nama }}</td>
+                <td>{{ $resepGroup->first()->konsultasi->hewan->nama_hewan }}</td>
                 <td>{{ $resepGroup->first()->konsultasi->keluhan }}</td>
                 <td>
                     @foreach ($resepGroup as $resep)

@@ -42,26 +42,26 @@
         <!-- Card: Prescriptions -->
         <div class="col-md-6 col-lg-4">
             <div class="card shadow-sm">
-                <div class="card-header bg-warning text-white">
+                <div class="card-header bg-success text-white">
                     <h5 class="card-title mb-0">Resep Obat</h5>
                 </div>
                 <div class="card-body text-center">
                     <h3 class="display-6">{{ $prescriptions ?? 'N/A' }}</h3>
                     <p class="card-text">Lihat resep obat yang diberikan untuk hewan Anda.</p>
-                    <a href="{{ route ('pemilik-hewan.resep_obat.index')}}" class="btn btn-warning btn-sm">Lihat Resep</a>
+                    <a href="{{ route ('pemilik-hewan.resep_obat.index')}}" class="btn btn-success btn-sm">Lihat Resep</a>
                 </div>
             </div>
         </div>
 
         <div class="col-md-6 col-lg-4">
             <div class="card shadow-sm">
-                <div class="card-header bg-primary text-white">
+                <div class="card-header bg-danger text-white">
                     <h5 class="card-title mb-0">Riwayat Transaksi Anda</h5>
                 </div>
                 <div class="card-body text-center">
                     <h3 class="display-6">{{ $transaksiCount ?? 'N/A' }}</h3>
                     <p class="text-mured">Lihat daftar Teransaksi anda yang telah terdaftar.</p>
-                    <a href="{{ route('pemilik-hewan.transaksi.list') }}" class="btn btn-primary btn-sm">Lihat Transaksi</a>
+                    <a href="{{ route('pemilik-hewan.transaksi.list') }}" class="btn btn-danger btn-sm">Lihat Transaksi</a>
                 </div>
             </div>
         </div>

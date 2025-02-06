@@ -190,15 +190,6 @@ public function panggil(Request $request, Antrian $antrian)
             }
         }
 
-        // Update status antrian menjadi "Selesai"
-    $antrian = Antrian::where('konsultasi_id', $id_konsultasi)->first();
-
-    if ($antrian) {
-        $antrian->update([
-            'status' => 'Selesai',
-        ]);
-    }
-
         return redirect()->route("dokter.konsultasi.index")->with('success', 'Diagnosis dan resep berhasil diperbarui.');
     }
 

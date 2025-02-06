@@ -270,6 +270,26 @@ class kasirController extends Controller
         ]);
     }
 
+     // Update status antrian menjadi "Selesai"
+     $konsultasi = $transaksi->konsultasi;
+    if ($konsultasi) {
+        $konsultasi->update([
+            'status' => 'Selesai',
+        ]);
+
+        // Perbaikan: Mengambil id_konsultasi dengan benar
+        $id_konsultasi = $konsultasi->id_konsultasi;
+
+        // Update status antrian menjadi "Selesai"
+        $antrian = Antrian::where('konsultasi_id', $id_konsultasi)->first();
+        if ($antrian) {
+            $antrian->update([
+                'status' => 'Selesai',
+            ]);
+        }
+    }
+
+
     return redirect()->route('kasir.transaksi.rincian', $transaksi->id_transaksi)
         ->with('success', 'Pembayaran berhasil dilakukan. Status konsultasi telah diperbarui menjadi Selesai.')
         ->with('jumlah_bayar', $jumlahBayar)
