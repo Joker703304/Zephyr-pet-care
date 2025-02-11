@@ -40,7 +40,7 @@
 </div>
 
         <button type="submit" class="btn btn-success">Daftar Ulang</button>
-        <a href="{{ route('kasir.konsultasi.index') }}" class="btn btn-secondary">Batal</a>
+        <a href="{{ route('kasir.konsultasi.index') }}" class="btn btn-secondary">Kembali</a>
     </form>
 </div>
 @endsection

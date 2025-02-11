@@ -29,7 +29,7 @@
                 <td>{{ $item->jenis->nama_jenis ?? 'Jenis tidak ditemukan' }}</td>
                 <td>{{ $item->jenkel }}</td>
                 <td>{{ $item->umur }}</td>
-                <td>{{ $item->berat }}</td>
+                <td>{{ number_format($item->berat, 0, ',', '.') }}</td>
                 <td>
                     @if($item->foto)
                         <img src="{{ asset('storage/' . $item->foto) }}" alt="Foto" width="50">

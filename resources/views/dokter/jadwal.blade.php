@@ -2,8 +2,9 @@
 
 @section('content')
 <div class="container">
-    <h1>Doctor Dashboard</h1>
+    <h1>Kalender Jadwal</h1>
 
+    <a href="{{ route('dokter.dashboard') }}" class="btn btn-secondary mb-3">Kembali</a>
     <!-- Full Calendar with new ID -->
     <div id="doctor-calendar"></div>  <!-- Changed the ID to 'doctor-calendar' -->
 

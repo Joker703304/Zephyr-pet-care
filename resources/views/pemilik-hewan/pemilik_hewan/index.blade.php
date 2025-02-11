@@ -2,62 +2,68 @@
 
 @section('content')
 <div class="container">
-    <h1 class="mb-4">Data Diri Anda</h1>
+    <h1 class="mb-4 text-center">Profil Anda</h1>
 
-    <!-- Success Message -->
+    <!-- Success & Error Messages -->
     @if(session('success'))
-        <div class="alert alert-success">
-            {{ session('success') }}
-        </div>
+        <div class="alert alert-success">{{ session('success') }}</div>
+    @endif
+    @if(session('error'))
+        <div class="alert alert-danger">{{ session('error') }}</div>
     @endif
 
-    <!-- Data Pemilik Hewan -->
-    <div class="card shadow">
-        <div class="card-header bg-primary text-white">
-            <h5 class="mb-0">Informasi Pemilik Hewan</h5>
-        </div>
-        <div class="card-body">
-            @if($data->isNotEmpty())
-                @foreach($data as $pemilik)
-                    <table class="table table-bordered">
-                        {{-- <tr>
-                            <th>ID Pemilik</th>
-                            <td>{{ $loop->iteration }}</td>
-                        </tr> --}}
-                        <tr>
-                            <th>Nama</th>
-                            <td>{{ $pemilik->nama }}</td>
-                        </tr>
-                        <tr>
-                            <th>Email</th>
-                            <td>{{ $pemilik->user ? $pemilik->user->email : 'Email tidak ditemukan' }}</td>
-                        </tr>
-                        <tr>
-                            <th>Jenis Kelamin</th>
-                            <td>{{ $pemilik->jenkel }}</td>
-                        </tr>
-                        <tr>
-                            <th>Alamat</th>
-                            <td>{{ $pemilik->alamat }}</td>
-                        </tr>
-                        <tr>
-                            <th>No Telepon</th>
-                            <td>{{ $pemilik->no_tlp }}</td>
-                        </tr>
-                    </table>
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-lg">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Informasi Pemilik Hewan</h5>
+                    <i class="fas fa-user-circle fa-lg"></i>
+                </div>
+                <div class="card-body">
+                    @if($data->isNotEmpty())
+                        @foreach($data as $pemilik)
+                        <div class="text-center mb-3">
+                            <h4 class="mt-2">{{ $pemilik->nama }}</h4>
+                            <p class="text-muted">Pemilik Hewan</p>
+                        </div>
 
-                    <!-- Action Buttons -->
-                    <a href="{{ route('pemilik-hewan.pemilik_hewan.edit', $pemilik->id_pemilik) }}" class="btn btn-warning btn-sm">Edit</a>
-                    <a href="{{ route('pemilik-hewan.dashboard') }}" class="btn btn-secondary btn-sm">Kembali</a>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item">
+                                <i class="fa fa-envelope text-primary"></i> 
+                                <strong>Email:</strong> {{ $pemilik->user->email ?? 'Email tidak ditemukan' }}
+                            </li>
+                            <li class="list-group-item">
+                                <i class="fa fa-venus-mars text-success"></i> 
+                                <strong>Jenis Kelamin:</strong> {{ $pemilik->jenkel }}
+                            </li>
+                            <li class="list-group-item">
+                                <i class="fa fa-map-marker-alt text-danger"></i> 
+                                <strong>Alamat:</strong> {{ $pemilik->alamat }}
+                            </li>
+                            <li class="list-group-item">
+                                <i class="fa fa-phone text-warning"></i> 
+                                <strong>No Telepon:</strong> {{ $pemilik->no_tlp }}
+                            </li>
+                        </ul>                        
 
-                    <!-- Button to Open Password Modal -->
-                    <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modalUbahPassword">
-                        Ubah Password
-                    </button>
-                @endforeach
-            @else
-                <p class="text-center">Data diri tidak ditemukan.</p>
-            @endif
+                        <!-- Action Buttons -->
+                        <div class="d-flex justify-content-center gap-2 mt-3">
+                            <a href="{{ route('pemilik-hewan.dashboard') }}" class="btn btn-secondary btn-sm">
+                                <i class="fa fa-arrow-left"></i> Kembali
+                            </a>
+                            <a href="{{ route('pemilik-hewan.pemilik_hewan.edit', $pemilik->id_pemilik) }}" class="btn btn-warning btn-sm">
+                                <i class="fa fa-edit"></i> Edit Profil
+                            </a>
+                            <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modalUbahPassword">
+                                <i class="fas fa-key"></i> Ubah Password
+                            </button>
+                        </div>
+                        @endforeach
+                    @else
+                        <p class="text-center">Data diri tidak ditemukan.</p>
+                    @endif
+                </div>
+            </div>
         </div>
     </div>
 
@@ -79,7 +85,7 @@
                                 <label for="password" class="form-label">Password Baru</label>
                                 <div class="input-group">
                                     <input type="password" name="password" id="password" class="form-control" required>
-                                    <button type="button" class="btn btn-outline-secondary" id="togglePassword">
+                                    <button type="button" class="btn btn-outline-secondary toggle-password" data-target="password">
                                         <i class="fa fa-eye-slash"></i>
                                     </button>
                                 </div>
@@ -88,11 +94,12 @@
                                 <label for="password_confirmation" class="form-label">Konfirmasi Password</label>
                                 <div class="input-group">
                                     <input type="password" name="password_confirmation" id="password_confirmation" class="form-control" required>
-                                    <button type="button" class="btn btn-outline-secondary" id="toggleConfirmPassword">
+                                    <button type="button" class="btn btn-outline-secondary toggle-password" data-target="password_confirmation">
                                         <i class="fa fa-eye-slash"></i>
                                     </button>
                                 </div>
                             </div>                            
+                        </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
                             <button type="submit" class="btn btn-primary">Simpan</button>
@@ -104,35 +111,25 @@
         @endforeach
     @endif
 </div>
+
 <script>
     // Toggle Password Visibility
-    document.getElementById('togglePassword').addEventListener('click', function () {
-        const passwordField = document.getElementById('password');
-        const icon = this.querySelector('i');
-        if (passwordField.type === 'password') {
-            passwordField.type = 'text';
-            icon.classList.remove('fa-eye-slash');
-            icon.classList.add('fa-eye');
-        } else {
-            passwordField.type = 'password';
-            icon.classList.remove('fa-eye');
-            icon.classList.add('fa-eye-slash');
-        }
-    });
+    document.querySelectorAll('.toggle-password').forEach(button => {
+        button.addEventListener('click', function () {
+            const targetId = this.getAttribute('data-target');
+            const inputField = document.getElementById(targetId);
+            const icon = this.querySelector('i');
 
-    // Toggle Confirm Password Visibility
-    document.getElementById('toggleConfirmPassword').addEventListener('click', function () {
-        const confirmPasswordField = document.getElementById('password_confirmation');
-        const icon = this.querySelector('i');
-        if (confirmPasswordField.type === 'password') {
-            confirmPasswordField.type = 'text';
-            icon.classList.remove('fa-eye-slash');
-            icon.classList.add('fa-eye');
-        } else {
-            confirmPasswordField.type = 'password';
-            icon.classList.remove('fa-eye');
-            icon.classList.add('fa-eye-slash');
-        }
+            if (inputField.type === 'password') {
+                inputField.type = 'text';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            } else {
+                inputField.type = 'password';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            }
+        });
     });
 </script>
 @endsection

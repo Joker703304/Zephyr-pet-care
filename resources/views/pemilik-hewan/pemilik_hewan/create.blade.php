@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="container">
-    <h1>Add New Owner</h1>
+    <h1 class="mb-4 text-center">Lengkapi data Anda</h1>
 
     <!-- Success Message -->
     @if(session('success'))
@@ -28,41 +28,56 @@
         </div>
     @endif
 
-    <form action="{{ route('pemilik-hewan.pemilik_hewan.store') }}" method="POST">
-        @csrf
-        <div class="form-group">
-            <label for="nama">Nama</label>
-            <input type="text" name="nama" id="nama" class="form-control" value="{{ old('nama', $user->name) }}" required>
-        </div>
+    <div class="card mx-auto shadow" style="max-width: 600px;">
+        <div class="card-body">
+            <form action="{{ route('pemilik-hewan.pemilik_hewan.store') }}" method="POST">
+                @csrf
 
-        <div class="form-group">
-            <label for="email">Email</label>
-            <input type="email" name="email" id="email" class="form-control" value="{{ old('email', $user->email) }}" required readonly>
-        </div>
+                <!-- Nama -->
+                <div class="mb-3">
+                    <label for="nama" class="form-label"><i class="fa fa-user"></i> Nama</label>
+                    <input type="text" name="nama" id="nama" class="form-control" value="{{ old('nama', $user->name) }}" required>
+                </div>
 
-        <div class="form-group">
-            <label for="jenkel">Jenis Kelamin</label>
-            <select name="jenkel" id="jenkel" class="form-control">
-                <option value="" disabled selected>Pilih Jenis Kelamin</option> <!-- Opsi default -->
-                <option value="pria" {{ old('jenkel') == 'pria' ? 'selected' : '' }}>Pria</option>
-                <option value="wanita" {{ old('jenkel') == 'wanita' ? 'selected' : '' }}>Wanita</option>
-            </select>
-        </div>
+                <!-- Email (Read Only) -->
+                <div class="mb-3">
+                    <label for="email" class="form-label"><i class="fa fa-envelope"></i> Email</label>
+                    <input type="email" name="email" id="email" class="form-control" value="{{ old('email', $user->email) }}" required readonly>
+                </div>
 
-        <div class="form-group">
-            <label for="alamat">Alamat</label>
-            <textarea name="alamat" id="alamat" class="form-control" required>{{ old('alamat') }}</textarea>
-        </div>
+                <!-- Jenis Kelamin -->
+                <div class="mb-3">
+                    <label for="jenkel" class="form-label"><i class="fa fa-venus-mars"></i> Jenis Kelamin</label>
+                    <select name="jenkel" id="jenkel" class="form-select">
+                        <option value="" disabled selected>Pilih Jenis Kelamin</option>
+                        <option value="pria" {{ old('jenkel') == 'pria' ? 'selected' : '' }}>Pria</option>
+                        <option value="wanita" {{ old('jenkel') == 'wanita' ? 'selected' : '' }}>Wanita</option>
+                    </select>
+                </div>
 
-        <div class="form-group">
-            <label for="no_tlp">Nomor Telepon</label>
-            <input type="text" name="no_tlp" id="no_tlp" class="form-control" value="{{ old('no_tlp') }}" required>
-        </div>
+                <!-- Alamat -->
+                <div class="mb-3">
+                    <label for="alamat" class="form-label"><i class="fa fa-map-marker-alt"></i> Alamat</label>
+                    <textarea name="alamat" id="alamat" class="form-control" rows="3" required>{{ old('alamat') }}</textarea>
+                </div>
 
-        <div class="form-group">
-            <button type="submit" class="btn btn-primary">Save</button>
-            <a href="{{ route('pemilik-hewan.dashboard') }}" class="btn btn-secondary">Cancel</a>
+                <!-- Nomor Telepon -->
+                <div class="mb-3">
+                    <label for="no_tlp" class="form-label"><i class="fa fa-phone"></i> Nomor Telepon</label>
+                    <input type="text" name="no_tlp" id="no_tlp" class="form-control" value="{{ old('no_tlp') }}" required>
+                </div>
+
+                <!-- Buttons -->
+                <div class="d-flex justify-content-between">
+                    {{-- <a href="{{ route('pemilik-hewan.dashboard') }}" class="btn btn-secondary">
+                        <i class="fa fa-arrow-left"></i> Batal
+                    </a> --}}
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fa fa-save"></i> Simpan
+                    </button>
+                </div>
+            </form>
         </div>
-    </form>
+    </div>
 </div>
 @endsection

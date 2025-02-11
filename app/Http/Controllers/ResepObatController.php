@@ -18,19 +18,20 @@ class ResepObatController extends Controller
     
         // Check if the logged-in user is 'pemilik_hewan'
         if ($user->role == 'pemilik_hewan') {
-            // Ambil semua resep obat yang terkait dengan konsultasi hewan yang dimiliki oleh pemilik hewan
-            $resep_obat = ResepObat::whereHas('konsultasi', function ($query) use ($user) {
-                // Ambil konsultasi berdasarkan hewan yang dimiliki oleh pemilik hewan
-                $query->whereIn('id_hewan', function ($subQuery) use ($user) {
-                    $subQuery->select('id_hewan')
-                        ->from('hewan')
-                        ->where('id_pemilik', $user->pemilikHewan->id_pemilik);  // Relasi dengan pemilik hewan
-                });
-            })
-            ->with('konsultasi', 'obat') // Sertakan relasi konsultasi dan obat
-            ->orderByDesc('created_at') // Urutkan berdasarkan waktu terbaru
-            ->get()
-            ->groupBy('id_konsultasi'); // Kelompokkan berdasarkan id_konsultasi
+            // Ambil semua resep obat dengan status "siap" yang terkait dengan konsultasi hewan yang dimiliki oleh pemilik hewan
+            $resep_obat = ResepObat::where('status', 'siap') // Tambahkan filter status "siap"
+                ->whereHas('konsultasi', function ($query) use ($user) {
+                    // Ambil konsultasi berdasarkan hewan yang dimiliki oleh pemilik hewan
+                    $query->whereIn('id_hewan', function ($subQuery) use ($user) {
+                        $subQuery->select('id_hewan')
+                            ->from('hewan')
+                            ->where('id_pemilik', $user->pemilikHewan->id_pemilik);  // Relasi dengan pemilik hewan
+                    });
+                })
+                ->with('konsultasi', 'obat') // Sertakan relasi konsultasi dan obat
+                ->orderByDesc('created_at') // Urutkan berdasarkan waktu terbaru
+                ->get()
+                ->groupBy('id_konsultasi'); // Kelompokkan berdasarkan id_konsultasi
     
             // Tampilkan halaman untuk pemilik_hewan
             return view('pemilik-hewan.resep_obat.index', compact('resep_obat'));
