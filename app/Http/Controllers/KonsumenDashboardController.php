@@ -51,15 +51,16 @@ class KonsumenDashboardController extends Controller
         ->count('id_konsultasi');
 
         // Count prescriptions for the logged-in user's animals
-        $prescriptions = ResepObat::whereHas('konsultasi', function ($query) use ($pemilikHewan) {
-            $query->whereIn('id_hewan', function ($subQuery) use ($pemilikHewan) {
-                $subQuery->select('id_hewan')
-                    ->from('hewan')
-                    ->where('id_pemilik', $pemilikHewan->id_pemilik);
-            });
-        })
-        ->distinct('id_konsultasi')
-        ->count('id_konsultasi');
+        $prescriptions = ResepObat::where('status', 'siap') // Hanya hitung yang sudah siap
+        ->whereHas('konsultasi', function ($query) use ($pemilikHewan) {
+        $query->whereIn('id_hewan', function ($subQuery) use ($pemilikHewan) {
+            $subQuery->select('id_hewan')
+                ->from('hewan')
+                ->where('id_pemilik', $pemilikHewan->id_pemilik);
+        });
+    })
+    ->distinct('id_konsultasi') // Hindari duplikasi berdasarkan id_konsultasi
+    ->count('id_konsultasi'); // Hitung jumlah unik berdasarkan id_konsultasi
 
         // Return the dashboard view
         return view('pemilik-hewan.dashboard', compact('pemilikHewan', 'animalsCount', 'consultationsCount', 'prescriptions', 'transaksiCount'));

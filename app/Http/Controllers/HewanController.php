@@ -64,10 +64,10 @@ class HewanController extends Controller
     return view('admin.hewan.show-jenis', compact('jenisHewan'));
 }
 
-    public function create()
+public function create()
 {
-    // Ambil jenis hewan yang sudah ada di tabel hewan
-    $jenisHewan = JenisHewan::all();
+    // Ambil dan urutkan jenis hewan berdasarkan nama_jenis (A-Z)
+    $jenisHewan = JenisHewan::orderBy('nama_jenis', 'asc')->get();
 
     if (auth()->user()->role === 'pemilik_hewan') {
         $pemilikId = auth()->user()->pemilikhewan->id_pemilik;
@@ -76,8 +76,13 @@ class HewanController extends Controller
         return view('pemilik-hewan.hewan.create', compact('pemilikId', 'jenisHewan'));
     }
 
-    // Pass jenisHewan ke view untuk admin
-    return view('admin.hewan.create', compact('jenisHewan'));
+    if (auth()->user()->role === 'admin') {
+        // Jika admin, tampilkan halaman untuk menambah jenis hewan
+        return view('admin.hewan.jenis', compact('jenisHewan'));
+    }
+
+    // Jika bukan admin atau pemilik_hewan, tampilkan error
+    abort(403, 'Unauthorized action.');
 }
 
 public function store(Request $request)
@@ -173,14 +178,23 @@ public function update(Request $request, Hewan $hewan)
     return redirect()->route($redirectRoute)->with('success', 'Hewan berhasil diupdate.');
 }
 
-    public function destroy(Hewan $hewan)
-    {
-        if ($hewan->foto) {
-            Storage::disk('public')->delete($hewan->foto);
-        }
-        $hewan->delete();
+public function destroy($id)
+{
+    $hewan = Hewan::findOrFail($id);
 
-        $redirectRoute = auth()->user()->role === 'pemilik_hewan' ? 'pemilik-hewan.hewan.index' : 'admin.hewan.index';
-        return redirect()->route($redirectRoute)->with('success', 'Hewan berhasil dihapus.');
+    // Cek apakah hewan sudah pernah dikonsultasikan
+    if ($hewan->konsultasi()->exists()) {
+        return redirect()->back()->with('error', 'Hewan tidak bisa dihapus karena sudah diajukan konsultasi.');
     }
+
+    // Hapus foto jika ada
+    if ($hewan->foto) {
+        Storage::delete($hewan->foto);
+    }
+
+    // Hapus data hewan
+    $hewan->delete();
+
+    return redirect()->route('pemilik-hewan.hewan.index')->with('success', 'Hewan berhasil dihapus.');
+}
 }

@@ -2,56 +2,90 @@
 
 @section('content')
 <div class="container">
-    <h1>Tambah Hewan</h1>
-
-    <form action="{{ route('pemilik-hewan.hewan.store') }}" method="POST" enctype="multipart/form-data">
-        @csrf
-
-        <!-- Hidden field for id_pemilik -->
-        <input type="hidden" name="id_pemilik" value="{{ $pemilikId }}">
-
-        <div class="form-group">
-            <label for="nama_hewan">Nama Hewan</label>
-            <input type="text" name="nama_hewan" id="nama_hewan" class="form-control" value="{{ old('nama_hewan') }}" required>
+    <!-- Card untuk Create Hewan -->
+    <div class="card">
+        <div class="card-header">
+            <h1>Tambah Hewan</h1>
         </div>
 
-        <div class="form-group">
-            <label for="jenis_id">Jenis Hewan</label>
-            <select name="jenis_id" id="jenis_id" class="form-control" required>
-                <option value="">Pilih Jenis Hewan</option>
-                @foreach($jenisHewan as $jenis)
-                    <option value="{{ $jenis->id }}">{{ $jenis->nama_jenis }}</option> <!-- Menggunakan nama_jenis -->
-                @endforeach
-            </select>
-        </div>                    
+        <div class="card-body">
+            <form action="{{ route('pemilik-hewan.hewan.store') }}" method="POST" enctype="multipart/form-data">
+                @csrf
 
-        <div class="form-group">
-            <label for="jenkel">Jenis Kelamin</label>
-            <select name="jenkel" id="jenkel" class="form-control" required>
-                <option value="" selected>Pilih Jenis Kelamin</option> <!-- Opsi default -->
-                <option value="jantan" {{ old('jenkel') == 'jantan' ? 'selected' : '' }}>Jantan</option>
-                <option value="betina" {{ old('jenkel') == 'betina' ? 'selected' : '' }}>Betina</option>
-            </select>
+                <!-- Hidden field for id_pemilik -->
+                <input type="hidden" name="id_pemilik" value="{{ $pemilikId }}">
+
+                <!-- Nama Hewan -->
+                <div class="form-group mb-3">
+                    <label for="nama_hewan">
+                        <i class="fas fa-paw"></i> Nama Hewan
+                    </label>
+                    <input type="text" name="nama_hewan" id="nama_hewan" class="form-control" value="{{ old('nama_hewan') }}" required>
+                    <small class="form-text text-muted">Masukkan nama hewan yang akan didaftarkan.</small>
+                </div>
+
+                <!-- Jenis Hewan -->
+                <div class="form-group mb-3">
+                    <label for="jenis_id">
+                        <i class="fas fa-paw"></i> Jenis Hewan
+                    </label>
+                    <select name="jenis_id" id="jenis_id" class="form-control" required>
+                        <option value="">Pilih Jenis Hewan</option>
+                        @foreach($jenisHewan as $jenis)
+                            <option value="{{ $jenis->id }}">{{ $jenis->nama_jenis }}</option>
+                        @endforeach
+                    </select>
+                    <small class="form-text text-muted">Pilih jenis hewan sesuai dengan yang Anda miliki.</small>
+                </div>
+
+                <!-- Jenis Kelamin -->
+                <div class="form-group mb-3">
+                    <label for="jenkel">
+                        <i class="fas fa-venus-mars"></i> Jenis Kelamin
+                    </label>
+                    <select name="jenkel" id="jenkel" class="form-control" required>
+                        <option value="" selected>Pilih Jenis Kelamin</option> <!-- Opsi default -->
+                        <option value="jantan" {{ old('jenkel') == 'jantan' ? 'selected' : '' }}>Jantan</option>
+                        <option value="betina" {{ old('jenkel') == 'betina' ? 'selected' : '' }}>Betina</option>
+                    </select>
+                    <small class="form-text text-muted">Pilih jenis kelamin hewan.</small>
+                </div>
+
+                <!-- Umur -->
+                <div class="form-group mb-3">
+                    <label for="umur">
+                        <i class="fas fa-calendar-alt"></i> Umur (Bulan)
+                    </label>
+                    <input type="number" name="umur" id="umur" class="form-control" value="{{ old('umur') }}" min="0" required>
+                    <small class="form-text text-muted">Masukkan umur hewan dalam bulan.</small>
+                </div>
+
+                <!-- Berat -->
+                <div class="form-group mb-3">
+                    <label for="berat">
+                        <i class="fas fa-weight-hanging"></i> Berat (Gram)
+                    </label>
+                    <input type="number" step="0.01" name="berat" id="berat" class="form-control" value="{{ old('berat') }}" required>
+                    <small class="form-text text-muted">Masukkan berat hewan dalam gram.</small>
+                </div>
+
+                <!-- Foto Hewan -->
+                <div class="form-group mb-3">
+                    <label for="foto">
+                        <i class="fas fa-camera"></i> Foto Hewan (maks: 2MB)
+                    </label>
+                    <input type="file" name="foto" id="foto" class="form-control" accept="image/*">
+                    <small class="form-text text-muted">Unggah foto hewan Anda (maksimal 2MB).</small>
+                </div>
+
+                <!-- Tombol Submit -->
+                <div class="d-flex gap-2">
+                    <a href="{{ route('pemilik-hewan.hewan.index') }}" class="btn btn-secondary mb-3"><i class="fas fa-arrow-left"></i> Kembali</a>
+                    <button type="submit" class="btn btn-success mb-3">Simpan</button>
+                </div>
+            </form>
         </div>
-
-        <div class="form-group">
-            <label for="umur">Umur (Bulan)</label>
-            <input type="number" name="umur" id="umur" class="form-control" value="{{ old('umur') }}">
-        </div>
-
-        <div class="form-group">
-            <label for="berat">Berat (Gram)</label>
-            <input type="number" step="0.01" name="berat" id="berat" class="form-control" value="{{ old('berat') }}">
-        </div>
-
-        <div class="form-group">
-            <label for="foto">Foto Hewan (maks:2mb)</label>
-            <input type="file" name="foto" id="foto" class="form-control">
-        </div>
-
-        <button type="submit" class="btn btn-success mt-3">Simpan</button>
-        <a href="{{ route('pemilik-hewan.hewan.index') }}" class="btn btn-secondary mt-3">Kembali</a>
-    </form>
+    </div>
 </div>
 
 <script>

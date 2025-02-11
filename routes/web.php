@@ -198,6 +198,7 @@ Route::middleware(['auth', 'role:pemilik_hewan'])->prefix('pemilik-hewan')->name
 //hewan
 Route::middleware(['auth', 'role:pemilik_hewan'])->prefix('pemilik-hewan')->name('pemilik-hewan.')->group(function () {
     Route::resource('hewan', HewanController::class);
+    Route::delete('/hewan/{id}', [HewanController::class, 'destroy'])->name('pemilik-hewan.hewan.destroy');
 });
 
 Route::middleware(['auth', 'role:pemilik_hewan'])->prefix('pemilik-hewan')->group(function () {
