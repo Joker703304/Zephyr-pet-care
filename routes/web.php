@@ -25,6 +25,7 @@ use App\Http\Controllers\LayananController;
 use App\Http\Controllers\DokterJadwalController;
 use App\Http\Controllers\SecurityAdminController;
 use App\Http\Controllers\SecurityController;
+use App\Http\Controllers\CodeOtpController;
 use App\Models\Apoteker;
 use App\Models\DokterJadwal;
 use App\Models\Kasir;
@@ -40,10 +41,10 @@ Auth::routes();
 
 Auth::routes(['verify' => true]);
 
-
-Route::get('/email/verify/{id}/{hash}', [VerificationController::class, 'verify'])
-->middleware(['signed']) // Hanya signed, tanpa 'auth'
-->name('verification.verify');
+Route::post('/send-otp', [CodeOtpController::class, 'sendOtp'])->middleware('throttle:send-otp')->name('send-otp');
+// Route::get('/email/verify/{id}/{hash}', [VerificationController::class, 'verify'])
+// ->middleware(['signed']) // Hanya signed, tanpa 'auth'
+// ->name('verification.verify');
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
@@ -79,7 +80,7 @@ Route::middleware('auth')->group(function () {
     Route::patch('/security/{id}/update-password', [SecurityController::class, 'updatePassword'])->name('security.update-password');
 });
 
-Route::middleware(['auth', 'verified'])->group(function () {
+Route::middleware(['auth'])->group(function () {
     Route::get('/pemilik-hewan/dashboard', [PemilikHewanController::class, 'index'])
         ->name('pemilik-hewan.dashboard');
 });

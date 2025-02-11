@@ -17,14 +17,14 @@ class ResetPasswordController extends Controller
     {
         // Validasi data input
         $request->validate([
-            'email' => 'required|email|exists:users,email',
+            'phone' => 'required|string|max:13|exists:users,phone',
             'password' => 'required|confirmed|min:8',
             'token' => 'required',
         ]);
 
         // Reset password
         $response = Password::reset(
-            $request->only('email', 'password', 'password_confirmation', 'token'),
+            $request->only('phone', 'password', 'password_confirmation', 'token'),
             function ($user, $password) {
                 $user->password = bcrypt($password);
                 $user->save();

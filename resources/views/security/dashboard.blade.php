@@ -6,7 +6,7 @@
 
         <div class="row">
             <!-- Kolom Antrian Dipanggil -->
-            <div class="col-lg-5 mb-4">
+            <div class="col-lg-8 mb-4">
                 <h3 class="text-center">ANTRIAN DIPANGGIL</h3>
                 <div class="d-flex flex-wrap justify-content-center" id="antrianDipanggil">
                     @forelse ($antrianDipanggil as $item)
@@ -27,13 +27,13 @@
             </div>
 
             <!-- Kolom Daftar Antrian Menunggu -->
-            <div class="col-lg-7">
+            <div class="col-lg-4">
                 <h3 class="text-center">DAFTAR ANTRIAN MENUNGGU</h3>
                 <table class="table table-bordered mt-3">
                     <thead>
                         <tr>
                             <th>NOMOR ANTRIAN</th>
-                            <th>NAMA DOKTER</th>
+                            
                         </tr>
                     </thead>
                     <tbody id="menungguTable">
@@ -41,11 +41,7 @@
                             @if ($item->konsultasi->status !== 'Selesai')
                                 <tr>
                                     <td>{{ strtoupper($item->no_antrian) }}</td>
-                                    <td>
-                                        @if ($item->konsultasi->status_pembayaran !== 'Belum Lunas')
-                                            {{ strtoupper($item->konsultasi->dokter->user->name ?? 'TIDAK ADA') }}
-                                        @endif
-                                    </td>
+                                    
                                 </tr>
                             @endif
                         @empty

@@ -7,6 +7,9 @@ use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
+use App\Models\User;
+use Illuminate\Support\Facades\Log;
 
 class LoginController extends Controller
 {
@@ -39,6 +42,36 @@ class LoginController extends Controller
         $this->middleware('guest')->except('logout');
     }
 
+    public function login(Request $request)
+    {
+        Log::info('Mencoba login dengan:', [
+            'phone' => $request->phone,
+            'password' => $request->password
+        ]);
+
+        $credentials = $request->only('phone', 'password');
+
+        $user = User::where('phone', $credentials['phone'])->first();
+
+        if (!$user) {
+            Log::error('Login gagal: Nomor HP tidak ditemukan.');
+            return back()->with('error', 'Login gagal! Nomor HP tidak ditemukan.');
+        }
+
+        if (!Hash::check($credentials['password'], $user->password)) {
+            Log::error('Login gagal: Password salah.');
+            return back()->with('error', 'Login gagal! Password salah.');
+        }
+
+        if (!Auth::attempt($credentials)) {
+            Log::error('Login gagal: Authentication gagal.');
+            return back()->with('error', 'Login gagal! Silakan coba lagi.');
+        }
+
+        Log::info('Login berhasil untuk user ID: ' . Auth::id());
+        return redirect()->intended($this->redirectTo);
+    }
+
     /**
      * Override the authenticated method to handle email verification and role-based redirection.
      *
@@ -48,12 +81,6 @@ class LoginController extends Controller
      */
     protected function authenticated(Request $request, $user)
     {
-        // Cek apakah email sudah diverifikasi
-        if (!$user->hasVerifiedEmail()) {
-            Auth::logout();
-            return redirect('/login')->with('error', 'Email Anda belum diverifikasi. Silakan cek email Anda untuk verifikasi.');
-        }
-
         // Redirect berdasarkan role
         if (Gate::allows('admin', $user)) {
             return redirect()->route('admin.dashboard');

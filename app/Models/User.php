@@ -19,6 +19,7 @@ class User extends Authenticatable implements MustVerifyEmail
      */
     protected $fillable = [
         'name',
+        'phone',
         'email',
         'password',
         'role'
@@ -61,5 +62,10 @@ class User extends Authenticatable implements MustVerifyEmail
 {
     return $this->hasOne(Dokter::class, 'id_user');
 }
+
+public function otpCodes()
+    {
+        return $this->hasMany(OtpCode::class, 'id_user');
+    }
 
 }
