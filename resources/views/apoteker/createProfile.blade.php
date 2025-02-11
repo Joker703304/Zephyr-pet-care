@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="container">
-    <h1>Create Doctor Profile</h1>
+    <h1>Lengkapi Data Anda</h1>
 
     <!-- Success Message -->
     @if(session('success'))
