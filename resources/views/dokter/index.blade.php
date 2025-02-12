@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="container">
-    <h1 class="mb-4">Data Diri Anda</h1>
+    <h1 class="mb-4 text-center">Data Diri Anda</h1>
 
     <!-- Success Message -->
     @if(session('success'))
@@ -11,52 +11,52 @@
         </div>
     @endif
 
-    <!-- Data Pemilik Hewan -->
-    <div class="card shadow">
-        <div class="card-header bg-primary text-white">
+     <!-- Data Dokter -->
+     <div class="card shadow mx-auto" style="max-width: 500px;"> 
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
             <h5 class="mb-0">Informasi Dokter</h5>
+            <i class="fas fa-user-circle fa-lg"></i>
         </div>
         <div class="card-body">
             @if($data->isNotEmpty())
                 @foreach($data as $dokter)
-                    <table class="table table-bordered">
-                        {{-- <tr>
-                            <th>ID Pemilik</th>
-                            <td>{{ $loop->iteration }}</td>
-                        </tr> --}}
-                        <tr>
-                            <th>Nama</th>
-                            <td>{{ $dokter->user ? $dokter->user->name : 'Email tidak ditemukan' }}</td>
-                        </tr>
-                        <tr>
-                            <th>Sepesialis</th>
-                            <td>{{ $dokter->spesialis }}</td>
-                        </tr>
-                        <tr>
-                            <th>Email</th>
-                            <td>{{ $dokter->user ? $dokter->user->email : 'Email tidak ditemukan' }}</td>
-                        </tr>
-                        <tr>
-                            <th>Jenis Kelamin</th>
-                            <td>{{ $dokter->jenkel }}</td>
-                        </tr>
-                        <tr>
-                            <th>Alamat</th>
-                            <td>{{ $dokter->alamat }}</td>
-                        </tr>
-                        <tr>
-                            <th>No Telepon</th>
-                            <td>{{ $dokter->no_telepon }}</td>
-                        </tr>
-                    </table>
+                    <div class="text-center mb-3">
+                        <h4 class="mt-2">{{ $dokter->user->name ?? 'Nama tidak ditemukan' }}</h4>
+                        <p class="text-muted">{{ $dokter->spesialis }}</p>
+                    </div>
 
-                    <!-- Action Buttons -->
-                    <a href="{{ route('dokter.editProfile', $dokter->id_dokter) }}" class="btn btn-warning btn-sm">Edit</a>
-                    <a href="javascript:history.back()" class="btn btn-secondary btn-sm">Kembali</a>
-                    <!-- Button to Open Password Modal -->
-                    <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#changePasswordModal">
-                        Ubah Password
-                    </button> 
+                    <!-- Informasi Dokter dalam List Group -->
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item">
+                            <i class="fa fa-envelope text-primary"></i> 
+                            <strong>Email:</strong> {{ $dokter->user->email ?? 'Email tidak ditemukan' }}
+                        </li>
+                        <li class="list-group-item">
+                            <i class="fa fa-venus-mars text-success"></i> 
+                            <strong>Jenis Kelamin:</strong> {{ $dokter->jenkel }}
+                        </li>
+                        <li class="list-group-item">
+                            <i class="fa fa-map-marker-alt text-danger"></i> 
+                            <strong>Alamat:</strong> {{ $dokter->alamat }}
+                        </li>
+                        <li class="list-group-item">
+                            <i class="fa fa-phone text-warning"></i> 
+                            <strong>No Telepon:</strong> {{ $dokter->no_telepon }}
+                        </li>
+                    </ul>
+
+                    <!-- Tombol Aksi -->
+                    <div class="d-flex justify-content-center gap-2 mt-3">
+                        <a href="{{ route('dokter.dashboard')}}" class="btn btn-secondary btn-sm">
+                            <i class="fa fa-arrow-left"></i> Kembali
+                        </a>
+                        <a href="{{ route('dokter.editProfile', $dokter->id_dokter) }}" class="btn btn-warning btn-sm">
+                            <i class="fa fa-edit"></i> Edit Profil
+                        </a>
+                        <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#changePasswordModal">
+                            <i class="fas fa-key"></i> Ubah Password
+                        </button>
+                    </div>
                 @endforeach
             @else
                 <p class="text-center">Data diri tidak ditemukan.</p>

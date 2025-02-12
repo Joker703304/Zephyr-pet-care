@@ -2,37 +2,38 @@
 
 @section('content')
 <div class="container">
-    <h1>Ajukan Konsultasi</h1>
+    <h1 class="text-center mb-4">🩺 Ajukan Konsultasi</h1>
 
     @if(session('error'))
         <div class="alert alert-danger">{{ session('error') }}</div>
     @endif
 
+    <div class="card shadow-lg p-4">
     <form action="{{ route('pemilik-hewan.konsultasi_pemilik.store') }}" method="POST">
         @csrf
 
-        <div class="form-group mb-3">
-            <label for="id_hewan">Pilih Hewan</label>
+        <div class="mb-3">
+            <label for="id_hewan" class="form-label fw-bold"><i class="fas fa-paw"></i> Pilih Hewan</label>
             <select name="id_hewan" id="id_hewan" class="form-control" required>
                 <option value="">Pilih Hewan</option>
                 @foreach($hewan as $h)
-                    <option value="{{ $h->id_hewan }}">{{ $h->nama_hewan }} ({{ $h->jenis }})</option>
+                    <option value="{{ $h->id_hewan }}">{{ $h->nama_hewan }} ({{ $h->jenis->nama_jenis }})</option>
                 @endforeach
             </select>
         </div>
 
-        <div class="form-group mb-3">
-            <label for="keluhan">Keluhan</label>
-            <textarea name="keluhan" id="keluhan" class="form-control" rows="3" required>{{ old('keluhan') }}</textarea>
+        <div class="mb-3">
+            <label for="keluhan" class="form-label fw-bold"><i class="fas fa-exclamation-triangle"></i> Keluhan</label>
+            <textarea name="keluhan" id="keluhan" class="form-control" rows="3" required placeholder="Jelaskan keluhan hewan peliharaan Anda...">{{ old('keluhan') }}</textarea>
         </div>
 
-        <div class="form-group mb-3">
-            <label for="tanggal_konsultasi">Tanggal Konsultasi</label>
-            <input type="text" name="tanggal_konsultasi" id="tanggal_konsultasi" class="form-control" required>
+        <div class="mb-3">
+            <label for="tanggal_konsultasi" class="form-label fw-bold"><i class="fas fa-calendar-alt"></i> Tanggal Konsultasi</label>
+            <input type="text" name="tanggal_konsultasi" id="tanggal_konsultasi" class="form-control" required placeholder="Pilih tanggal...">
         </div>
 
-        <div class="form-group mb-3">
-            <label for="dokter">Pilih Dokter</label>
+        <div class="mb-3">
+            <label for="dokter" class="form-label fw-bold"><i class="fas fa-user-md"></i> Pilih Dokter</label>
             <select name="dokter_id" id="dokter" class="form-control" required>
                 <option value="">Pilih Dokter</option>
                 @foreach($dokterJadwal as $jadwal)
@@ -43,9 +44,12 @@
             </select>
         </div>
 
+        <a href="{{ route('pemilik-hewan.konsultasi_pemilik.index') }}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Kembali
+        </a>
         <button type="submit" class="btn btn-primary">Ajukan Konsultasi</button>
-        <a href="{{ route('pemilik-hewan.konsultasi_pemilik.index') }}" class="btn btn-secondary btn-primary">Kembali</a>
     </form>
+    </div>
 </div>
 
 <!-- Flatpickr Styles and Script -->
@@ -122,10 +126,33 @@
 
 
 <style>
-    /* Custom style untuk dropdown dokter supaya bisa scroll */
-    #dokter {
-        max-height: 200px; /* Tentukan tinggi maksimal dropdown */
-        overflow-y: auto;  /* Tambahkan scroll jika lebih banyak opsi */
+    .card {
+        border-radius: 12px;
+        max-width: 600px;
+        margin: auto;
+    }
+
+    .form-control {
+        border-radius: 8px;
+    }
+
+    .btn {
+        border-radius: 8px;
+    }
+
+    @media (max-width: 576px) {
+        h1 {
+            font-size: 22px;
+        }
+
+        .form-label {
+            font-size: 14px;
+        }
+
+        .btn {
+            font-size: 14px;
+            padding: 8px 12px;
+        }
     }
 </style>
 
