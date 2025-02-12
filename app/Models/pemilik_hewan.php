@@ -16,11 +16,11 @@ class pemilik_hewan extends Model
 
     public $incrementing = false;
 
-    protected $fillable = ['id_pemilik', 'nama', 'email', 'jenkel', 'alamat', 'no_tlp'];
+    protected $fillable = ['id_pemilik', 'id_user', 'nama', 'jenkel', 'alamat', 'no_tlp'];
 
     public function user()
     {
-        return $this->belongsTo(User::class, 'email', 'email'); // foreignKey, ownerKey
+        return $this->belongsTo(User::class, 'id_user');
     }
 
     public function hewan()

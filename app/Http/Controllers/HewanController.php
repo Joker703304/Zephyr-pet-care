@@ -20,7 +20,7 @@ class HewanController extends Controller
             // Mengambil data hewan yang dimiliki oleh pemilik yang sedang login berdasarkan nama pemilik
             $hewan = Hewan::with('pemilik')
                         ->whereHas('pemilik', function ($query) use ($user) {
-                            $query->where('email', $user->email); // Menyaring berdasarkan nama pemilik yang login
+                            $query->where('id_user', $user->id); // Menyaring berdasarkan nama pemilik yang login
                         })
                         ->get();
         } else {

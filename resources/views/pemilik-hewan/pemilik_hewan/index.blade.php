@@ -30,7 +30,7 @@
                         <ul class="list-group list-group-flush">
                             <li class="list-group-item">
                                 <i class="fa fa-envelope text-primary"></i> 
-                                <strong>Email:</strong> {{ $pemilik->user->email ?? 'Email tidak ditemukan' }}
+                                <strong>No Telepon:</strong> {{ $pemilik->user->phone ?? 'Email tidak ditemukan' }}
                             </li>
                             <li class="list-group-item">
                                 <i class="fa fa-venus-mars text-success"></i> 
@@ -40,10 +40,7 @@
                                 <i class="fa fa-map-marker-alt text-danger"></i> 
                                 <strong>Alamat:</strong> {{ $pemilik->alamat }}
                             </li>
-                            <li class="list-group-item">
-                                <i class="fa fa-phone text-warning"></i> 
-                                <strong>No Telepon:</strong> {{ $pemilik->no_tlp }}
-                            </li>
+                            
                         </ul>                        
 
                         <!-- Action Buttons -->

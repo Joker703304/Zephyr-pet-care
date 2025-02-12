@@ -24,7 +24,7 @@ class KonsumenDashboardController extends Controller
         $user = auth()->user();
 
         // Check if the user exists in the pemilik_hewan table
-        $pemilikHewan = pemilik_hewan::where('email', $user->email)->first();
+        $pemilikHewan = pemilik_hewan::where('id_user', Auth::id())->first();
 
         if (!$pemilikHewan) {
             return redirect()->route('pemilik-hewan.pemilik_hewan.create')->with('warning', 'Mohon Isi data diri terlebih dahulu.');

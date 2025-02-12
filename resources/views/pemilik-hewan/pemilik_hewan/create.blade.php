@@ -41,8 +41,8 @@
 
                 <!-- Email (Read Only) -->
                 <div class="mb-3">
-                    <label for="email" class="form-label"><i class="fa fa-envelope"></i> Email</label>
-                    <input type="email" name="email" id="email" class="form-control" value="{{ old('email', $user->email) }}" required readonly>
+                    <label for="email" class="form-label"><i class="fa fa-envelope"></i> Nomor Telepon</label>
+                    <input type="text" name="phone" id="phone" class="form-control" value="{{ old('phone', $user->phone) }}" required readonly>
                 </div>
 
                 <!-- Jenis Kelamin -->
@@ -62,10 +62,7 @@
                 </div>
 
                 <!-- Nomor Telepon -->
-                <div class="mb-3">
-                    <label for="no_tlp" class="form-label"><i class="fa fa-phone"></i> Nomor Telepon</label>
-                    <input type="text" name="no_tlp" id="no_tlp" class="form-control" value="{{ old('no_tlp') }}" required>
-                </div>
+                
 
                 <!-- Buttons -->
                 <div class="d-flex justify-content-between">
