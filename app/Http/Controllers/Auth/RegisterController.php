@@ -4,9 +4,11 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Models\OtpCode;
 use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Http\Request;
 
 class RegisterController extends Controller
 {
@@ -70,12 +72,32 @@ class RegisterController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function register(\Illuminate\Http\Request $request)
+    public function register(Request $request)
     {
-        $this->validator($request->all())->validate();
-
-        $user = $this->create($request->all());
-
-        return redirect('/login')->with('success', 'Register berhasil. Silahkan verify email anda sebelum login.');
+        $request->validate([
+            'name' => 'required|string|max:255|unique:users',
+            'phone' => 'required|string|max:13',
+            'password' => 'required|string|min:3|confirmed',
+            'otp' => 'required|numeric|digits:6',
+        ], [
+            'otp.digits' => 'OTP harus terdiri dari 6 digit.',
+        ]);
+        $otpRecord = OtpCode::where('phone', $request->phone)->first();
+    
+        if (!$otpRecord || $otpRecord->otp != $request->otp) {
+            return redirect()->route('register')->with('error', 'OTP tidak valid atau salah.')->withInput();
+        }
+    
+        $user = User::create([
+            'name' => $request->name,
+            'phone' => $request->phone,
+            'phone_verified_at' => now(),
+            'password' => bcrypt($request->password), 
+            'role' => 'pemilik_hewan',
+        ]);
+    
+        $otpRecord->delete();
+    
+        return redirect()->route('login')->with('success', 'Registrasi berhasil! Silakan login.');
     }
 }

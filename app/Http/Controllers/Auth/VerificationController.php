@@ -37,7 +37,6 @@ class VerificationController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('auth')->except(['verify', 'resend']);
         $this->middleware('signed')->only('verify');
         $this->middleware('throttle:6,1')->only('verify', 'resend');
     }
@@ -50,26 +49,6 @@ class VerificationController extends Controller
      */
     public function verify(Request $request)
     {
-        // Cari user berdasarkan ID
-        $user = User::findOrFail($request->route('id'));
-
-        // Validasi hash email
-        $expectedHash = sha1($user->getEmailForVerification());
-        if (!hash_equals((string) $request->route('hash'), $expectedHash)) {
-            abort(403, 'Invalid verification link.');
-        }
-
-        // Perbarui status verifikasi jika belum terverifikasi
-        if (!$user->hasVerifiedEmail()) {
-            $user->email_verified_at = now();
-            $user->save();
-
-            // Emit event bahwa email sudah diverifikasi
-            event(new Verified($user));
-        }
-
-        // Redirect ke halaman login dengan pesan sukses
-        return redirect($this->redirectTo)
-            ->with('success', 'Email Anda telah berhasil diverifikasi. Silakan login.');
+        //
     }
 }

@@ -154,14 +154,15 @@ class kasirController extends Controller
 
     public function createProfile()
     {
-        return view('kasir.createProfile');
+        $user = auth()->user();
+        return view('kasir.createProfile', compact('user'));
     }
 
     public function storeProfile(Request $request)
     {
         // Validate the incoming data
         $validated = $request->validate([
-            'no_telepon' => 'required|string|max:20|unique:kasir',
+            'phone' => 'required|string|max:13|exists:users,phone',
             'jenkel' => 'required|in:pria,wanita',
             'alamat' => 'nullable|string',
         ]);
@@ -169,7 +170,6 @@ class kasirController extends Controller
         // Create a new doctor profile
         Kasir::create([
             'id_user' => Auth::id(),
-            'no_telepon' => $validated['no_telepon'],
             'jenkel' => $validated['jenkel'],
             'alamat' => $validated['alamat'],
         ]);
@@ -269,6 +269,26 @@ class kasirController extends Controller
             'status' => 'Selesai',
         ]);
     }
+
+     // Update status antrian menjadi "Selesai"
+     $konsultasi = $transaksi->konsultasi;
+    if ($konsultasi) {
+        $konsultasi->update([
+            'status' => 'Selesai',
+        ]);
+
+        // Perbaikan: Mengambil id_konsultasi dengan benar
+        $id_konsultasi = $konsultasi->id_konsultasi;
+
+        // Update status antrian menjadi "Selesai"
+        $antrian = Antrian::where('konsultasi_id', $id_konsultasi)->first();
+        if ($antrian) {
+            $antrian->update([
+                'status' => 'Selesai',
+            ]);
+        }
+    }
+
 
     return redirect()->route('kasir.transaksi.rincian', $transaksi->id_transaksi)
         ->with('success', 'Pembayaran berhasil dilakukan. Status konsultasi telah diperbarui menjadi Selesai.')

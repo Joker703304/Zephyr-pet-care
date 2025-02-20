@@ -8,86 +8,65 @@
                 <div class="card-header">{{ __('Register') }}</div>
 
                 <div class="card-body">
-                    <!-- Error Alert -->
-                    @if ($errors->any())
-                        <div class="alert alert-danger" role="alert">
-                            <ul>
-                                @foreach ($errors->all() as $error)
-                                    <li>{{ $error }}</li>
-                                @endforeach
-                            </ul>
-                        </div>
+                    @if (session('error'))
+                        <div class="alert alert-danger">{{ session('error') }}</div>
+                    @endif
+
+                    @if (session('success'))
+                        <div class="alert alert-success">{{ session('success') }}</div>
                     @endif
 
                     <form method="POST" action="{{ route('register') }}">
                         @csrf
 
-                        <!-- Input Name -->
-                        <div class="row mb-3">
-                            <label for="name" class="col-md-4 col-form-label text-md-end">{{ __('Name') }}</label>
-                            <div class="col-md-6">
-                                <input id="name" type="text" class="form-control @error('name') is-invalid @enderror" name="name" value="{{ old('name') }}" required autocomplete="name" autofocus>
-                                @error('name')
-                                    <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
-                                @enderror
-                            </div>
+                        <div class="mb-3">
+                            <label for="name" class="form-label">{{ __('Name') }}</label>
+                            <input id="name" type="text" class="form-control @error('name') is-invalid @enderror" name="name" value="{{ old('name') }}" required>
+                            @error('name')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
                         </div>
 
-                        <!-- Input Email -->
-                        <div class="row mb-3">
-                            <label for="email" class="col-md-4 col-form-label text-md-end">{{ __('Email Address') }}</label>
-                            <div class="col-md-6">
-                                <input id="email" type="email" class="form-control @error('email') is-invalid @enderror" name="email" value="{{ old('email') }}" required autocomplete="email">
-                                @error('email')
-                                    <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
-                                @enderror
-                            </div>
+                        <div class="mb-3">
+                            <label for="phone" class="form-label">{{ __('Phone') }}</label>
+                            <input type="text" id="phone" name="phone" class="form-control @error('phone') is-invalid @enderror"
+                                   oninput="this.value = this.value.replace(/[^0-9]/g, '');" minlength="10" maxlength="13"
+                                   value="{{ old('phone') }}" required>
+                            @error('phone')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
                         </div>
 
-                        <!-- Input Password -->
-                        <div class="row mb-3">
-                            <label for="password" class="col-md-4 col-form-label text-md-end">{{ __('Password') }}</label>
-                            <div class="col-md-6">
-                                <div class="input-group">
-                                    <input id="password" type="password" class="form-control @error('password') is-invalid @enderror" name="password" required autocomplete="new-password">
-                                    <span class="input-group-text" id="togglePassword" style="cursor: pointer;">
-                                        <i class="fa fa-eye-slash"></i>
-                                    </span>
-                                </div>
-                                @error('password')
-                                    <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
-                                @enderror
-                            </div>
+                        <div class="mb-3">
+                            <button type="button" class="btn btn-secondary w-100" id="sendOtpBtn">Send OTP</button>
+                            <small id="otpStatus" class="text-muted"></small>
                         </div>
 
-                        <!-- Input Confirm Password -->
-                        <div class="row mb-3">
-                            <label for="password-confirm" class="col-md-4 col-form-label text-md-end">{{ __('Confirm Password') }}</label>
-                            <div class="col-md-6">
-                                <div class="input-group">
-                                    <input id="password-confirm" type="password" class="form-control" name="password_confirmation" required autocomplete="new-password">
-                                    <span class="input-group-text" id="toggleConfirmPassword" style="cursor: pointer;">
-                                        <i class="fa fa-eye-slash"></i>
-                                    </span>
-                                </div>
-                            </div>
+                        <div class="mb-3">
+                            <label for="otp" class="form-label">{{ __('Enter OTP') }}</label>
+                            <input type="text" id="otp" name="otp" class="form-control @error('otp') is-invalid @enderror"
+                                   oninput="this.value = this.value.replace(/[^0-9]/g, '');" minlength="6" maxlength="6" required>
+                            @error('otp')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
                         </div>
 
-                        <!-- Submit Button -->
-                        <div class="row mb-0">
-                            <div class="col-md-6 offset-md-4">
-                                <button type="submit" class="btn btn-primary">
-                                    {{ __('Register') }}
-                                </button>
+                        <div class="mb-3">
+                            <label for="password" class="form-label">{{ __('Password') }}</label>
+                            <input id="password" type="password" class="form-control @error('password') is-invalid @enderror" name="password" required>
+                            @error('password')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
 
-                                <a href="{{ route('login') }}" class="btn btn-secondary">Kembali</a>
-                            </div>
+                        <div class="mb-3">
+                            <label for="password-confirm" class="form-label">{{ __('Confirm Password') }}</label>
+                            <input id="password-confirm" type="password" class="form-control" name="password_confirmation" required>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary">{{ __('Register') }}</button>
+                            <a href="{{ route('login') }}" class="btn btn-secondary">Kembali</a>
                         </div>
                     </form>
                 </div>
@@ -96,35 +75,44 @@
     </div>
 </div>
 
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
-    // Toggle Password Visibility
-    document.getElementById('togglePassword').addEventListener('click', function () {
-        const passwordField = document.getElementById('password');
-        const icon = this.querySelector('i');
-        if (passwordField.type === 'password') {
-            passwordField.type = 'text';
-            icon.classList.remove('fa-eye-slash');
-            icon.classList.add('fa-eye');
-        } else {
-            passwordField.type = 'password';
-            icon.classList.remove('fa-eye');
-            icon.classList.add('fa-eye-slash');
-        }
-    });
+    
+    $(document).ready(function () {
+        $("#sendOtpBtn").click(function () {
+            let phone = $("#phone").val();
+            let otpStatus = $("#otpStatus");
 
-    // Toggle Confirm Password Visibility
-    document.getElementById('toggleConfirmPassword').addEventListener('click', function () {
-        const confirmPasswordField = document.getElementById('password-confirm');
-        const icon = this.querySelector('i');
-        if (confirmPasswordField.type === 'password') {
-            confirmPasswordField.type = 'text';
-            icon.classList.remove('fa-eye-slash');
-            icon.classList.add('fa-eye');
-        } else {
-            confirmPasswordField.type = 'password';
-            icon.classList.remove('fa-eye');
-            icon.classList.add('fa-eye-slash');
-        }
+            if (phone.length < 10 || phone.length > 13) {
+                otpStatus.text("Nomor telepon tidak valid.").addClass("text-danger");
+                return;
+            }
+
+            $(this).prop("disabled", true).text("Sending...");
+
+            $.ajax({
+                url: "{{ route('send-otp') }}",
+                type: "POST",
+                data: {
+                    phone: phone,
+                    _token: "{{ csrf_token() }}"
+                },
+                success: function (response) {
+                    if (response.success) {
+                        otpStatus.text("OTP telah dikirim!").addClass("text-success");
+                    } else {
+                        otpStatus.text(response.message).addClass("text-danger");
+                    }
+                },
+                error: function () {
+                    otpStatus.text("Gagal mengirim OTP.").addClass("text-danger");
+                },
+                complete: function () {
+                    $("#sendOtpBtn").prop("disabled", false).text("Send OTP");
+                }
+            });
+        });
     });
 </script>
 @endsection
+

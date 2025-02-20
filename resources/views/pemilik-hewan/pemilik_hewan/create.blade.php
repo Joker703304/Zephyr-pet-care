@@ -55,15 +55,11 @@
                         @enderror
                     </div>
 
-                    <!-- Email (Read Only) -->
-                    <div class="mb-3">
-                        <label for="email" class="form-label">Email</label>
-                        <div class="input-group">
-                            <span class="input-group-text"><i class="fas fa-envelope"></i></span>
-                            <input type="email" name="email" id="email" 
-                                class="form-control" value="{{ old('email', $user->email) }}" readonly>
-                        </div>
-                    </div>
+                <!-- Email (Read Only) -->
+                <div class="mb-3">
+                    <label for="email" class="form-label"><i class="fa fa-envelope"></i> Nomor Telepon</label>
+                    <input type="text" name="phone" id="phone" class="form-control" value="{{ old('phone', $user->phone) }}" required readonly>
+                </div>
 
                     <!-- Jenis Kelamin -->
                     <div class="mb-3">
@@ -95,19 +91,8 @@
                         @enderror
                     </div>
 
-                    <!-- Nomor Telepon -->
-                    <div class="mb-3">
-                        <label for="no_tlp" class="form-label">Nomor Telepon <span class="text-danger">*</span></label>
-                        <div class="input-group">
-                            <span class="input-group-text"><i class="fas fa-phone"></i></span>
-                            <input type="text" name="no_tlp" id="no_tlp" 
-                                class="form-control @error('no_tlp') is-invalid @enderror" 
-                                value="{{ old('no_tlp') }}" placeholder="Masukan No.Tlp" required>
-                        </div>
-                        @error('no_tlp')
-                            <small class="text-danger">{{ $message }}</small>
-                        @enderror
-                    </div>
+                <!-- Nomor Telepon -->
+                
 
                     <!-- Tombol Simpan -->
                     <div class="d-grid gap-2 mt-4">

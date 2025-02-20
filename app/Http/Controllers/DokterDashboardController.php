@@ -190,15 +190,6 @@ public function panggil(Request $request, Antrian $antrian)
             }
         }
 
-        // Update status antrian menjadi "Selesai"
-    $antrian = Antrian::where('konsultasi_id', $id_konsultasi)->first();
-
-    if ($antrian) {
-        $antrian->update([
-            'status' => 'Selesai',
-        ]);
-    }
-
         return redirect()->route("dokter.konsultasi.index")->with('success', 'Diagnosis dan resep berhasil diperbarui.');
     }
 
@@ -216,7 +207,8 @@ public function panggil(Request $request, Antrian $antrian)
 
     public function createProfile()
     {
-        return view('dokter.createProfile');
+        $user = auth()->user();
+        return view('dokter.createProfile', compact('user'));
     }
 
     public function storeProfile(Request $request)
@@ -224,7 +216,7 @@ public function panggil(Request $request, Antrian $antrian)
         // Validate the incoming data
         $validated = $request->validate([
             'spesialis' => 'required|string|max:50',
-            'no_telepon' => 'required|string|max:20|unique:tbl_dokter',
+            'phone' => 'required|string|max:13|exists:users,phone',
             'jenkel' => 'required|in:pria,wanita',
             'alamat' => 'nullable|string',
         ]);
@@ -233,7 +225,6 @@ public function panggil(Request $request, Antrian $antrian)
         Dokter::create([
             'id_user' => Auth::id(),
             'spesialis' => $validated['spesialis'],
-            'no_telepon' => $validated['no_telepon'],
             'jenkel' => $validated['jenkel'],
             'alamat' => $validated['alamat'],
         ]);
@@ -257,7 +248,6 @@ public function panggil(Request $request, Antrian $antrian)
         $validated = $request->validate([
             'name' => 'required|string|max:255',  // Menambahkan validasi untuk name
             'spesialis' => 'required|string|max:50',
-            'no_telepon' => 'required|string|max:20|unique:tbl_dokter,no_telepon,' . Auth::id() . ',id_user',
             'jenkel' => 'required|in:pria,wanita',
             'alamat' => 'nullable|string',
         ]);
@@ -273,7 +263,6 @@ public function panggil(Request $request, Antrian $antrian)
         // Update data dokter
         $dokter->update([
             'spesialis' => $validated['spesialis'],
-            'no_telepon' => $validated['no_telepon'],
             'jenkel' => $validated['jenkel'],
             'alamat' => $validated['alamat'],
         ]);
