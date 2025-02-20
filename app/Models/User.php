@@ -19,7 +19,7 @@ class User extends Authenticatable implements MustVerifyEmail
      */
     protected $fillable = [
         'name',
-        'email',
+        'phone',
         'password',
         'role'
     ];
@@ -54,12 +54,17 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function pemilikHewan()
     {
-        return $this->hasOne(pemilik_hewan::class, 'email', 'email');
+        return $this->hasOne(pemilik_hewan::class, 'id_user', 'id');
     }
 
     public function dokter()
 {
     return $this->hasOne(Dokter::class, 'id_user');
 }
+
+public function otpCodes()
+    {
+        return $this->hasMany(OtpCode::class, 'id_user');
+    }
 
 }

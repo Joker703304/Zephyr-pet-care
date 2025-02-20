@@ -6,13 +6,19 @@
 
         <div class="row">
             <!-- Kolom Antrian Dipanggil -->
-            <div class="col-lg-5 mb-4"> <!-- Adjusted width -->
+            <div class="col-lg-8 mb-4">
                 <h3 class="text-center">ANTRIAN DIPANGGIL</h3>
-                <div class="d-flex flex-wrap justify-content-center">
+                <div class="d-flex flex-wrap justify-content-center" id="antrianDipanggil">
                     @forelse ($antrianDipanggil as $item)
                         <div class="kotak-antrian m-3">
                             <h1>{{ strtoupper($item->no_antrian) }}</h1>
-                            <p>{{ strtoupper($item->konsultasi->dokter->user->name ?? 'TIDAK ADA') }}</p>
+                            <p>{{ strtoupper($item->konsultasi->hewan->pemilik->nama ?? 'TIDAK ADA') }}</p>
+                            <p>{{ strtoupper($item->konsultasi->hewan->nama_hewan ?? 'TIDAK ADA') }}</p>
+                            @if ($item->konsultasi->status == 'Pembayaran')
+                                <p class="kasir text-success">KASIR</p>
+                            @else
+                                <p class="text-primary">{{ strtoupper($item->konsultasi->dokter->user->name ?? 'TIDAK ADA') }}</p>
+                            @endif
                         </div>
                     @empty
                         <p class="text-center w-100">TIDAK ADA ANTRIAN YANG DIPANGGIL.</p>
@@ -21,21 +27,21 @@
             </div>
 
             <!-- Kolom Daftar Antrian Menunggu -->
-            <div class="col-lg-7"> <!-- Adjusted width -->
+            <div class="col-lg-4">
                 <h3 class="text-center">DAFTAR ANTRIAN MENUNGGU</h3>
-                <table class="table table-bordered mt-3" id="menungguTable">
+                <table class="table table-bordered mt-3">
                     <thead>
                         <tr>
                             <th>NOMOR ANTRIAN</th>
-                            <th>NAMA DOKTER</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody id="menungguTable">
                         @forelse ($antrianMenunggu as $item)
-                            <tr>
-                                <td>{{ strtoupper($item->no_antrian) }}</td>
-                                <td>{{ strtoupper($item->konsultasi->dokter->user->name ?? 'TIDAK ADA') }}</td>
-                            </tr>
+                            @if ($item->konsultasi->status !== 'Selesai')
+                                <tr>
+                                    <td>{{ strtoupper($item->no_antrian) }}</td>
+                                </tr>
+                            @endif
                         @empty
                             <tr>
                                 <td colspan="2" class="text-center">BELUM ADA ANTRIAN UNTUK SAAT INI.</td>
@@ -62,7 +68,7 @@
             overflow: hidden;
             word-wrap: break-word;
         }
-    
+
         .kotak-antrian h1 {
             font-size: 2.5rem;
             color: #007bff;
@@ -71,7 +77,7 @@
             line-height: 1;
             text-transform: uppercase;
         }
-    
+
         .kotak-antrian p {
             font-size: 2rem;
             color: #333;
@@ -81,22 +87,31 @@
             text-overflow: ellipsis;
             text-transform: uppercase;
         }
-    
+
+        .text-primary {
+            color: blue !important; /* Nama dokter jadi biru */
+            font-weight: bold;
+        }
+
+        .text-success {
+            color: green !important; /* Kasir jadi hijau */
+            font-weight: bold;
+        }
+
         .table th, .table td {
             text-align: center;
             vertical-align: middle;
             text-transform: uppercase;
-            font-size: 2rem; /* Ukuran teks diperbesar */
-            font-weight: bold; /* Menambah ketebalan */
-            color: #000; /* Warna teks hitam */
+            font-size: 2rem;
+            font-weight: bold;
+            color: #000;
         }
-    
+
         .table th {
             background-color: #007bff;
-            color: #fff; /* Warna teks header tabel putih */
+            color: #fff;
         }
     </style>
-    
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
@@ -105,15 +120,21 @@
                 url: "{{ route('security.getAntrian') }}",
                 method: "GET",
                 success: function (data) {
-                    const antrianDipanggilContainer = $(".d-flex.flex-wrap");
+                    const antrianDipanggilContainer = $("#antrianDipanggil");
                     antrianDipanggilContainer.empty();
 
                     if (data.antrianDipanggil.length > 0) {
                         data.antrianDipanggil.forEach(item => {
+                            let statusPembayaran = item.konsultasi.status_pembayaran == 'Belum Lunas' 
+                                ? '<p class="kasir text-success">Silakan ke kasir</p>' 
+                                : `<p class="text-primary">${(item.konsultasi.dokter.user.name ?? 'TIDAK ADA').toUpperCase()}</p>`;
+
                             const antrianBox = `
                                 <div class="kotak-antrian m-3">
                                     <h1>${item.no_antrian.toUpperCase()}</h1>
-                                    <p>${(item.konsultasi.dokter.user.name ?? 'TIDAK ADA').toUpperCase()}</p>
+                                    <p>${(item.konsultasi.hewan.pemilik. ?? 'TIDAK ADA').toUpperCase()}</p>
+                                    <p>${(item.konsultasi.hewan.nama_hewan ?? 'TIDAK ADA').toUpperCase()}</p>
+                                    ${statusPembayaran}
                                 </div>
                             `;
                             antrianDipanggilContainer.append(antrianBox);
@@ -122,18 +143,24 @@
                         antrianDipanggilContainer.append('<p class="text-center w-100">TIDAK ADA ANTRIAN YANG DIPANGGIL.</p>');
                     }
 
-                    const menungguTableBody = $("#menungguTable tbody");
+                    const menungguTableBody = $("#menungguTable");
                     menungguTableBody.empty();
 
                     if (data.antrianMenunggu.length > 0) {
                         data.antrianMenunggu.forEach(item => {
-                            const row = `
-                                <tr>
-                                    <td>${item.no_antrian.toUpperCase()}</td>
-                                    <td>${(item.konsultasi.dokter.user.name ?? 'TIDAK ADA').toUpperCase()}</td>
-                                </tr>
-                            `;
-                            menungguTableBody.append(row);
+                            if (item.konsultasi.status !== "Selesai") {
+                                let dokterName = item.konsultasi.status_pembayaran !== 'Belum Lunas' 
+                                    ? `<span class="text-primary">${(item.konsultasi.dokter.user.name ?? 'TIDAK ADA').toUpperCase()}</span>` 
+                                    : '';
+
+                                const row = `
+                                    <tr>
+                                        <td>${item.no_antrian.toUpperCase()}</td>
+                                        <td>${dokterName}</td>
+                                    </tr>
+                                `;
+                                menungguTableBody.append(row);
+                            }
                         });
                     } else {
                         menungguTableBody.append('<tr><td colspan="2" class="text-center">BELUM ADA ANTRIAN UNTUK SAAT INI.</td></tr>');

@@ -165,6 +165,8 @@ class ResepObatController extends Controller
         ['total_harga' => $totalHarga, 'status_pembayaran' => 'belum dibayar']
     );
 
+    $konsultasi->update(['status' => 'Pembayaran']);
+
     return redirect()->route('apoteker.resep_obat.index')->with('success', 'Resep Obat dan Transaksi berhasil diperbarui.');
 }
 

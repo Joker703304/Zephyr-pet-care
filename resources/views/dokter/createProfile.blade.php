@@ -58,9 +58,9 @@
                         <label for="no_telepon" class="form-label">Nomor Telepon <span class="text-danger">*</span></label>
                         <div class="input-group">
                             <span class="input-group-text"><i class="fas fa-phone"></i></span>
-                            <input type="text" name="no_telepon" id="no_telepon" 
-                                class="form-control @error('no_telepon') is-invalid @enderror" 
-                                value="{{ old('no_telepon') }}" placeholder="Masukan No.Tlp" required>
+                            <input type="text" name="phone" id="phone" 
+                                class="form-control @error('') is-invalid @enderror" 
+                                value="{{ old('phone', $user->phone) }}" placeholder="Masukan No.Tlp" readonly>
                         </div>
                         @error('no_telepon')
                             <small class="text-danger">{{ $message }}</small>

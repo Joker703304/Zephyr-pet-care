@@ -29,7 +29,7 @@
         <div class="card-body">
             <form action="{{ route('dokter.updateProfile') }}" method="POST">
                 @csrf
-                {{-- @method('PUT') --}}
+                
 
                 <!-- Nama -->
                 <div class="mb-3">
@@ -52,14 +52,7 @@
                 </div>
 
                 <!-- Nomor Telepon -->
-                <div class="mb-3">
-                    <label for="no_telepon" class="form-label">Nomor Telepon</label>
-                    <div class="input-group">
-                        <span class="input-group-text"><i class="fas fa-phone"></i></span>
-                        <input type="text" name="no_telepon" id="no_telepon" class="form-control" 
-                               value="{{ old('no_telepon', $dokter->no_telepon) }}" required>
-                    </div>
-                </div>
+                
 
                 <!-- Jenis Kelamin -->
                 <div class="mb-3">

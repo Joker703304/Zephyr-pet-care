@@ -43,11 +43,11 @@
 
                 <!-- Email (Read Only) -->
                 <div class="mb-3">
-                    <label for="email" class="form-label">Email</label>
+                    <label for="email" class="form-label">Nomor Telepon</label>
                     <div class="input-group">
-                        <span class="input-group-text"><i class="fas fa-envelope"></i></span>
-                        <input type="email" name="email" id="email" class="form-control" 
-                               value="{{ old('email', $pemilik->email) }}" readonly>
+                        <span class="input-group-text"><i class="fas fa-phone"></i></span>
+                        <input type="text" name="phone" id="phone" class="form-control" 
+                               value="{{ old('phone', $pemilik->user->phone) }}" readonly>
                     </div>
                 </div>
 
@@ -74,14 +74,7 @@
                 </div>
 
                 <!-- Nomor Telepon -->
-                <div class="mb-3">
-                    <label for="no_tlp" class="form-label">Nomor Telepon</label>
-                    <div class="input-group">
-                        <span class="input-group-text"><i class="fas fa-phone"></i></span>
-                        <input type="text" name="no_tlp" id="no_tlp" class="form-control" 
-                               value="{{ old('no_tlp', $pemilik->no_tlp) }}" required>
-                    </div>
-                </div>
+                
 
                 <!-- Buttons -->
                 <div class="d-flex justify-content-center gap-2">

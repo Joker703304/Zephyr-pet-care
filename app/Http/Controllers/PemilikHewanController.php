@@ -6,6 +6,7 @@ use App\Models\pemilik_hewan;
 use App\Models\user;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
 
 class PemilikHewanController extends Controller
 {
@@ -14,11 +15,11 @@ class PemilikHewanController extends Controller
         // Cek role pengguna yang sedang login
         if (auth()->user()->role == 'pemilik_hewan') {
             // Ambil data pemilik hewan terkait dengan user yang login
-            $userId = auth()->user()->email;
+            $userId = auth()->user()->id;
 
             // Ambil data pemilik hewan berdasarkan user_id
             $data = pemilik_hewan::with('user')
-                ->where('email', $userId)
+                ->where('id_user', $userId)
                 ->get();
 
             // Tampilkan view untuk pemilik hewan
@@ -43,31 +44,28 @@ class PemilikHewanController extends Controller
 
     // Menyimpan data pemilik hewan baru
     public function store(Request $request)
-    {
-        $request->validate([
-            'nama' => 'required|string|max:255',
-            'email' => 'required|email|exists:users,email', // Validasi email harus ada di tabel users dengan role pemilik_hewan
-            'jenkel' => 'required|in:pria,wanita',
-            'alamat' => 'required|string|max:255',
-            'no_tlp' => 'required|string|max:15',
-        ]);
+{
+    $validated = $request->validate([
+        'nama' => 'required|string|max:50',
+        'phone' => 'required|string|max:13|exists:users,phone',
+        'jenkel' => 'required|in:pria,wanita',
+        'alamat' => 'nullable|string',
+    ]);
 
-        // Periksa apakah email sudah ada di tabel pemilik_hewan
-        if (pemilik_hewan::where('email', $request->email)->exists()) {
-            return back()->withErrors(['email' => 'Email ini sudah terdaftar pada pemilik hewan.'])->withInput();
-        }
+    // Ensure the authenticated user has the right id_user
+    $userId = Auth::id(); // Get the authenticated user ID
 
-        // Simpan data ke tabel pemilik_hewan
-        pemilik_hewan::create([
-            'nama' => $request->nama,
-            'email' => $request->email,
-            'jenkel' => $request->jenkel,
-            'alamat' => $request->alamat,
-            'no_tlp' => $request->no_tlp,
-        ]);
+    // Create a new pemilik_hewan profile
+    pemilik_hewan::create([
+        'id_user' => $userId,   // Store the authenticated user's ID
+        'nama' => $validated['nama'],
+        'jenkel' => $validated['jenkel'],
+        'alamat' => $validated['alamat'],
+    ]);
 
-        return redirect()->route('pemilik-hewan.dashboard')->with('success', 'Data pemilik hewan berhasil disimpan.');
-    }
+    return redirect()->route('pemilik-hewan.dashboard')->with('success', 'Data pemilik hewan berhasil disimpan.');
+}
+
 
     // Menampilkan form untuk mengedit data pemilik hewan
     public function edit($id_pemilik)
@@ -85,37 +83,32 @@ class PemilikHewanController extends Controller
 
     // Memperbarui data pemilik hewan yang sudah ada
     public function update(Request $request, $id_pemilik)
-    {
-        // Menemukan pemilik hewan yang akan diperbarui
-        $pemilik = pemilik_hewan::findOrFail($id_pemilik);
+{
+    $pemilik = pemilik_hewan::findOrFail($id_pemilik);
 
-        if (!in_array(auth()->user()->role, ['admin', 'pemilik_hewan'])) {
-            abort(403, 'Unauthorized action.');
-        }
-        // Validasi input
-        $request->validate([
-            'nama' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email,' . $pemilik->user->id, // Validasi unik, kecuali untuk email yang sama
-            'jenkel' => 'required',
-            'alamat' => 'required|string',
-            'no_tlp' => 'required|string|max:15',
-        ]);
-
-        // Menemukan pemilik hewan yang akan diperbarui
-        $pemilikHewan = pemilik_hewan::findOrFail($id_pemilik);
-        
-        // Update field yang diperbarui
-        $pemilikHewan->update([
-            'nama' => $request->nama,
-            'email' => $request->email,
-            'jenkel' => $request->jenkel,
-            'alamat' => $request->alamat,
-            'no_tlp' => $request->no_tlp,
-        ]);
-
-        $redirectRoute = auth()->user()->role === 'pemilik_hewan' ? 'pemilik-hewan.pemilik_hewan.index' : 'admin.pemilik_hewan.index';
-        return redirect()->route($redirectRoute)->with('success', 'Data berhasil diupdate.');
+    if (auth()->user()->role === 'pemilik_hewan' && auth()->id() !== $pemilik->id_user) {
+        abort(403, 'Unauthorized action.');
     }
+
+    $validated = $request->validate([
+        'nama' => 'required|string|max:255',
+        'phone' => 'required|string|max:13|unique:users,phone,' . $pemilik->id_user . ',id',
+        'jenkel' => 'required|in:pria,wanita',
+        'alamat' => 'nullable|string',
+    ]);
+
+    $pemilik->update([
+        'nama' => $validated['nama'],
+        'jenkel' => $validated['jenkel'],
+        'alamat' => $validated['alamat'],
+    ]);
+
+    $redirectRoute = auth()->user()->role === 'pemilik_hewan' 
+        ? 'pemilik-hewan.pemilik_hewan.index' 
+        : 'admin.pemilik_hewan.index';
+
+    return redirect()->route($redirectRoute)->with('success', 'Data berhasil diupdate.');
+}
 
     // Menghapus data pemilik hewan
     public function destroy($id_pemilik)
