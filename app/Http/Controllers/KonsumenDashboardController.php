@@ -76,7 +76,7 @@ class KonsumenDashboardController extends Controller
     public function listTransaksi()
 {
     // Ambil data pemilik berdasarkan email user yang login
-    $pemilik = pemilik_hewan::where('email', Auth::user()->email)->first();
+    $pemilik = pemilik_hewan::where('id_user', Auth::user()->id)->first();
 
     // Jika pemilik tidak ditemukan
     if (!$pemilik) {

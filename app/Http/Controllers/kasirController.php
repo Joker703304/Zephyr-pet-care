@@ -154,14 +154,15 @@ class kasirController extends Controller
 
     public function createProfile()
     {
-        return view('kasir.createProfile');
+        $user = auth()->user();
+        return view('kasir.createProfile', compact('user'));
     }
 
     public function storeProfile(Request $request)
     {
         // Validate the incoming data
         $validated = $request->validate([
-            'no_telepon' => 'required|string|max:20|unique:kasir',
+            'phone' => 'required|string|max:13|exists:users,phone',
             'jenkel' => 'required|in:pria,wanita',
             'alamat' => 'nullable|string',
         ]);
@@ -169,7 +170,6 @@ class kasirController extends Controller
         // Create a new doctor profile
         Kasir::create([
             'id_user' => Auth::id(),
-            'no_telepon' => $validated['no_telepon'],
             'jenkel' => $validated['jenkel'],
             'alamat' => $validated['alamat'],
         ]);

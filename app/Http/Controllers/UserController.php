@@ -14,11 +14,25 @@ class UserController extends Controller
     }
 
     // Menampilkan daftar pengguna
-    public function index()
+    public function index(Request $request)
     {
-        $users = User::all();
+        $query = User::query();
+
+        // Cek apakah ada input pencarian
+        if ($request->has('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%$search%")
+                    ->orWhere('phone', 'like', "%$search%");
+            });
+        }
+
+        // Ambil data user dengan pagination (10 data per halaman)
+        $users = $query->paginate(10);
+
         return view('admin.users.index', compact('users'));
     }
+
 
     // Menampilkan form untuk menambah pengguna baru
     public function create()
@@ -52,21 +66,21 @@ class UserController extends Controller
 
     // Mengupdate data pengguna
     public function update(Request $request, User $user)
-{
-    $request->validate([
-        'name' => 'required|string|max:255',
-        'email' => 'required|email|unique:users,email,' . $user->id,
-        'role' => 'required|in:pemilik_hewan,admin,dokter,apoteker', // Validasi role
-    ]);
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email,' . $user->id,
+            'role' => 'required|in:pemilik_hewan,admin,dokter,apoteker', // Validasi role
+        ]);
 
-    $user->update([
-        'name' => $request->name,
-        'email' => $request->email,
-        'role' => $request->role,  // Update role
-    ]);
+        $user->update([
+            'name' => $request->name,
+            'email' => $request->email,
+            'role' => $request->role,  // Update role
+        ]);
 
-    return redirect()->route('admin.users.index')->with('success', 'User updated successfully.');
-}
+        return redirect()->route('admin.users.index')->with('success', 'User updated successfully.');
+    }
 
 
     // Menghapus pengguna
@@ -74,5 +88,38 @@ class UserController extends Controller
     {
         $user->delete();
         return redirect()->route('admin.users.index')->with('success', 'User deleted successfully.');
+    }
+
+    public function updateRole(Request $request, User $user)
+    {
+        $request->validate([
+            'role' => 'required|in:pemilik_hewan,admin,dokter,apoteker,kasir',
+        ]);
+
+        // Hapus data terkait jika user mengganti role
+        if ($user->role != $request->role) {
+            if ($user->pemilikHewan) {
+                $user->pemilikHewan()->delete();
+            }
+            if ($user->dokter) {
+                $user->dokter()->delete();
+            }
+            if ($user->apoteker) {
+                $user->apoteker()->delete();
+            }
+            if ($user->kasir) {
+                $user->kasir()->delete();
+            }
+            if ($user->security) {
+                $user->security()->delete();
+            }
+        }
+
+        // Update role user
+        $user->update([
+            'role' => $request->role,
+        ]);
+
+        return redirect()->route('admin.users.index')->with('success', 'Role user berhasil diperbarui.');
     }
 }

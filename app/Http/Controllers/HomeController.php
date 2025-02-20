@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 
 class HomeController extends Controller
 {
@@ -13,7 +14,7 @@ class HomeController extends Controller
      */
     public function __construct()
     {
-        $this->middleware(['auth', 'verified']);
+        $this->middleware(['auth']);
     }
 
     /**
@@ -23,6 +24,20 @@ class HomeController extends Controller
      */
     public function index()
     {
-        return view('home');
+        $user = auth()->user();
+
+        if (Gate::allows('admin', $user)) {
+            return redirect()->route('admin.dashboard');
+        } elseif (Gate::allows('dokter', $user)) {
+            return redirect()->route('dokter.dashboard');
+        } elseif (Gate::allows('apoteker', $user)) {
+            return redirect()->route('apoteker.dashboard');
+        } elseif (Gate::allows('kasir', $user)) {
+            return redirect()->route('kasir.dashboard');
+        } elseif (Gate::allows('security', $user)) {
+            return redirect()->route('security.dashboard');
+        } else {
+            return redirect()->route('pemilik-hewan.dashboard');
+        }
     }
 }

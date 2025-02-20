@@ -3,31 +3,31 @@
 @section('content')
 <div class="container">
     <div class="row justify-content-center">
-        <div class="col-md-8">
+        <div class="col-md-6">
             <div class="card">
-                <div class="card-header">{{ __('Reset Password') }}</div>
-
+                <div class="card-header">Forgot Password</div>
                 <div class="card-body">
-                    @if (session('status'))
-                        <div class="alert alert-success" role="alert">
-                            {{ session('status') }}
-                        </div>
+                    @if (session('error'))
+                        <div class="alert alert-danger">{{ session('error') }}</div>
                     @endif
-
-                    <form method="POST" action="{{ route('password.email') }}">
+                    @if (session('success'))
+                        <div class="alert alert-success">{{ session('success') }}</div>
+                    @endif
+                    <form action="{{ route('password.sendOtp') }}" method="POST">
                         @csrf
-
-                         <input type="hidden" name="token" value="{{ request('token') }}">
-
                         <div class="mb-3">
-                            <label for="floatingInput" class="form-label">Phone Number</label>
-                            <input name="phone" type="text" class="form-control {{ $errors->has('phone') ? 'is-invalid' : '' }}" id="floatingInput" value="{{ request('phone') }}" >
+                            <label for="phone" class="form-label">Enter your phone number</label>
+                            <input type="text" name="phone" id="phone" class="form-control @error('phone') is-invalid @enderror" 
+                                oninput="this.value = this.value.replace(/[^0-9]/g, '');" minlength="10" maxlength="13"
+                                value="{{ old('phone') }}" required>
                             @error('phone')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
-                        
-                        <button class="w-100 btn btn-primary btn-lg mb-3" type="submit">Submit</button>
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary w-100">Send OTP</button>
+                            <a href="{{ route('login') }}" class="btn btn-secondary">Kembali</a>
+                        </div>
                     </form>
                 </div>
             </div>

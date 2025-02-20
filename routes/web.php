@@ -10,6 +10,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\ApotekerController;
 use App\Http\Controllers\ApotekerAdminController;
 use App\Http\Controllers\Auth\ResetPasswordController;
+use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\PemilikHewanController;
 use App\Http\Controllers\ObatController;
 use App\Http\Controllers\DokterController;
@@ -39,8 +40,17 @@ Route::get('/', function () {
 
 Auth::routes();
 
-Auth::routes(['verify' => true]);
 
+Route::post('/password/send-otp', [ForgotPasswordController::class, 'sendResetOtp'])
+    ->middleware('throttle:5,1') // Batasi pengiriman OTP agar tidak disalahgunakan
+    ->name('password.sendOtp');
+
+Route::get('/password/resetform', [ResetPasswordController::class, 'showResetForm'])
+    ->name('password.reset.form');
+
+Route::post('/password/update', [ResetPasswordController::class, 'reset'])
+    ->middleware('throttle:5,1') // Batasi reset password agar tidak disalahgunakan
+    ->name('password.update');
 Route::post('/send-otp', [CodeOtpController::class, 'sendOtp'])->middleware('throttle:send-otp')->name('send-otp');
 // Route::get('/email/verify/{id}/{hash}', [VerificationController::class, 'verify'])
 // ->middleware(['signed']) // Hanya signed, tanpa 'auth'
@@ -52,9 +62,6 @@ Route::get('login', [LoginController::class, 'showLoginForm'])->name('login');
 Route::post('login', [LoginController::class, 'login']);
 Route::post('logout', [LoginController::class, 'logout'])->name('logout');
 
-Route::get('/email/verify', function () {
-    return view('auth.verify-email');
-})->name('verification.notice');
 
 // Reset Password Bawaan Laravel
 Route::get('password/reset/{token}', [ResetPasswordController::class, 'showResetForm'])->name('password.reset');
@@ -81,8 +88,14 @@ Route::middleware('auth')->group(function () {
 });
 
 Route::middleware(['auth'])->group(function () {
-    Route::get('/pemilik-hewan/dashboard', [PemilikHewanController::class, 'index'])
+        Route::get('/pemilik-hewan/dashboard', [PemilikHewanController::class, 'index'])
         ->name('pemilik-hewan.dashboard');
+        Route::post('/send-otp-change-number', [CodeOtpController::class, 'sendOtpChangeNumber'])->name('sendOtpChangeNumber');
+        Route::post('/verify-otp-change-number', [CodeOtpController::class, 'verifyOtpChangeNumber'])->name('verifyOtpChangeNumber');
+        Route::put('/admin/users/{user}/update-role', [UserController::class, 'updateRole'])->name('admin.users.updateRole');
+        Route::post('/send-otp-change-password', [CodeOtpController::class, 'sendOtpChangePassword'])->name('sendOtpChangePassword');
+Route::post('/verify-otp-change-password', [CodeOtpController::class, 'verifyOtpChangePassword'])->name('verifyOtpChangePassword');
+
 });
 
 

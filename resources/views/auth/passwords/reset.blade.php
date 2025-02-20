@@ -3,135 +3,44 @@
 @section('content')
 <div class="container">
     <div class="row justify-content-center">
-        <div class="col-md-8">
+        <div class="col-md-6">
             <div class="card">
                 <div class="card-header">{{ __('Reset Password') }}</div>
 
                 <div class="card-body">
-                    <!-- Pemberitahuan jika pengguna mengakses halaman reset password setelah mengklik link di email -->
-                    <div class="alert alert-info" role="alert">
-                        Permintaan pengaturan ulang Password untuk akun Anda. Silakan masukkan Password baru Anda.
-                    </div>
-
-                    <!-- Error Alert -->
-                    @if ($errors->any())
-                        <div class="alert alert-danger" role="alert">
-                            <ul>
-                                @foreach ($errors->all() as $error)
-                                    <li>{{ $error }}</li>
-                                @endforeach
-                            </ul>
-                        </div>
+                    @if (session('success'))
+                        <div class="alert alert-success">{{ session('success') }}</div>
+                    @elseif (session('error'))
+                        <div class="alert alert-danger">{{ session('error') }}</div>
                     @endif
 
-                <div class="card-body">
-                    @if (session('status'))
-                        <div class="alert alert-success" role="alert">
-                            {{ session('status') }}
-                        </div>
-                    @endif
-
-                    <div class="card-body">
-                        <!-- Error Alert -->
-                        @if ($errors->any())
-                            <div class="alert alert-danger" role="alert">
-                                <ul>
-                                    @foreach ($errors->all() as $error)
-                                        <li>{{ $error }}</li>
-                                    @endforeach
-                                </ul>
-                            </div>
-                        @endif
-
-                <div class="card-body">
                     <form method="POST" action="{{ route('password.update') }}">
                         @csrf
 
-                        <input type="hidden" name="token" value="{{ $token }}">
+                        <input type="hidden" name="phone" value="{{ session('reset_phone') }}">
 
-                        <div class="row mb-3">
-                            <label for="email" class="col-md-4 col-form-label text-md-end">{{ __('Email Address') }}</label>
-
-                             <div class="form-floating mb-2">
-                                <input type="text" oninput="this.value = this.value.replace(/[^0-9]/g, '');" minlength="10" maxlength="13" class="form-control @error('phone') is-invalid @enderror" id="floatingPhone" name="phone" value="{{ old('phone') }}" required autocomplete="phone">
-                                <label for="floatingPhone">Phone</label>
-                            </div>
+                        <div class="mb-3">
+                            <label for="otp" class="form-label">Kode OTP</label>
+                            <input type="text" name="otp" class="form-control @error('otp') is-invalid @enderror" required>
+                            @error('otp') <span class="text-danger">{{ $message }}</span> @enderror
                         </div>
 
-                        <!-- Input Password -->
-                        <div class="row mb-3">
-                            <label for="password" class="col-md-4 col-form-label text-md-end">{{ __('Password') }}</label>
-                            <div class="col-md-6">
-                                <div class="input-group">
-                                    <input id="password" type="password" class="form-control @error('password') is-invalid @enderror" name="password" required autocomplete="new-password">
-                                    <span class="input-group-text" id="togglePassword" style="cursor: pointer;">
-                                        <i class="fa fa-eye-slash"></i>
-                                    </span>
-                                </div>
-                                @error('password')
-                                    <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
-                                @enderror
-                            </div>
+                        <div class="mb-3">
+                            <label for="password" class="form-label">Password Baru</label>
+                            <input type="password" name="password" class="form-control @error('password') is-invalid @enderror" required>
+                            @error('password') <span class="text-danger">{{ $message }}</span> @enderror
                         </div>
 
-                        <!-- Input Confirm Password -->
-                        <div class="row mb-3">
-                            <label for="password-confirm" class="col-md-4 col-form-label text-md-end">{{ __('Confirm Password') }}</label>
-                            <div class="col-md-6">
-                                <div class="input-group">
-                                    <input id="password-confirm" type="password" class="form-control" name="password_confirmation" required autocomplete="new-password">
-                                    <span class="input-group-text" id="toggleConfirmPassword" style="cursor: pointer;">
-                                        <i class="fa fa-eye-slash"></i>
-                                    </span>
-                                </div>
-                            </div>
+                        <div class="mb-3">
+                            <label for="password_confirmation" class="form-label">Konfirmasi Password</label>
+                            <input type="password" name="password_confirmation" class="form-control" required>
                         </div>
 
-                        <div class="row mb-0">
-                            <div class="col-md-6 offset-md-4">
-                                <button type="submit" class="btn btn-primary">
-                                    {{ __('Reset Password') }}
-                                </button>
-                            </div>
-                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Reset Password</button>
                     </form>
                 </div>
             </div>
         </div>
     </div>
 </div>
-
-<script>
-    // Toggle Password Visibility
-    document.getElementById('togglePassword').addEventListener('click', function () {
-        const passwordField = document.getElementById('password');
-        const icon = this.querySelector('i');
-        if (passwordField.type === 'password') {
-            passwordField.type = 'text';
-            icon.classList.remove('fa-eye-slash');
-            icon.classList.add('fa-eye');
-        } else {
-            passwordField.type = 'password';
-            icon.classList.remove('fa-eye');
-            icon.classList.add('fa-eye-slash');
-        }
-    });
-
-    // Toggle Confirm Password Visibility
-    document.getElementById('toggleConfirmPassword').addEventListener('click', function () {
-        const confirmPasswordField = document.getElementById('password-confirm');
-        const icon = this.querySelector('i');
-        if (confirmPasswordField.type === 'password') {
-            confirmPasswordField.type = 'text';
-            icon.classList.remove('fa-eye-slash');
-            icon.classList.add('fa-eye');
-        } else {
-            confirmPasswordField.type = 'password';
-            icon.classList.remove('fa-eye');
-            icon.classList.add('fa-eye-slash');
-        }
-    });
-</script>
 @endsection

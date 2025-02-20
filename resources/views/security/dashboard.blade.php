@@ -15,9 +15,9 @@
                             <p>{{ strtoupper($item->konsultasi->hewan->pemilik->nama ?? 'TIDAK ADA') }}</p>
                             <p>{{ strtoupper($item->konsultasi->hewan->nama_hewan ?? 'TIDAK ADA') }}</p>
                             @if ($item->konsultasi->status == 'Pembayaran')
-                                <p class="kasir">kasir</p>
+                                <p class="kasir text-success">KASIR</p>
                             @else
-                                <p>{{ strtoupper($item->konsultasi->dokter->user->name ?? 'TIDAK ADA') }}</p>
+                                <p class="text-primary">{{ strtoupper($item->konsultasi->dokter->user->name ?? 'TIDAK ADA') }}</p>
                             @endif
                         </div>
                     @empty
@@ -33,7 +33,6 @@
                     <thead>
                         <tr>
                             <th>NOMOR ANTRIAN</th>
-                            
                         </tr>
                     </thead>
                     <tbody id="menungguTable">
@@ -41,7 +40,6 @@
                             @if ($item->konsultasi->status !== 'Selesai')
                                 <tr>
                                     <td>{{ strtoupper($item->no_antrian) }}</td>
-                                    
                                 </tr>
                             @endif
                         @empty
@@ -90,9 +88,13 @@
             text-transform: uppercase;
         }
 
-        .kasir {
-            font-size: 1.5rem;
-            color: red;
+        .text-primary {
+            color: blue !important; /* Nama dokter jadi biru */
+            font-weight: bold;
+        }
+
+        .text-success {
+            color: green !important; /* Kasir jadi hijau */
             font-weight: bold;
         }
 
@@ -124,8 +126,8 @@
                     if (data.antrianDipanggil.length > 0) {
                         data.antrianDipanggil.forEach(item => {
                             let statusPembayaran = item.konsultasi.status_pembayaran == 'Belum Lunas' 
-                                ? '<p class="kasir">Silakan ke kasir</p>' 
-                                : `<p>${(item.konsultasi.dokter.user.name ?? 'TIDAK ADA').toUpperCase()}</p>`;
+                                ? '<p class="kasir text-success">Silakan ke kasir</p>' 
+                                : `<p class="text-primary">${(item.konsultasi.dokter.user.name ?? 'TIDAK ADA').toUpperCase()}</p>`;
 
                             const antrianBox = `
                                 <div class="kotak-antrian m-3">
@@ -148,7 +150,7 @@
                         data.antrianMenunggu.forEach(item => {
                             if (item.konsultasi.status !== "Selesai") {
                                 let dokterName = item.konsultasi.status_pembayaran !== 'Belum Lunas' 
-                                    ? (item.konsultasi.dokter.user.name ?? 'TIDAK ADA').toUpperCase() 
+                                    ? `<span class="text-primary">${(item.konsultasi.dokter.user.name ?? 'TIDAK ADA').toUpperCase()}</span>` 
                                     : '';
 
                                 const row = `

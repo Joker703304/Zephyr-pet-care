@@ -3,9 +3,12 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\OtpCode;
 use Illuminate\Foundation\Auth\ResetsPasswords;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Password;
+use App\Models\User;
+use Illuminate\Support\Facades\Hash;
 
 class ResetPasswordController extends Controller
 {
@@ -13,28 +16,45 @@ class ResetPasswordController extends Controller
 
     protected $redirectTo = '/dashboard'; // Ganti sesuai kebutuhan
 
-    public function reset(Request $request)
+    public function showResetForm(Request $request)
     {
-        // Validasi data input
-        $request->validate([
-            'phone' => 'required|string|max:13|exists:users,phone',
-            'password' => 'required|confirmed|min:8',
-            'token' => 'required',
-        ]);
+        $phone = $request->query('phone');
 
-        // Reset password
-        $response = Password::reset(
-            $request->only('phone', 'password', 'password_confirmation', 'token'),
-            function ($user, $password) {
-                $user->password = bcrypt($password);
-                $user->save();
-            }
-        );
-
-        if ($response == Password::PASSWORD_RESET) {
-            return redirect()->route('login')->with('status', 'Password berhasil diubah!');
+        if (!$phone) {
+            return redirect()->route('password.forgot')->with('error', 'Nomor HP tidak ditemukan.');
         }
 
-        return back()->withErrors(['email' => 'Token tidak valid atau sudah kadaluarsa.']);
+        return view('auth.passwords.reset', compact('phone'));
     }
+
+    public function reset(Request $request)
+    {
+        $request->validate([
+            'phone' => 'required|numeric|digits_between:10,13|exists:users,phone',
+            'otp' => 'required|numeric',
+            'password' => 'required|min:8|confirmed',
+        ]);
+
+        $otpCode = OtpCode::where('phone', $request->phone)->first();
+
+        // Cek apakah OTP valid
+        if (!$otpCode || !$otpCode->isOtpValid($request->otp)) {
+            return back()->withErrors(['otp' => 'Kode OTP tidak valid atau sudah kedaluwarsa.']);
+        }
+
+        // Update password user
+        $user = User::where('phone', $request->phone)->first();
+        $user->update([
+            'password' => Hash::make($request->password),
+        ]);
+
+        // Hapus OTP setelah digunakan
+        $otpCode->delete();
+
+        // Hapus session nomor HP
+        session()->forget('reset_phone');
+
+        return redirect()->route('login')->with('success', 'Password berhasil diubah!');
+    }
+
 }

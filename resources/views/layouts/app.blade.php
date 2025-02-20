@@ -59,7 +59,6 @@
         <!-- Navbar (Hanya muncul di Desktop) -->
         <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
             <div class="container">
-                <!-- Brand -->
                 @php
                     $userRole = auth()->check() ? auth()->user()->role : null;
                     $dashboardRoutes = [
@@ -69,16 +68,15 @@
                         'kasir' => 'kasir.dashboard',
                         'security' => 'security.dashboard',
                     ];
+        
+                    // Cek apakah pemilik hewan dan dokter sudah melengkapi profil
+                    $profilPemilikHewanLengkap = auth()->check() && $userRole === 'pemilik_hewan' ? auth()->user()->pemilikHewan : true;
+                    $profilDokterLengkap = auth()->check() && $userRole === 'dokter' ? auth()->user()->dokterProfile : true;
                 @endphp
         
                 <a class="navbar-brand fw-bold" href="{{ auth()->check() && isset($dashboardRoutes[$userRole]) ? route($dashboardRoutes[$userRole]) : url('/') }}">
                     <i class="fas fa-paw"></i> Zephyr Pet
                 </a>
-        
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" 
-                    aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
         
                 <div class="collapse navbar-collapse" id="navbarNav">
                     <ul class="navbar-nav ms-auto">
@@ -95,7 +93,7 @@
                             </li>
                         @else
                             @if ($userRole !== 'security')
-                                <!-- Dropdown Menu untuk Navigasi Dashboard (Security tidak memiliki menu ini) -->
+                                <!-- Dropdown Menu -->
                                 <li class="nav-item dropdown">
                                     <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
                                         aria-haspopup="true" aria-expanded="false">
@@ -104,25 +102,31 @@
         
                                     <div class="dropdown-menu">
                                         @if ($userRole === 'dokter')
-                                            <a class="dropdown-item" href="{{ route('dokter.jadwal.dokter') }}">
+                                            <a class="dropdown-item {{ !$profilDokterLengkap ? 'disabled-menu' : '' }}" 
+                                                href="{{ $profilDokterLengkap ? route('dokter.jadwal.dokter') : '#' }}">
                                                 <i class="fas fa-calendar-alt"></i> Jadwal Saya
                                             </a>
-                                            <a class="dropdown-item" href="{{ route('dokter.konsultasi.index') }}">
+                                            <a class="dropdown-item {{ !$profilDokterLengkap ? 'disabled-menu' : '' }}" 
+                                                href="{{ $profilDokterLengkap ? route('dokter.konsultasi.index') : '#' }}">
                                                 <i class="fas fa-stethoscope"></i> Konsultasi
                                             </a>
                                         @endif
         
                                         @if ($userRole === 'pemilik_hewan')
-                                            <a class="dropdown-item" href="{{ route('pemilik-hewan.hewan.index') }}">
+                                            <a class="dropdown-item {{ !$profilPemilikHewanLengkap ? 'disabled-menu' : '' }}" 
+                                                href="{{ $profilPemilikHewanLengkap ? route('pemilik-hewan.hewan.index') : '#' }}">
                                                 <i class="fas fa-dog"></i> Hewan Peliharaan
                                             </a>
-                                            <a class="dropdown-item" href="{{ route('pemilik-hewan.konsultasi_pemilik.index') }}">
+                                            <a class="dropdown-item {{ !$profilPemilikHewanLengkap ? 'disabled-menu' : '' }}" 
+                                                href="{{ $profilPemilikHewanLengkap ? route('pemilik-hewan.konsultasi_pemilik.index') : '#' }}">
                                                 <i class="fas fa-comments-medical"></i> Konsultasi
                                             </a>
-                                            <a class="dropdown-item" href="{{ route('pemilik-hewan.resep_obat.index') }}">
+                                            <a class="dropdown-item {{ !$profilPemilikHewanLengkap ? 'disabled-menu' : '' }}" 
+                                                href="{{ $profilPemilikHewanLengkap ? route('pemilik-hewan.resep_obat.index') : '#' }}">
                                                 <i class="fas fa-pills"></i> Resep Obat
                                             </a>
-                                            <a class="dropdown-item" href="{{ route('pemilik-hewan.transaksi.list') }}">
+                                            <a class="dropdown-item {{ !$profilPemilikHewanLengkap ? 'disabled-menu' : '' }}" 
+                                                href="{{ $profilPemilikHewanLengkap ? route('pemilik-hewan.transaksi.list') : '#' }}">
                                                 <i class="fas fa-receipt"></i> Riwayat Transaksi
                                             </a>
                                         @endif
@@ -148,7 +152,7 @@
                                 </li>
                             @endif
         
-                            <!-- Dropdown Menu untuk Profile & Logout -->
+                            <!-- Dropdown Profile & Logout -->
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
                                     aria-haspopup="true" aria-expanded="false">
@@ -189,7 +193,7 @@
                     </ul>
                 </div>
             </div>
-        </nav>                              
+        </nav>                            
 
         <main class="py-4">
             @yield('content')
@@ -200,11 +204,19 @@
 <nav class="mobile-nav d-md-none fixed-bottom bg-white shadow py-2">
     <div class="container d-flex justify-content-around">
         @php
+            $userRole = auth()->user()->role;
+            
             // Cek apakah pengguna sudah melengkapi profil
-            $profilLengkap = auth()->user()->pemilikHewan; 
+            $profilLengkap = true;
+
+            if ($userRole === 'pemilik_hewan') {
+                $profilLengkap = auth()->user()->pemilikHewan;
+            } elseif ($userRole === 'dokter') {
+                $profilLengkap = auth()->user()->dokter;
+            }
         @endphp
 
-        @if (auth()->user()->role === 'pemilik_hewan')
+        @if ($userRole === 'pemilik_hewan')
             <a href="{{ $profilLengkap ? route('pemilik-hewan.hewan.index') : '#' }}" 
                class="text-dark text-center {{ $profilLengkap ? '' : 'disabled-menu' }}">
                 <i class="fas fa-paw"></i>
@@ -235,16 +247,21 @@
                 <p class="small mb-0">Profil</p>
             </a>
 
-        @elseif (auth()->user()->role === 'dokter')
-            <a href="{{ route('dokter.konsultasi.index') }}" class="text-dark text-center">
+        @elseif ($userRole === 'dokter')
+            <a href="{{ $profilLengkap ? route('dokter.konsultasi.index') : '#' }}" 
+               class="text-dark text-center {{ $profilLengkap ? '' : 'disabled-menu' }}">
                 <i class="fas fa-stethoscope"></i>
                 <p class="small mb-0">Konsultasi</p>
             </a>
-            <a href="{{ route('dokter.jadwal.dokter') }}" class="text-dark text-center">
+
+            <a href="{{ $profilLengkap ? route('dokter.jadwal.dokter') : '#' }}" 
+               class="text-dark text-center {{ $profilLengkap ? '' : 'disabled-menu' }}">
                 <i class="fas fa-calendar-check"></i>
                 <p class="small mb-0">Jadwal</p>
             </a>
-            <a href="{{ route('dokter.profile') }}" class="text-dark text-center">
+
+            <a href="{{ $profilLengkap ? route('dokter.profile') : '#' }}" 
+               class="text-dark text-center {{ $profilLengkap ? '' : 'disabled-menu' }}">
                 <i class="fas fa-user"></i>
                 <p class="small mb-0">Profil</p>
             </a>
