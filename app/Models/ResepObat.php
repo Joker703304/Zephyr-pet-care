@@ -29,6 +29,6 @@ class ResepObat extends Model
     // Relasi ke Obat
     public function obat()
     {
-        return $this->belongsTo(Obat::class, 'id_obat');
+        return $this->belongsTo(obat::class, 'id_obat');
     }
 }
