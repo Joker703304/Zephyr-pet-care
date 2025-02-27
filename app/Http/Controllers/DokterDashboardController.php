@@ -13,7 +13,7 @@ use Carbon\Carbon;
 use App\Models\DetailResepObat;
 use App\Models\DokterJadwal;
 use App\Models\pemilik_hewan;
-use App\Models\Hewan;
+use App\Models\hewan;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -56,7 +56,7 @@ class DokterDashboardController extends Controller
 
         // Ambil data konsultasi terkait antrian
         $konsultasi = $antrian->konsultasi;
-        $hewan = Hewan::find($konsultasi->id_hewan);
+        $hewan = hewan::find($konsultasi->id_hewan);
         $pemilik = pemilik_hewan::where('id_pemilik', $hewan->id_pemilik)->first();
 
         if ($pemilik) {
@@ -96,7 +96,7 @@ class DokterDashboardController extends Controller
 
         $today = now()->toDateString(); // Mendapatkan tanggal hari ini
 
-        $countPerawatan = Konsultasi::where('dokter_id', $dokter->id)
+        $countPerawatan = konsultasi::where('dokter_id', $dokter->id)
             ->where('status', 'Diterima')
             ->whereDate('tanggal_konsultasi', $today)
             ->count();
@@ -127,7 +127,7 @@ class DokterDashboardController extends Controller
         }
 
         // Filter konsultasi berdasarkan dokter yang sedang login dan tanggal hari ini
-        $konsultasi = Konsultasi::with(['hewan', 'dokter', 'resepObat'])
+        $konsultasi = konsultasi::with(['hewan', 'dokter', 'resepObat'])
             ->where('dokter_id', $dokter->id) // Filter by dokter ID
             ->whereDate('tanggal_konsultasi', $today) // Filter by today's date
             ->where('status', 'Diterima') // Filter by status 'Diterima'
@@ -138,7 +138,7 @@ class DokterDashboardController extends Controller
 
     public function diagnosis($id)
     {
-        $konsultasi = Konsultasi::with(['hewan', 'dokter', 'resepObat'])->findOrFail($id);
+        $konsultasi = konsultasi::with(['hewan', 'dokter', 'resepObat'])->findOrFail($id);
         $obat = Obat::all();
         $layanan = Layanan::all();
 
@@ -147,7 +147,7 @@ class DokterDashboardController extends Controller
 
     public function storeDiagnosis(Request $request, $id_konsultasi)
     {
-        $konsultasi = Konsultasi::findOrFail($id_konsultasi);
+        $konsultasi = konsultasi::findOrFail($id_konsultasi);
 
         // Update diagnosis dan status
         $konsultasi->update([
