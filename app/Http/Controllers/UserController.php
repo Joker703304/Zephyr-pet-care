@@ -70,7 +70,7 @@ class UserController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,' . $user->id,
-            'role' => 'required|in:pemilik_hewan,admin,dokter,apoteker', // Validasi role
+            'role' => 'required|in:pemilik_hewan,admin,dokter,apoteker,security', // Validasi role
         ]);
 
         $user->update([
