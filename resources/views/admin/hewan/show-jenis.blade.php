@@ -17,6 +17,7 @@
             <tr>
                 <th>No</th>
                 <th>Jenis Hewan</th>
+                <th>Aksi</th>
             </tr>
         </thead>
         <tbody>
@@ -24,6 +25,14 @@
             <tr>
                 <td>{{ $index + 1 }}</td>
                 <td>{{ $jenis->nama_jenis }}</td>
+                <td>
+                    <a href="{{ route('admin.hewan.edit-jenis', $jenis->id) }}" class="btn btn-warning btn-sm">Edit</a>
+                    <form action="{{ route('admin.hewan.delete-jenis', $jenis->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Yakin ingin menghapus jenis hewan ini?')">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="btn btn-danger btn-sm">Hapus</button>
+                    </form>
+                </td>
             </tr>
             @endforeach
         </tbody>

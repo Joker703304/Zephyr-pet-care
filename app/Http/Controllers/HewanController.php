@@ -57,11 +57,39 @@ class HewanController extends Controller
     // Menampilkan daftar jenis hewan yang unik
     public function showJenis()
 {
-    // Mengambil data jenis hewan dari tabel jenis_hewan
-    $jenisHewan = JenisHewan::select('nama_jenis')->distinct()->get();
-
-    // Melanjutkan untuk menampilkan view
+    $jenisHewan = JenisHewan::select('id', 'nama_jenis')->get(); // Pastikan 'id' disertakan
     return view('admin.hewan.show-jenis', compact('jenisHewan'));
+}
+
+public function editJenis($id)
+{
+    $jenis = JenisHewan::findOrFail($id);
+    return view('admin.hewan.edit-jenis', compact('jenis'));
+}
+
+public function updateJenis(Request $request, $id)
+{
+    $request->validate([
+        'nama_jenis' => 'required|string|max:255'
+    ]);
+
+    $jenis = JenisHewan::findOrFail($id);
+    $jenis->update([
+        'nama_jenis' => $request->nama_jenis
+    ]);
+
+    return redirect()->route('admin.hewan.show-jenis')->with('success', 'Jenis Hewan berhasil diperbarui!');
+}
+
+public function deleteJenis($id)
+{
+    try {
+        $jenis = JenisHewan::findOrFail($id);
+        $jenis->delete();
+        return redirect()->route('admin.hewan.show-jenis')->with('success', 'Jenis Hewan berhasil dihapus!');
+    } catch (\Exception $e) {
+        return redirect()->route('admin.hewan.show-jenis')->with('error', 'Jenis Hewan gagal dihapus. Mungkin masih terhubung dengan data lain.');
+    }
 }
 
 public function create()
