@@ -23,7 +23,7 @@ class ResepObat extends Model
     // Relasi ke Konsultasi
     public function konsultasi()
     {
-        return $this->belongsTo(Konsultasi::class, 'id_konsultasi');
+        return $this->belongsTo(konsultasi::class, 'id_konsultasi');
     }
 
     // Relasi ke Obat
