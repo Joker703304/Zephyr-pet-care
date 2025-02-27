@@ -142,18 +142,15 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
 
 //hewan
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
-    // Route resource untuk hewan (tanpa show)
+    // Definisikan route resource untuk hewan
     Route::resource('hewan', HewanController::class)->except(['show']);
 
-    // Route untuk jenis hewan
+    // Route untuk menampilkan daftar jenis hewan
     Route::get('hewan/show-jenis', [HewanController::class, 'showJenis'])->name('hewan.show-jenis');
+
+    // Route untuk menambah jenis hewan
     Route::get('hewan/create-jenis', [HewanController::class, 'createJenis'])->name('hewan.create-jenis');
     Route::post('hewan/store-jenis', [HewanController::class, 'storeJenis'])->name('hewan.store-jenis');
-
-    // Route edit, update, delete jenis hewan (tanpa /admin/)
-    Route::get('jenis-hewan/{id}/edit', [HewanController::class, 'editJenis'])->name('hewan.edit-jenis');
-    Route::put('jenis-hewan/{id}', [HewanController::class, 'updateJenis'])->name('hewan.update-jenis');
-    Route::delete('jenis-hewan/{id}', [HewanController::class, 'deleteJenis'])->name('hewan.delete-jenis');
 });
 
 //konsultasi

@@ -3,13 +3,13 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Obat;
+use App\Models\obat;
 
 class ObatController extends Controller
 {
     public function index()
     {
-        $obats = Obat::all();
+        $obats = obat::all();
 
         if (auth()->user()->role == 'apoteker') {
             return view('apoteker.obat.index', compact('obats'));
@@ -42,18 +42,18 @@ class ObatController extends Controller
             'harga' => 'required|string',
         ]);
 
-        $lastObat = Obat::latest()->first();
+        $lastObat = obat::latest()->first();
 
         // Mengambil angka terakhir dan menambahkannya satu
         $lastId = $lastObat ? (int) substr($lastObat->id_obat, 1) : 0;
         $newId = 'D' . str_pad($lastId + 1, 3, '0', STR_PAD_LEFT);
 
-        while (Obat::where('id_obat', $newId)->exists()) {
+        while (obat::where('id_obat', $newId)->exists()) {
             $lastId++;
             $newId = 'D' . str_pad($lastId + 1, 3, '0', STR_PAD_LEFT);
         }
 
-        Obat::create([
+        obat::create([
             'id_obat' => $newId,
             'nama_obat' => $request->nama_obat,
             'jenis_obat' => $request->jenis_obat,
@@ -66,7 +66,7 @@ class ObatController extends Controller
     }
 
     // Menampilkan form untuk mengedit data obat
-    public function edit(Obat $obat)
+    public function edit(obat $obat)
     {
         if (!in_array(auth()->user()->role, ['admin', 'apoteker'])) {
             abort(403, 'Unauthorized action.');
@@ -80,7 +80,7 @@ class ObatController extends Controller
     }
 
     // Memperbarui data obat di database
-    public function update(Request $request, Obat $obat)
+    public function update(Request $request, obat $obat)
     {
         if (!in_array(auth()->user()->role, ['admin', 'apoteker'])) {
             abort(403, 'Unauthorized action.');
@@ -100,7 +100,7 @@ class ObatController extends Controller
     }
 
     // Menghapus data obat
-    public function destroy(Obat $obat)
+    public function destroy(obat $obat)
     {
         if (!in_array(auth()->user()->role, ['admin', 'apoteker'])) {
             abort(403, 'Unauthorized action.');
