@@ -30,29 +30,32 @@ class SecurityController extends Controller
 
     public function createProfile()
     {
-        return view('security.createProfile');
+        $user = auth()->user();
+        return view('security.createProfile', compact('user'));
     }
 
     public function storeProfile(Request $request)
-    {
-        // Validate the incoming data
-        $validated = $request->validate([
-            'no_telepon' => 'required|string|max:20|unique:security',
-            'jenkel' => 'required|in:pria,wanita',
-            'alamat' => 'nullable|string',
-        ]);
+{
+    // Validate the incoming data
+    $validated = $request->validate([
+        'nama' => 'required|string|max:50',
+        'phone' => 'required|string|max:13|exists:users,phone',
+        'jenkel' => 'required|in:pria,wanita',
+        'alamat' => 'nullable|string',
+    ]);
 
-        // Create a new doctor profile
-        Security::create([
-            'id_user' => Auth::id(),
-            'no_telepon' => $validated['no_telepon'],
-            'jenkel' => $validated['jenkel'],
-            'alamat' => $validated['alamat'],
-        ]);
+    // Create a new security profile
+    Security::create([
+        'id_user' => Auth::id(),
+        'nama' => $validated['nama'],
+        'jenkel' => $validated['jenkel'],
+        'alamat' => $validated['alamat'],
+    ]);
 
-        // Redirect to the dashboard after the profile is created
-        return redirect()->route('security.dashboard')->with('success', 'Profile anda berhasil dibuat.');
-    }
+    // Redirect to the dashboard after the profile is created
+    return redirect()->route('security.dashboard')->with('success', 'Profile anda berhasil dibuat.');
+}
+
 
     public function editProfile()
     {
