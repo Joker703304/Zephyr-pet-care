@@ -78,14 +78,16 @@ class ApotekerController extends Controller
 
     public function createProfile()
     {
-        return view('apoteker.createProfile');
+        $user = auth()->user();
+        return view('apoteker.createProfile', compact('user'));
     }
 
     public function storeProfile(Request $request)
     {
         // Validate the incoming data
         $validated = $request->validate([
-            'no_telepon' => 'required|string|max:20|unique:apotekers',
+            'nama' => 'required|string|max:50',
+            'phone' => 'required|string|max:13|exists:users,phone',
             'jenkel' => 'required|in:pria,wanita',
             'alamat' => 'nullable|string',
         ]);
@@ -93,7 +95,7 @@ class ApotekerController extends Controller
         // Create a new doctor profile
         Apoteker::create([
             'id_user' => Auth::id(),
-            'no_telepon' => $validated['no_telepon'],
+            'nama' => $validated['nama'],
             'jenkel' => $validated['jenkel'],
             'alamat' => $validated['alamat'],
         ]);
@@ -112,33 +114,32 @@ class ApotekerController extends Controller
     }
 
     public function updateProfile(Request $request)
-    {
-        // Validate the incoming data
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',  // Menambahkan validasi untuk name
-            'no_telepon' => 'required|string|max:20|unique:apotekers,no_telepon,' . Auth::id() . ',id_user',
-            'jenkel' => 'required|in:pria,wanita',
-            'alamat' => 'nullable|string',
-        ]);
+{
+    // Temukan apoteker berdasarkan id_user (auth)
+    $apoteker = Apoteker::where('id_user', Auth::id())->first();
 
-        // Temukan dokter berdasarkan id_user (auth)
-        $apoteker = Apoteker::where('id_user', Auth::id())->first();
+    // Validasi data yang masuk
+    $validated = $request->validate([
+        'name' => 'required|string|max:255',  // Validasi untuk nama
+        'phone' => 'string|max:13|unique:users,phone,' . $apoteker->id_user . ',id',  // Validasi untuk nomor telepon
+        'jenkel' => 'required|in:pria,wanita',  // Validasi untuk jenis kelamin
+        'alamat' => 'nullable|string',  // Validasi untuk alamat
+    ]);
 
-        // Update nama pengguna
-        $apoteker->user->update([
-            'name' => $validated['name'],
-        ]);
+    // Update nama pengguna dan nomor telepon pada tabel users
+    $apoteker->user->update([
+        'name' => $validated['name'],
+    ]);
 
-        // Update data dokter
-        $apoteker->update([
-            'no_telepon' => $validated['no_telepon'],
-            'jenkel' => $validated['jenkel'],
-            'alamat' => $validated['alamat'],
-        ]);
+    // Update data apoteker
+    $apoteker->update([
+        'jenkel' => $validated['jenkel'],
+        'alamat' => $validated['alamat'],
+    ]);
 
-        // Redirect to the dashboard after the profile is updated
-        return redirect()->route('apoteker.profile')->with('success', 'Profile Anda Berhasil Di Perbarui.');
-    }
+    // Redirect ke halaman profil dengan pesan sukses
+    return redirect()->route('apoteker.profile')->with('success', 'Profil berhasil diperbarui.');
+}
 
     public function updatePassword(Request $request, $id)
     {

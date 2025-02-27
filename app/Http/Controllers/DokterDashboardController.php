@@ -12,8 +12,12 @@ use App\Models\Antrian;
 use Carbon\Carbon;
 use App\Models\DetailResepObat;
 use App\Models\DokterJadwal;
+use App\Models\pemilik_hewan;
+use App\Models\Hewan;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Http;
 
 class DokterDashboardController extends Controller
 {
@@ -46,67 +50,91 @@ class DokterDashboardController extends Controller
         return view('admin.pemilik_hewan.index', compact('data'));
     }
 
-public function panggil(Request $request, Antrian $antrian)
+    public function panggil(Request $request, Antrian $antrian)
     {
         $antrian->update(['status' => 'Dipanggil']);
 
-        return redirect()->back()->with('success', 'Pasien telah dipanggil.');
+        // Ambil data konsultasi terkait antrian
+        $konsultasi = $antrian->konsultasi;
+        $hewan = Hewan::find($konsultasi->id_hewan);
+        $pemilik = pemilik_hewan::where('id_pemilik', $hewan->id_pemilik)->first();
+
+        if ($pemilik) {
+            $nomorPemilik = $pemilik->user->phone; // Ambil nomor HP pemilik dari tabel users
+            $apiToken = 'API-TOKEN-3Kf4h51x2zIfh2Si2fd8LMorPfs5T9JXKiqYv1dnaT1hvwMWXs8crl';
+            $gateway = '6288229193849';
+
+            $pesan = "📢 *Pemanggilan Pasien* 📢\n\n"
+                . "🐶 Hewan: {$hewan->nama_hewan}\n"
+                . "📅 Tanggal Konsultasi: {$konsultasi->tanggal_konsultasi}\n"
+                . "📌 No. Antrian: {$konsultasi->no_antrian}\n\n"
+                . "🔔 *Giliran Anda telah tiba! Harap segera menuju ruang pemeriksaan.*";
+
+            Http::withToken($apiToken)->post('http://app.japati.id/api/send-message', [
+                'gateway' => $gateway,
+                'number' => $nomorPemilik,
+                'type' => 'text',
+                'message' => $pesan,
+            ]);
+        }
+
+        return redirect()->back()->with('success', 'Pasien telah dipanggil dan notifikasi telah dikirim ke WhatsApp.');
     }
 
     public function dokter()
     {
-          // Check if the logged-in user has a doctor profile
-          $dokter = Dokter::where('id_user', Auth::id())->first();
+        // Check if the logged-in user has a doctor profile
+        $dokter = Dokter::where('id_user', Auth::id())->first();
 
-          // Retrieve the schedules from the database
-    $schedules = DokterJadwal::all();  // Or your sp
+        // Retrieve the schedules from the database
+        $schedules = DokterJadwal::all();  // Or your sp
 
-          if (!$dokter) {
-              // If no doctor profile exists, redirect to the profile creation page
-              return redirect()->route('dokter.createProfile')->with('warning', 'Mohon Isi data diri terlebih dahulu.');
-          }
+        if (!$dokter) {
+            // If no doctor profile exists, redirect to the profile creation page
+            return redirect()->route('dokter.createProfile')->with('warning', 'Mohon Isi data diri terlebih dahulu.');
+        }
 
-          $today = now()->toDateString(); // Mendapatkan tanggal hari ini
+        $today = now()->toDateString(); // Mendapatkan tanggal hari ini
 
-    $countPerawatan = Konsultasi::where('dokter_id', $dokter->id)
-        ->where('status', 'Diterima')
-        ->whereDate('tanggal_konsultasi', $today)
-        ->count();
+        $countPerawatan = Konsultasi::where('dokter_id', $dokter->id)
+            ->where('status', 'Diterima')
+            ->whereDate('tanggal_konsultasi', $today)
+            ->count();
 
         $currentMonth = now()->month; // Mendapatkan bulan saat ini
         $currentYear = now()->year;  // Mendapatkan tahun saat ini
-    
+
         $jadwalBulanIni = DokterJadwal::where('id_dokter', $dokter->id)
             ->whereMonth('tanggal', $currentMonth) // Filter berdasarkan bulan
             ->whereYear('tanggal', $currentYear)  // Filter berdasarkan tahun
             ->where('status', 'Praktik')
             ->count();
-  
+
         // Menampilkan tampilan dashboard pemilik hewan
         return view('dokter.dashboard', compact('schedules', 'countPerawatan', 'jadwalBulanIni'));
     }
 
     public function konsultasi()
-{
-    $today = Carbon::today();
+    {
+        $today = Carbon::today();
 
-    // Ambil dokter yang sedang login
-    $dokter = Dokter::where('id_user', Auth::id())->first();
+        // Ambil dokter yang sedang login
+        $dokter = Dokter::where('id_user', Auth::id())->first();
 
-    if (!$dokter) {
-        // Jika dokter tidak ditemukan, arahkan ke halaman profil
-        return redirect()->route('dokter.createProfile')->with('warning', 'Mohon isi data diri terlebih dahulu.');
+        if (!$dokter) {
+            // Jika dokter tidak ditemukan, arahkan ke halaman profil
+            return redirect()->route('dokter.createProfile')->with('warning', 'Mohon isi data diri terlebih dahulu.');
+        }
+
+        // Filter konsultasi berdasarkan dokter yang sedang login dan tanggal hari ini
+        $konsultasi = Konsultasi::with(['hewan', 'dokter', 'resepObat'])
+            ->where('dokter_id', $dokter->id) // Filter by dokter ID
+            ->whereDate('tanggal_konsultasi', $today) // Filter by today's date
+            ->where('status', 'Diterima') // Filter by status 'Diterima'
+            ->get();
+
+        return view('dokter.konsultasi', compact('konsultasi'));
     }
-
-    // Filter konsultasi berdasarkan dokter yang sedang login dan tanggal hari ini
-    $konsultasi = Konsultasi::with(['hewan', 'dokter', 'resepObat'])
-        ->where('dokter_id', $dokter->id) // Filter by dokter ID
-        ->whereDate('tanggal_konsultasi', $today) // Filter by today's date
-        ->where('status', 'Diterima') // Filter by status 'Diterima'
-        ->get();
-
-    return view('dokter.konsultasi', compact('konsultasi'));
-}
 
     public function diagnosis($id)
     {
@@ -138,10 +166,10 @@ public function panggil(Request $request, Antrian $antrian)
         // Hapus resep obat yang dihapus oleh user
         if ($request->filled('deleted_obat_ids')) {
             $deletedIds = explode(',', $request->deleted_obat_ids);
-            
+
             // Hapus dari tabel resep_obat
             ResepObat::whereIn('id_resep', $deletedIds)->delete();
-            
+
             // Hapus juga dari tabel detail_resep_obat
             DetailResepObat::whereIn('id_resep', $deletedIds)->delete();
         }
@@ -188,6 +216,37 @@ public function panggil(Request $request, Antrian $antrian)
                     ]);
                 }
             }
+        }
+
+        // Kirim notifikasi ke apoteker dan pemilik
+        $apiToken = 'API-TOKEN-3Kf4h51x2zIfh2Si2fd8LMorPfs5T9JXKiqYv1dnaT1hvwMWXs8crl';
+        $gateway = '6288229193849';
+
+        $apoteker = User::where('role', 'apoteker')->first();
+        $pemilik = $konsultasi->hewan->pemilik;
+
+        if ($apoteker) {
+            $nomorApoteker = $apoteker->phone; // Gunakan nomor dari tabel users
+            $pesanApoteker = "Halo {$apoteker->name},\nDiagnosis baru dibuat untuk {$konsultasi->hewan->nama_hewan}. Silakan persiapkan obatnya.";
+
+            Http::withToken($apiToken)->post('http://app.japati.id/api/send-message', [
+                'gateway' => $gateway,
+                'number' => $nomorApoteker,
+                'type' => 'text',
+                'message' => $pesanApoteker,
+            ]);
+        }
+
+        if ($pemilik) {
+            $nomorPemilik = $pemilik->user->phone;
+            $pesanPemilik = "Halo {$pemilik->user->name},\nHasil diagnosis hewan Anda ({$konsultasi->hewan->nama_hewan}): {$konsultasi->diagnosis}.\nStatus: Pembuatan Obat. Obat sedang disiapkan oleh apoteker {$apoteker->name}. Silahkan tunggu informasi selanjutnya.";
+
+            Http::withToken($apiToken)->post('http://app.japati.id/api/send-message', [
+                'gateway' => $gateway,
+                'number' => $nomorPemilik,
+                'type' => 'text',
+                'message' => $pesanPemilik,
+            ]);
         }
 
         return redirect()->route("dokter.konsultasi.index")->with('success', 'Diagnosis dan resep berhasil diperbarui.');
@@ -276,12 +335,12 @@ public function panggil(Request $request, Antrian $antrian)
         $request->validate([
             'password' => 'required|min:8|confirmed',
         ]);
-    
+
         $dokter = Dokter::findOrFail($id); // Pastikan model sesuai
         $dokter->user->update([
             'password' => Hash::make($request->password),
         ]);
-    
+
         return redirect()->back()->with('success', 'Password berhasil diperbarui.');
     }
 }
