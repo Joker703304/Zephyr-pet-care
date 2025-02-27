@@ -30,7 +30,7 @@ class Hewan extends Model
 
     public function konsultasi()
     {
-        return $this->hasMany(Konsultasi::class, 'id_hewan');
+        return $this->hasMany(konsultasi::class, 'id_hewan');
     }
 
     // Mengubah nama method relasi menjadi 'jenis' agar lebih konsisten dengan konvensi

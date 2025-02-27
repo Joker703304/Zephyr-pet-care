@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Hewan;
+use App\Models\hewan;
 use App\Models\pemilik_hewan;
 use App\Models\JenisHewan;
 use Illuminate\Http\Request;
@@ -18,14 +18,14 @@ class HewanController extends Controller
         // Jika role user adalah pemilik_hewan, filter berdasarkan nama pemilik
         if ($user->role == 'pemilik_hewan') {
             // Mengambil data hewan yang dimiliki oleh pemilik yang sedang login berdasarkan nama pemilik
-            $hewan = Hewan::with('pemilik')
+            $hewan = hewan::with('pemilik')
                         ->whereHas('pemilik', function ($query) use ($user) {
                             $query->where('id_user', $user->id); // Menyaring berdasarkan nama pemilik yang login
                         })
                         ->get();
         } else {
             // Jika role user bukan pemilik_hewan (misalnya admin), tampilkan semua hewan
-            $hewan = Hewan::with('pemilik')->get();
+            $hewan = hewan::with('pemilik')->get();
         }
 
         // Menampilkan view sesuai dengan role user
@@ -134,7 +134,7 @@ public function store(Request $request)
     $fotoPath = $request->file('foto') ? $request->file('foto')->store('uploads/hewan', 'public') : null;
 
     // Simpan data ke tabel Hewan, menggunakan jenis_id
-    Hewan::create([
+    hewan::create([
         'id_pemilik' => $request->id_pemilik,
         'nama_hewan' => $request->nama_hewan,
         'jenis_id' => $request->jenis_id, // Menyimpan jenis_id
@@ -152,7 +152,7 @@ public function store(Request $request)
 public function edit($id)
 {
     // Ambil data hewan berdasarkan id
-    $hewan = Hewan::findOrFail($id);
+    $hewan = hewan::findOrFail($id);
 
     // Ambil semua jenis hewan yang ada di tabel jenis_hewan
     $jenisHewan = JenisHewan::all();
@@ -208,7 +208,7 @@ public function update(Request $request, Hewan $hewan)
 
 public function destroy($id)
 {
-    $hewan = Hewan::findOrFail($id);
+    $hewan = hewan::findOrFail($id);
 
     // Cek apakah hewan sudah pernah dikonsultasikan
     if ($hewan->konsultasi()->exists()) {
