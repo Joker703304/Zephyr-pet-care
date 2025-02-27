@@ -30,7 +30,7 @@ class pemilik_hewan extends Model
 
 public function konsultasi()
 {
-    return $this->hasMany(Konsultasi::class);
+    return $this->hasMany(konsultasi::class);
 }
 
 public function konsultasiMenunggu()

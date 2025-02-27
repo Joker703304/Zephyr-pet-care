@@ -14,6 +14,6 @@ class JenisHewan extends Model
 
     public function hewan()
     {
-        return $this->hasMany(Hewan::class, 'jenis_id');
+        return $this->hasMany(hewan::class, 'jenis_id');
     }
 }

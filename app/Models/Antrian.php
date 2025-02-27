@@ -20,7 +20,7 @@ class Antrian extends Model
     // Relasi dengan model Konsultasi
     public function konsultasi()
     {
-        return $this->belongsTo(Konsultasi::class, 'konsultasi_id', 'id_konsultasi');
+        return $this->belongsTo(konsultasi::class, 'konsultasi_id', 'id_konsultasi');
     }
 }
 

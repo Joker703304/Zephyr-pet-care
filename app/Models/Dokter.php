@@ -28,7 +28,7 @@ class Dokter extends Model
 
     public function konsultasi()
     {
-        return $this->hasMany(Konsultasi::class, 'dokter_id');
+        return $this->hasMany(konsultasi::class, 'dokter_id');
     }
 
     public function isAvailable()
