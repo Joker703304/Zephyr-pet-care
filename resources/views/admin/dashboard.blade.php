@@ -258,7 +258,7 @@
                     <div class="col mr-2">
                         <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
                             Total Pemasukan Bulan Ini</div>
-                        <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $totalThisMonth ?? 'N/A' }}</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">Rp{{ number_format($totalThisMonth ?? 0, 0, ',', '.') }}</div>
                     </div>
                     <div class="col-auto">
                         <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
