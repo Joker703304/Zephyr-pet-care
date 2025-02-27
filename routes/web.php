@@ -164,7 +164,7 @@ Route::middleware(['auth', 'role:apoteker'])->prefix('apoteker')->name('apoteker
     Route::get('/create-profile', [ApotekerController::class, 'createProfile'])->name('createProfile');
     Route::post('/store-profile', [ApotekerController::class, 'storeProfile'])->name('storeProfile');
     Route::get('/edit-profile', [ApotekerController::class, 'editProfile'])->name('editProfile');
-    Route::post('/update-profile', [ApotekerController::class, 'updateProfile'])->name('updateProfile');
+    Route::match(['post', 'put'],'/update-profile', [ApotekerController::class, 'updateProfile'])->name('updateProfile');
     Route::get('/dashboard', [ApotekerController::class, 'index'])->name('dashboard');
 });
 

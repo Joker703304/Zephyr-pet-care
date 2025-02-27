@@ -10,6 +10,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Http;
 
 class kasirController extends Controller
 {
@@ -288,6 +289,28 @@ class kasirController extends Controller
             ]);
         }
     }
+
+    // Kirim notifikasi ke pemilik hewan
+    $apiToken = 'API-TOKEN-3Kf4h51x2zIfh2Si2fd8LMorPfs5T9JXKiqYv1dnaT1hvwMWXs8crl';
+    $gateway = '6288229193849';
+
+    $pemilik = $konsultasi->hewan->pemilik;
+    if ($pemilik) {
+        $nomorPemilik = $pemilik->user->phone;
+        $messagePemilik = "Halo {$pemilik->user->name},\n"
+            . "Pembayaran untuk hewan Anda ({$konsultasi->hewan->nama_hewan}) telah berhasil.\n"
+            . "💰 Total Dibayar: Rp" . number_format($jumlahBayar, 0, ',', '.') . "\n"
+            . "💵 Kembalian: Rp" . number_format($kembalian, 0, ',', '.') . "\n"
+            . "Status: Selesai. Terima kasih telah menggunakan layanan kami! 😊";
+
+        Http::withToken($apiToken)->post('http://app.japati.id/api/send-message', [
+            'gateway' => $gateway,
+            'number' => $nomorPemilik,
+            'type' => 'text',
+            'message' => $messagePemilik,
+        ]);
+    }
+
 
 
     return redirect()->route('kasir.transaksi.rincian', $transaksi->id_transaksi)

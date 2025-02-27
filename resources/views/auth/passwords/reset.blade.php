@@ -27,13 +27,23 @@
 
                         <div class="mb-3">
                             <label for="password" class="form-label">Password Baru</label>
-                            <input type="password" name="password" class="form-control @error('password') is-invalid @enderror" required>
+                            <div class="input-group">
+                                <input type="password" id="password" name="password" class="form-control @error('password') is-invalid @enderror" required>
+                                <span class="input-group-text toggle-password" style="cursor: pointer;">
+                                    <i class="fa fa-eye-slash"></i>
+                                </span>
+                            </div>
                             @error('password') <span class="text-danger">{{ $message }}</span> @enderror
                         </div>
 
                         <div class="mb-3">
                             <label for="password_confirmation" class="form-label">Konfirmasi Password</label>
-                            <input type="password" name="password_confirmation" class="form-control" required>
+                            <div class="input-group">
+                                <input type="password" id="password_confirmation" name="password_confirmation" class="form-control" required>
+                                <span class="input-group-text toggle-password" style="cursor: pointer;">
+                                    <i class="fa fa-eye-slash"></i>
+                                </span>
+                            </div>
                         </div>
 
                         <button type="submit" class="btn btn-primary w-100">Reset Password</button>
@@ -43,4 +53,23 @@
         </div>
     </div>
 </div>
+
+<script>
+    document.querySelectorAll('.toggle-password').forEach(item => {
+        item.addEventListener('click', function () {
+            const inputField = this.previousElementSibling;
+            const icon = this.querySelector('i');
+            
+            if (inputField.type === 'password') {
+                inputField.type = 'text';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            } else {
+                inputField.type = 'password';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            }
+        });
+    });
+</script>
 @endsection

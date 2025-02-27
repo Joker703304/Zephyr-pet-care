@@ -9,6 +9,8 @@ use App\Models\konsultasi;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
+use App\Models\User;
+use Illuminate\Support\Facades\Http;
 
 class KonsultasiPemilikController extends Controller
 {
@@ -120,6 +122,30 @@ class KonsultasiPemilikController extends Controller
     if ($jadwal) {
         $jadwal->maksimal_konsultasi -= 1; // Decrease the slot
         $jadwal->save();
+    }
+
+    $hewan = Hewan::find($request->id_hewan);
+    $dokter = Dokter::find($request->dokter_id);
+
+    // Ambil nomor kasir dari database
+    $kasir = User::whereHas('kasir')->first(); // Ambil kasir pertama (jika ada lebih dari satu, bisa disesuaikan)
+    
+    if ($kasir) {
+        $nomorKasir = $kasir->phone;
+
+        $apiToken = 'API-TOKEN-3Kf4h51x2zIfh2Si2fd8LMorPfs5T9JXKiqYv1dnaT1hvwMWXs8crl';
+            $gateway = '6288229193849';
+            $response = Http::withToken($apiToken)->post('http://app.japati.id/api/send-message', [
+                'gateway' => $gateway,
+                'number' => $nomorKasir,
+                'type' => 'text',
+                'message' => "📢 Pemberitahuan Konsultasi Baru 📢\n\n"
+                . "🐶 Hewan: {$hewan->nama_hewan}\n"
+                . "📅 Tanggal: {$konsultasi->tanggal_konsultasi}\n"
+                . "👨‍⚕️ Dokter: {$dokter->user->name}\n"
+                . "🩺 Keluhan: {$konsultasi->keluhan}\n\n"
+                . "Mohon segera diproses!",
+            ]);
     }
 
     // Redirect to the consultation index page with a success message

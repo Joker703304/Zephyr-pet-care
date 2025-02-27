@@ -6,8 +6,10 @@ use App\Models\ResepObat;
 use App\Models\konsultasi;
 use App\Models\Transaksi;
 use App\Models\obat;
+use App\Models\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Http;
 
 class ResepObatController extends Controller
 {
@@ -166,6 +168,48 @@ class ResepObatController extends Controller
     );
 
     $konsultasi->update(['status' => 'Pembayaran']);
+
+    // Kirim notifikasi ke kasir dan pemilik
+    $apiToken = 'API-TOKEN-3Kf4h51x2zIfh2Si2fd8LMorPfs5T9JXKiqYv1dnaT1hvwMWXs8crl';
+    $gateway = '6288229193849';
+
+    // Ambil data kasir
+    $kasir = User::where('role', 'kasir')->first();
+    $pemilik = $konsultasi->hewan->pemilik;
+
+    if ($kasir) {
+        $nomorKasir = $kasir->phone;
+        $pesanKasir = "📢 *Transaksi Baru* 📢\n\n"
+            . "👨‍⚕️ Konsultasi ID: {$konsultasi->id_konsultasi}\n"
+            . "🐾 Hewan: {$konsultasi->hewan->nama_hewan}\n"
+            . "💰 Total Biaya: Rp" . number_format($totalHarga, 0, ',', '.') . "\n"
+            . "🔄 Status: Menunggu Pembayaran\n\n"
+            . "Silakan siapkan proses pembayaran.";
+
+        Http::withToken($apiToken)->post('http://app.japati.id/api/send-message', [
+            'gateway' => $gateway,
+            'number' => $nomorKasir,
+            'type' => 'text',
+            'message' => $pesanKasir,
+        ]);
+    }
+
+    if ($pemilik) {
+        $nomorPemilik = $pemilik->user->phone;
+        $pesanPemilik = "📢 *Tagihan Konsultasi* 📢\n\n"
+            . "Halo {$pemilik->user->name}, berikut rincian tagihan konsultasi Anda:\n\n"
+            . "🐶 Hewan: {$konsultasi->hewan->nama_hewan}\n"
+            . "💰 Total Biaya: Rp" . number_format($totalHarga, 0, ',', '.') . "\n"
+            . "🔄 Status: Menunggu Pembayaran\n\n"
+            . "Silakan menuju kasir untuk menyelesaikan pembayaran. Terima kasih telah mempercayakan layanan kami!";
+
+        Http::withToken($apiToken)->post('http://app.japati.id/api/send-message', [
+            'gateway' => $gateway,
+            'number' => $nomorPemilik,
+            'type' => 'text',
+            'message' => $pesanPemilik,
+        ]);
+    }
 
     return redirect()->route('apoteker.resep_obat.index')->with('success', 'Resep Obat dan Transaksi berhasil diperbarui.');
 }

@@ -53,7 +53,12 @@
 
                         <div class="mb-3">
                             <label for="password" class="form-label">{{ __('Password') }}</label>
-                            <input id="password" type="password" class="form-control @error('password') is-invalid @enderror" name="password" required>
+                            <div class="input-group">
+                                <input id="password" type="password" class="form-control @error('password') is-invalid @enderror" name="password" required>
+                                <span class="input-group-text" id="togglePassword" style="cursor: pointer;">
+                                    <i class="fa fa-eye-slash"></i>
+                                </span>
+                            </div>
                             @error('password')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -61,7 +66,12 @@
 
                         <div class="mb-3">
                             <label for="password-confirm" class="form-label">{{ __('Confirm Password') }}</label>
-                            <input id="password-confirm" type="password" class="form-control" name="password_confirmation" required>
+                            <div class="input-group">
+                                <input id="password-confirm" type="password" class="form-control" name="password_confirmation" required>
+                                <span class="input-group-text" id="toggleConfirmPassword" style="cursor: pointer;">
+                                    <i class="fa fa-eye-slash"></i>
+                                </span>
+                            </div>
                         </div>
 
                         <div class="d-grid gap-2">
@@ -77,13 +87,12 @@
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
-    
     $(document).ready(function () {
         $("#sendOtpBtn").click(function () {
-            let phone = $("#phone").val();
+            let phone = $("#phone");
             let otpStatus = $("#otpStatus");
 
-            if (phone.length < 10 || phone.length > 13) {
+            if (phone.val().length < 10 || phone.val().length > 13) {
                 otpStatus.text("Nomor telepon tidak valid.").addClass("text-danger");
                 return;
             }
@@ -94,7 +103,7 @@
                 url: "{{ route('send-otp') }}",
                 type: "POST",
                 data: {
-                    phone: phone,
+                    phone: phone.val(),
                     _token: "{{ csrf_token() }}"
                 },
                 success: function (response) {
@@ -112,7 +121,20 @@
                 }
             });
         });
+
+        $("#togglePassword").click(function () {
+            const passwordField = $("#password");
+            const icon = $(this).find("i");
+            passwordField.attr("type", passwordField.attr("type") === "password" ? "text" : "password");
+            icon.toggleClass("fa-eye fa-eye-slash");
+        });
+
+        $("#toggleConfirmPassword").click(function () {
+            const confirmPasswordField = $("#password-confirm");
+            const icon = $(this).find("i");
+            confirmPasswordField.attr("type", confirmPasswordField.attr("type") === "password" ? "text" : "password");
+            icon.toggleClass("fa-eye fa-eye-slash");
+        });
     });
 </script>
 @endsection
-

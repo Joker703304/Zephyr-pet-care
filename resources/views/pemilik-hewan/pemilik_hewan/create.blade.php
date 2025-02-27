@@ -55,10 +55,17 @@
                         @enderror
                     </div>
 
-                <!-- Email (Read Only) -->
                 <div class="mb-3">
-                    <label for="email" class="form-label"><i class="fa fa-envelope"></i> Nomor Telepon</label>
-                    <input type="text" name="phone" id="phone" class="form-control" value="{{ old('phone', $user->phone) }}" required readonly>
+                    <label for="no_tlp" class="form-label">Nomor Telepon <span class="text-danger">*</span></label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fas fa-phone"></i></span>
+                        <input type="text" name="phone" id="phone" 
+                            class="form-control @error('phone') is-invalid @enderror" 
+                            value="{{ old('phone', $user->phone) }}" placeholder="Masukan No.Tlp" readonly>
+                    </div>
+                    @error('phone')
+                        <small class="text-danger">{{ $message }}</small>
+                    @enderror
                 </div>
 
                     <!-- Jenis Kelamin -->
