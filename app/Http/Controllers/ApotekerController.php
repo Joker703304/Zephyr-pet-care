@@ -8,6 +8,7 @@ use App\Models\obat;
 use App\Models\ResepObat;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\DB;
 
 class ApotekerController extends Controller
 {
@@ -18,26 +19,44 @@ class ApotekerController extends Controller
     }
 
     public function index()
-    {
-        // Ambil data apoteker berdasarkan id_user yang sedang login
-        $apoteker = Apoteker::where('id_user', Auth::id())->first();
+{
+    // Ambil data apoteker berdasarkan id_user yang sedang login
+    $apoteker = Apoteker::where('id_user', Auth::id())->first();
 
-        if (!$apoteker) {
-            // Jika data apoteker tidak ada, redirect untuk membuat profil
-            return redirect()->route('apoteker.createProfile')->with('warning', 'Mohon Isi data diri terlebih dahulu.');
-        }
-
-        // Hitung jumlah obat terdaftar
-        $medicationsCount = obat::count();
-
-        // Hitung jumlah resep obat berdasarkan id_konsultasi yang unik dengan status sedang disiapkan
-        $prescriptions = ResepObat::where('status', 'sedang di siapkan') // Filter hanya status sedang disiapkan
-                                    ->distinct('id_konsultasi') // Hanya hitung id_konsultasi unik
-                                    ->count('id_konsultasi'); // Hitung jumlah id_konsultasi
-
-        // Menampilkan tampilan dashboard apoteker
-        return view('apoteker.dashboard', compact('medicationsCount', 'prescriptions'));
+    if (!$apoteker) {
+        return redirect()->route('apoteker.createProfile')->with('warning', 'Mohon Isi data diri terlebih dahulu.');
     }
+
+    // Hitung jumlah obat terdaftar
+    $medicationsCount = Obat::count();
+
+    // Hitung jumlah resep yang sedang disiapkan berdasarkan id_konsultasi unik
+    $prescriptions = ResepObat::where('status', 'sedang di siapkan')
+                                ->distinct('id_konsultasi')
+                                ->count('id_konsultasi');
+
+    // Ambil data obat untuk grafik stok obat
+    $medications = Obat::select('nama_obat', 'stok')->get();
+    $medicineNames = $medications->pluck('nama_obat')->toArray();
+    $medicineStock = $medications->pluck('stok')->toArray();
+
+    // Hitung kategori resep dan jumlahnya berdasarkan id_konsultasi unik
+    $prescriptionData = ResepObat::select('status', DB::raw('COUNT(DISTINCT id_konsultasi) as count'))
+                                ->groupBy('status')
+                                ->get();
+    
+    $prescriptionCategories = $prescriptionData->pluck('status')->toArray();
+    $prescriptionCounts = $prescriptionData->pluck('count')->toArray();
+
+    return view('apoteker.dashboard', compact(
+        'medicationsCount',
+        'prescriptions',
+        'medicineNames',
+        'medicineStock',
+        'prescriptionCategories',
+        'prescriptionCounts'
+    ));
+}
 
     public function profile()
     {

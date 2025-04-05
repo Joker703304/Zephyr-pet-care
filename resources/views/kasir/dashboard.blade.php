@@ -6,13 +6,13 @@
         <h3 class="fw-bold">Dashboard Kasir</h3>
     </div>
 
-    <div class="row g-3">
+    <div class="row g-4">
         <!-- Card: Daftar Ulang Hari Ini -->
-        <div class="col-md-6 col-lg-6">
+        <div class="col-12 col-lg-6">
             <div class="card shadow-sm text-white bg-primary border-0">
-                <div class="card-body text-center py-3">
+                <div class="card-body text-center py-4">
                     <i class="fas fa-calendar-check fa-2x mb-2"></i>
-                    <h6>Daftar Ulang Hari Ini</h6>
+                    <h6 class="mb-1">Daftar Ulang Hari Ini</h6>
                     <h4>{{ $konsultasiCount ?? 'N/A' }}</h4>
                     <p class="text-white-50 small">Kelola daftar ulang konsultasi.</p>
                     <a href="{{ route('kasir.konsultasi.index') }}" class="btn btn-light btn-sm">Daftar Ulang</a>
@@ -21,11 +21,11 @@
         </div>
 
         <!-- Card: Transaksi Belum Dibayar -->
-        <div class="col-md-6 col-lg-6">
+        <div class="col-12 col-lg-6">
             <div class="card shadow-sm text-white bg-success border-0">
-                <div class="card-body text-center py-3">
+                <div class="card-body text-center py-4">
                     <i class="fas fa-file-invoice-dollar fa-2x mb-2"></i>
-                    <h6>Transaksi Belum Dibayar</h6>
+                    <h6 class="mb-1">Transaksi Belum Dibayar</h6>
                     <h4>{{ $counttransaksi ?? 'N/A' }}</h4>
                     <p class="text-white-50 small">Lihat transaksi yang belum dibayar.</p>
                     <a href="{{ route('kasir.transaksi.list') }}" class="btn btn-light btn-sm">Lihat Transaksi</a>
@@ -33,35 +33,109 @@
             </div>
         </div>
     </div>
+
+    <!-- Grafik -->
+    <div class="row mt-5">
+        <!-- Grafik Daftar Ulang -->
+        <div class="col-12 col-lg-6 mb-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-primary text-white">Grafik Daftar Ulang (30 Hari)</div>
+                <div class="card-body">
+                    <canvas id="daftarUlangChart" height="400"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Grafik Transaksi -->
+        <div class="col-12 col-lg-6 mb-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-success text-white">Grafik Transaksi (30 Hari)</div>
+                <div class="card-body">
+                    <canvas id="transaksiChart" height="400"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
-<!-- Bottom Navbar for Mobile -->
-<nav class="mobile-nav d-md-none fixed-bottom bg-white shadow py-2">
-    <div class="container d-flex justify-content-around">
-        <a href="{{ route('kasir.konsultasi.index') }}" class="text-dark text-center">
-            <i class="fas fa-calendar-check"></i>
-            <p class="small mb-0">Daftar Ulang</p>
-        </a>
-        <a href="{{ route('kasir.transaksi.list') }}" class="text-dark text-center">
-            <i class="fas fa-file-invoice-dollar"></i>
-            <p class="small mb-0">Transaksi</p>
-        </a>
-    </div>
-</nav>
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    window.onload = function () {
+        const barOptions = {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: true }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: { stepSize: 1 }
+                },
+                x: {
+                    ticks: {
+                        maxRotation: 90,
+                        minRotation: 45
+                    }
+                }
+            }
+        };
+
+        // Grafik Daftar Ulang
+        var ctxDaftarUlang = document.getElementById("daftarUlangChart").getContext("2d");
+        new Chart(ctxDaftarUlang, {
+            type: 'bar',
+            data: {
+                labels: {!! json_encode($dates) !!},
+                datasets: [
+                    {
+                        label: "Menunggu",
+                        data: {!! json_encode($konsultasiCounts) !!},
+                        backgroundColor: "#4e73df",
+                        barThickness: 20
+                    },
+                    {
+                        label: "Selesai",
+                        data: {!! json_encode($konsultasiSelesaiCounts) !!},
+                        backgroundColor: "#1cc88a",
+                        barThickness: 20
+                    }
+                ]
+            },
+            options: barOptions
+        });
+
+        // Grafik Transaksi
+        var ctxTransaksi = document.getElementById("transaksiChart").getContext("2d");
+        new Chart(ctxTransaksi, {
+            type: 'bar',
+            data: {
+                labels: {!! json_encode($dates) !!},
+                datasets: [
+                    {
+                        label: "Sudah Dibayar",
+                        data: {!! json_encode($sudahDibayarCounts) !!},
+                        backgroundColor: "#1cc88a",
+                        barThickness: 20
+                    },
+                    {
+                        label: "Belum Dibayar",
+                        data: {!! json_encode($belumDibayarCounts) !!},
+                        backgroundColor: "#e74a3b",
+                        barThickness: 20
+                    }
+                ]
+            },
+            options: barOptions
+        });
+    };
+</script>
 
 <style>
-    .mobile-nav a {
-        text-decoration: none;
-        flex-grow: 1;
-        padding: 10px 0;
-    }
-    .mobile-nav i {
-        font-size: 18px;
-        display: block;
-    }
-    .mobile-nav p {
-        font-size: 12px;
-        margin-top: 2px;
+    .card-body canvas {
+        width: 100% !important;
+        max-height: 400px !important;
     }
 </style>
 @endsection

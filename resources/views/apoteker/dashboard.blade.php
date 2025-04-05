@@ -32,6 +32,31 @@
                 </div>
             </div>
         </div>
+    </div>
+
+    <!-- Grafik -->
+    <div class="row mt-4">
+        <!-- Grafik Stok Obat -->
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">Stok Obat</div>
+                <div class="card-body">
+                    <canvas id="stokObatChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Grafik Resep Obat -->
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-header bg-danger text-white">Distribusi Resep Obat</div>
+                <div class="card-body">
+                    <canvas id="resepObatChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
 <!-- Bottom Navbar for Mobile -->
 <nav class="mobile-nav d-md-none fixed-bottom bg-white shadow py-2">
@@ -48,7 +73,101 @@
             <i class="fas fa-user-md"></i>
             <p class="small mb-0">Profil</p>
         </a>
+    </div>
 </nav>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // Atur tinggi elemen canvas agar kedua grafik memiliki ukuran yang sama
+document.getElementById("stokObatChart").parentElement.style.height = "300px";
+document.getElementById("resepObatChart").parentElement.style.height = "300px";
+    // Grafik Stok Obat
+var ctxObat = document.getElementById("stokObatChart").getContext("2d");
+var stokObatChart = new Chart(ctxObat, {
+    type: 'bar',
+    data: {
+        labels: {!! json_encode($medicineNames) !!},
+        datasets: [{
+            label: "Stok Obat",
+            data: {!! json_encode($medicineStock) !!},
+            backgroundColor: [
+                "#4e73df", "#1cc88a", "#f6c23e", "#e74a3b", "#36b9cc"
+            ],
+            borderColor: "#fff",
+            borderWidth: 2
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                display: false
+            },
+            tooltip: {
+                callbacks: {
+                    label: function(tooltipItem) {
+                        return "Stok: " + tooltipItem.raw + " unit";
+                    }
+                }
+            }
+        },
+        scales: {
+            y: {
+                beginAtZero: true,
+                ticks: {
+                    callback: function(value) {
+                        return value + " unit";
+                    }
+                }
+            }
+        }
+    }
+});
+
+// Grafik Distribusi Resep Obat
+var ctxResep = document.getElementById("resepObatChart").getContext("2d");
+var resepObatChart = new Chart(ctxResep, {
+    type: 'doughnut',
+    data: {
+        labels: {!! json_encode($prescriptionCategories) !!},
+        datasets: [{
+            data: {!! json_encode($prescriptionCounts) !!},
+            backgroundColor: [
+                "#4e73df", "#1cc88a", "#f6c23e", "#e74a3b", "#36b9cc"
+            ],
+            hoverBackgroundColor: [
+                "#2e59d9", "#17a673", "#f4b619", "#c0392b", "#2c9faf"
+            ],
+            hoverBorderColor: "#fff"
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        animation: {
+            animateRotate: true,
+            animateScale: true
+        },
+        plugins: {
+            legend: {
+                position: 'bottom',
+                labels: {
+                    boxWidth: 20
+                }
+            },
+            tooltip: {
+                callbacks: {
+                    label: function(tooltipItem) {
+                        return tooltipItem.label + ": " + tooltipItem.raw + " resep";
+                    }
+                }
+            }
+        }
+    }
+});
+</script>
 
 <style>
     .mobile-nav a {
