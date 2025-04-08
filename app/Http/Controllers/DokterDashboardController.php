@@ -18,6 +18,7 @@ use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\DB;
 
 class DokterDashboardController extends Controller
 {
@@ -82,37 +83,64 @@ class DokterDashboardController extends Controller
     }
 
     public function dokter()
-    {
-        // Check if the logged-in user has a doctor profile
-        $dokter = Dokter::where('id_user', Auth::id())->first();
+{
+    $dokter = Dokter::where('id_user', Auth::id())->first();
+    $schedules = DokterJadwal::all();
 
-        // Retrieve the schedules from the database
-        $schedules = DokterJadwal::all();  // Or your sp
-
-        if (!$dokter) {
-            // If no doctor profile exists, redirect to the profile creation page
-            return redirect()->route('dokter.createProfile')->with('warning', 'Mohon Isi data diri terlebih dahulu.');
-        }
-
-        $today = now()->toDateString(); // Mendapatkan tanggal hari ini
-
-        $countPerawatan = konsultasi::where('dokter_id', $dokter->id)
-            ->where('status', 'Diterima')
-            ->whereDate('tanggal_konsultasi', $today)
-            ->count();
-
-        $currentMonth = now()->month; // Mendapatkan bulan saat ini
-        $currentYear = now()->year;  // Mendapatkan tahun saat ini
-
-        $jadwalBulanIni = DokterJadwal::where('id_dokter', $dokter->id)
-            ->whereMonth('tanggal', $currentMonth) // Filter berdasarkan bulan
-            ->whereYear('tanggal', $currentYear)  // Filter berdasarkan tahun
-            ->where('status', 'Praktik')
-            ->count();
-
-        // Menampilkan tampilan dashboard pemilik hewan
-        return view('dokter.dashboard', compact('schedules', 'countPerawatan', 'jadwalBulanIni'));
+    if (!$dokter) {
+        return redirect()->route('dokter.createProfile')->with('warning', 'Mohon Isi data diri terlebih dahulu.');
     }
+
+    $today = now()->toDateString();
+    $countPerawatan = Konsultasi::where('dokter_id', $dokter->id)
+        ->where('status', 'Diterima')
+        ->whereDate('tanggal_konsultasi', $today)
+        ->count();
+
+    $currentMonth = now()->month;
+    $currentYear = now()->year;
+
+    $jadwalBulanIni = DokterJadwal::where('id_dokter', $dokter->id)
+        ->whereMonth('tanggal', $currentMonth)
+        ->whereYear('tanggal', $currentYear)
+        ->where('status', 'Praktik')
+        ->count();
+
+    // Ambil data jumlah pasien per hari dalam 30 hari terakhir
+    $startDate = now()->subDays(29)->startOfDay(); // 30 hari termasuk hari ini
+    $endDate = now()->endOfDay();
+
+    $pasienPerHari = DB::table('konsultasi')
+        ->select(DB::raw('DATE(tanggal_konsultasi) as tanggal'), DB::raw('COUNT(*) as jumlah'))
+        ->where('dokter_id', $dokter->id)
+        ->whereBetween('tanggal_konsultasi', [$startDate, $endDate])
+        ->groupBy('tanggal')
+        ->orderBy('tanggal', 'asc')
+        ->get();
+
+    // Ambil data jumlah dokter praktik per hari dalam 30 hari terakhir
+    $dokterPraktikPerHari = DB::table('dokter_jadwal')
+        ->select(DB::raw('DATE(tanggal) as tanggal'), DB::raw('COUNT(DISTINCT id_dokter) as jumlah'))
+        ->whereBetween('tanggal', [$startDate, $endDate])
+        ->where('status', 'Praktik')
+        ->groupBy('tanggal')
+        ->orderBy('tanggal', 'asc')
+        ->get();
+
+    // Format data untuk chart
+    $labels = [];
+    $pasienData = [];
+    $dokterData = [];
+
+    for ($i = 0; $i < 30; $i++) {
+        $date = now()->subDays(29 - $i)->toDateString();
+        $labels[] = $date;
+        $pasienData[] = $pasienPerHari->where('tanggal', $date)->first()->jumlah ?? 0;
+        $dokterData[] = $dokterPraktikPerHari->where('tanggal', $date)->first()->jumlah ?? 0;
+    }
+
+    return view('dokter.dashboard', compact('schedules', 'countPerawatan', 'jadwalBulanIni', 'labels', 'pasienData', 'dokterData'));
+}
 
     public function konsultasi()
     {
