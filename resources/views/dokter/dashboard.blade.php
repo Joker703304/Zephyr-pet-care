@@ -35,6 +35,19 @@
     </div>
 </div>
 
+<div class="row mt-4">
+    <div class="col-md-12">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h6 class="fw-bold">Pasien & Dokter Praktik Per Hari (30 Hari Terakhir)</h6>
+                <div class="chart-container" style="position: relative; height: 350px; width: 100%;">
+                    <canvas id="pasienChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- Bottom Navbar for Mobile -->
 <nav class="mobile-nav d-md-none fixed-bottom bg-white shadow py-2">
     <div class="container d-flex justify-content-around">
@@ -54,6 +67,10 @@
 </nav>
 
 <style>
+    html, body {
+    overflow-x: hidden;
+    }
+
     .mobile-nav a {
         text-decoration: none;
         flex-grow: 1;
@@ -68,4 +85,61 @@
         margin-top: 2px;
     }
 </style>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        var ctx = document.getElementById('pasienChart').getContext('2d');
+
+        var pasienChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: {!! json_encode($labels) !!},
+                datasets: [
+                    {
+                        label: 'Jumlah Pasien',
+                        data: {!! json_encode($pasienData) !!},
+                        backgroundColor: 'rgba(54, 162, 235, 0.7)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 1
+                    },
+                    {
+                        label: 'Dokter Praktik',
+                        data: {!! json_encode($dokterData) !!},
+                        backgroundColor: 'rgba(255, 99, 132, 0.7)',
+                        borderColor: 'rgba(255, 99, 132, 1)',
+                        borderWidth: 1
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: {
+                        grid: {
+                            display: false
+                        }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            stepSize: 1
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: true
+                    },
+                    tooltip: {
+                        enabled: true,
+                        mode: 'index',
+                        intersect: false
+                    }
+                }
+            }
+        });
+    });
+</script>
+
 @endsection

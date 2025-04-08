@@ -9,7 +9,7 @@
         
         <div class="d-flex justify-content-center mt-4">
             <a href="{{ route('login') }}" class="btn btn-primary btn-lg me-2 px-4">Login</a>
-            <a href="{{ route('register') }}" class="btn btn-outline-light btn-lg px-4">Daftar</a>
+            <a href="{{ route('register') }}" class="btn btn-outline-light btn-lg px-4">Register</a>
         </div>
     </div>
 

@@ -24,28 +24,57 @@ class AdminController extends Controller
      *
      */
     public function index()
-    {
-        $today = now()->toDateString();
-        $currentMonth = now()->format('Y-m');
+{
+    $today = now()->toDateString();
+    $currentMonth = now()->format('Y-m');
 
-        // Cari antrian berikutnya
-        $nextQueue = Konsultasi::whereDate('tanggal_konsultasi', $today)
-            ->whereIn('status', ['Menunggu', 'Sedang Diproses'])
-            ->orderBy('no_antrian')
-            ->first();
-        $usersCount = User::count();  // Jumlah pengguna
-        $medicationsCount = obat::count(); // Jumlah obat
-        $ownersCount = pemilik_hewan::count(); // Jumlah pemilik hewan
-        $doctorsCount = Dokter::count();// Jumlah dokter
-        $animalsCount = hewan::count();// jumlah hewan
-        $consultationsCount = konsultasi::count();
-        $totalThisMonth = Transaksi::where('status_pembayaran', 'dibayar')
-            ->where('created_at', 'like', "$currentMonth%")
-            ->sum('total_harga');
+    // Cari antrian berikutnya
+    $nextQueue = Konsultasi::whereDate('tanggal_konsultasi', $today)
+        ->whereIn('status', ['Menunggu', 'Sedang Diproses'])
+        ->orderBy('no_antrian')
+        ->first();
 
+    // Statistik utama
+    $usersCount = User::count();
+    $medicationsCount = Obat::count();
+    $ownersCount = pemilik_hewan::count();
+    $doctorsCount = Dokter::count();
+    $animalsCount = Hewan::count();
+    $consultationsCount = Konsultasi::count();
 
-        return view('admin.dashboard', compact('usersCount', 'ownersCount', 'medicationsCount', 'doctorsCount', 'animalsCount', 'consultationsCount', 'nextQueue', 'totalThisMonth'));
-    }
+    // Total pemasukan bulan ini
+    $totalThisMonth = Transaksi::where('status_pembayaran', 'Sudah Dibayar')
+        ->where('created_at', 'like', "$currentMonth%")
+        ->sum('total_harga');
+
+    // Total pemasukan keseluruhan
+    $totalEarnings = Transaksi::where('status_pembayaran', 'Sudah Dibayar')->sum('total_harga');
+
+    // Ambil data pemasukan per bulan
+    $monthlyEarnings = Transaksi::selectRaw('DATE_FORMAT(created_at, "%Y-%m") as bulan, SUM(total_harga) as total')
+        ->where('status_pembayaran', 'Sudah Dibayar')
+        ->groupBy('bulan')
+        ->orderBy('bulan', 'asc')
+        ->get();
+
+    // Pisahkan label (bulan) dan data pemasukan
+    $monthlyLabels = $monthlyEarnings->pluck('bulan')->toArray();
+    $monthlyEarnings = $monthlyEarnings->pluck('total')->toArray();
+
+    return view('admin.dashboard', compact(
+        'usersCount',
+        'ownersCount',
+        'medicationsCount',
+        'doctorsCount',
+        'animalsCount',
+        'consultationsCount',
+        'nextQueue',
+        'totalThisMonth',
+        'totalEarnings', // DITAMBAHKAN untuk total pemasukan keseluruhan
+        'monthlyLabels',
+        'monthlyEarnings',
+    ));
+}
 
 
     // Menampilkan form untuk mengedit role pengguna

@@ -23,27 +23,73 @@ class kasirController extends Controller
      * Display a listing of the resource.
      */
     public function index()
-    {
-        $kasir = kasir::where('id_user', Auth::id())->first();
-        $today = Carbon::today();
+{
+    $kasir = Kasir::where('id_user', Auth::id())->first();
+    $today = Carbon::today();
 
-        if (!$kasir) {
-            // If no doctor profile exists, redirect to the profile creation page
-            return redirect()->route('kasir.createProfile')->with('warning', 'Mohon Isi data diri terlebih dahulu.');
-        }
+    if (!$kasir) {
+        return redirect()->route('kasir.createProfile')->with('warning', 'Mohon isi data diri terlebih dahulu.');
+    }
 
-        $konsultasiCount = konsultasi::whereDate('tanggal_konsultasi', Carbon::today())->where('status', 'Menunggu')->count();
-        // Menampilkan tampilan dashboard pemilik hewan
+    // Jumlah daftar ulang hari ini (Menunggu)
+    $konsultasiCount = Konsultasi::whereDate('tanggal_konsultasi', $today)
+        ->where('status', 'Menunggu')
+        ->count();
 
-        $antrianCount = Antrian::whereDate('created_at', $today)->count();
+    // Jumlah antrian hari ini
+    $antrianCount = Antrian::whereDate('created_at', $today)->count();
 
-        $counttransaksi = Transaksi::whereDate('created_at', $today)
+    // Jumlah transaksi belum dibayar hari ini
+    $counttransaksi = Transaksi::whereDate('created_at', $today)
         ->where('status_pembayaran', 'Belum Dibayar')
         ->count();
 
+    // Total transaksi hari ini
+    $totalTransaksi = Transaksi::whereDate('created_at', $today)->count();
 
-        return view('kasir.dashboard', compact('konsultasiCount', 'antrianCount', 'counttransaksi'));;
+    // 🔄 Ganti dari 7 hari jadi 30 hari terakhir
+    $startDate = now()->subDays(29); // 30 hari termasuk hari ini
+    $endDate = now();
+
+    $dates = [];
+    $konsultasiCounts = [];
+    $konsultasiSelesaiCounts = [];
+    $sudahDibayarCounts = [];
+    $belumDibayarCounts = [];
+
+    for ($date = $startDate->copy(); $date->lte($endDate); $date->addDay()) {
+        $formattedDate = $date->format('d M'); // Format agar label lebih rapi, contoh: 05 Apr
+        $dates[] = $formattedDate;
+
+        $konsultasiCounts[] = Konsultasi::whereDate('tanggal_konsultasi', $date)
+            ->where('status', 'Menunggu')
+            ->count();
+
+        $konsultasiSelesaiCounts[] = Konsultasi::whereDate('tanggal_konsultasi', $date)
+            ->where('status', 'Selesai')
+            ->count();
+
+        $belumDibayarCounts[] = Transaksi::whereDate('created_at', $date)
+            ->where('status_pembayaran', 'Belum Dibayar')
+            ->count();
+
+        $sudahDibayarCounts[] = Transaksi::whereDate('created_at', $date)
+            ->where('status_pembayaran', 'Sudah Dibayar')
+            ->count();
     }
+
+    return view('kasir.dashboard', compact(
+        'konsultasiCount',
+        'antrianCount',
+        'counttransaksi',
+        'totalTransaksi',
+        'dates',
+        'konsultasiCounts',
+        'konsultasiSelesaiCounts',
+        'sudahDibayarCounts',
+        'belumDibayarCounts'
+    ));
+}
 
     public function antrian()
     {
