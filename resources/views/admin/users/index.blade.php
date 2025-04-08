@@ -10,22 +10,54 @@
         </div>
     @endif
 
-    <!-- Search Form -->
-    <form action="{{ route('admin.users.index') }}" method="GET" class="mb-3">
-        <div class="input-group">
-            <input type="text" name="search" class="form-control" placeholder="Cari Nama atau No Telepon" value="{{ request('search') }}">
-            <button type="submit" class="btn btn-primary">Cari</button>
+    <!-- Search & Filter Section -->
+    <div class="row mb-3">
+        <!-- Search Bar -->
+        <div class="col-md-4">
+            <form action="{{ route('admin.users.index') }}" method="GET">
+                <div class="input-group">
+                    <input type="text" name="search" class="form-control" placeholder="Cari Nama atau No Telepon" value="{{ request('search') }}">
+                    <button type="submit" class="btn btn-primary">Cari</button>
+                </div>
+            </form>
         </div>
-    </form>
+
+        <!-- Filter Role -->
+        <div class="col-md-3">
+            <form action="{{ route('admin.users.index') }}" method="GET">
+                <select name="role" class="form-control" onchange="this.form.submit()">
+                    <option value="">-- Pilih Role --</option>
+                    <option value="pemilik_hewan" {{ request('role') == 'pemilik_hewan' ? 'selected' : '' }}>Pemilik Hewan</option>
+                    <option value="admin" {{ request('role') == 'admin' ? 'selected' : '' }}>Admin</option>
+                    <option value="dokter" {{ request('role') == 'dokter' ? 'selected' : '' }}>Dokter</option>
+                    <option value="apoteker" {{ request('role') == 'apoteker' ? 'selected' : '' }}>Apoteker</option>
+                    <option value="kasir" {{ request('role') == 'kasir' ? 'selected' : '' }}>Kasir</option>
+                    <option value="security" {{ request('role') == 'security' ? 'selected' : '' }}>Security</option>
+                </select>
+            </form>
+        </div>
+
+        <!-- Reset Button -->
+        <div class="col-md-2">
+            <a href="{{ route('admin.users.index') }}" class="btn btn-secondary">Reset</a>
+        </div>
+    </div>
 
     <table class="table table-bordered">
         <thead>
             <tr>
-                <th>Nama</th>
-                <th>No Telepon</th>
+                <th>
+                    <a href="{{ route('admin.users.index', array_merge(request()->query(), ['sort' => 'name', 'direction' => request('direction') == 'asc' ? 'desc' : 'asc'])) }}">
+                        Nama {!! request('sort') == 'name' ? (request('direction') == 'asc' ? '↑' : '↓') : '' !!}
+                    </a>
+                </th>
+                <th>
+                    <a href="{{ route('admin.users.index', array_merge(request()->query(), ['sort' => 'phone', 'direction' => request('direction') == 'asc' ? 'desc' : 'asc'])) }}">
+                        No Telepon {!! request('sort') == 'phone' ? (request('direction') == 'asc' ? '↑' : '↓') : '' !!}
+                    </a>
+                </th>
                 <th>Password</th>
                 <th>Role</th>
-                {{-- <th>Actions</th> --}}
             </tr>
         </thead>
         <tbody>
@@ -44,13 +76,10 @@
                             <option value="dokter" {{ $user->role == 'dokter' ? 'selected' : '' }}>Dokter</option>
                             <option value="apoteker" {{ $user->role == 'apoteker' ? 'selected' : '' }}>Apoteker</option>
                             <option value="kasir" {{ $user->role == 'kasir' ? 'selected' : '' }}>Kasir</option>
-                            <option value="security" {{ $user->role == 'security' ? 'selected' : '' }}>security</option>
+                            <option value="security" {{ $user->role == 'security' ? 'selected' : '' }}>Security</option>
                         </select>
                     </form>
                 </td>
-                {{-- <td>
-                    <a href="{{ route('admin.users.edit', $user->id) }}" class="btn btn-warning btn-sm">Edit</a>
-                </td> --}}
             </tr>
             @empty
             <tr>
@@ -64,7 +93,7 @@
     <div class="d-flex justify-content-between align-items-center mt-3">
         <span>Halaman {{ $users->currentPage() }} dari {{ $users->lastPage() }}</span>
         <div>
-            {{ $users->appends(['search' => request('search')])->links('pagination::bootstrap-4') }}
+            {{ $users->appends(request()->query())->links('pagination::bootstrap-4') }}
         </div>
     </div>
 </div>

@@ -2,84 +2,94 @@
 
 @section('content')
 <div class="container">
+    <h1>Manajemen Obat</h1>
     
-    {{-- <a href="{{ route('admin.obat.create') }}" class="btn btn-success mb-3">Add New Drug</a> --}}
-
-    <!-- Success Message -->
     @if(session('success'))
-        <div class="alert alert-success">
-            {{ session('success') }}
-        </div>
+        <div class="alert alert-success">{{ session('success') }}</div>
     @endif
 
-    <!-- Drugs Table -->
-    {{-- <table class="table table-bordered">
+    <div class="row mb-3">
+        <div class="col-md-4">
+            <form action="{{ route('admin.obat.index') }}" method="GET">
+                <div class="input-group">
+                    <input type="text" name="search" class="form-control" placeholder="Cari Nama Obat atau Jenis" value="{{ request('search') }}">
+                    <button type="submit" class="btn btn-primary">Cari</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="col-md-3">
+            <form action="{{ route('admin.obat.index') }}" method="GET">
+                <select name="jenis" class="form-control" onchange="this.form.submit()">
+                    <option value="">-- Pilih Jenis Obat --</option>
+                    @foreach($jenisObats as $jenis)
+                        <option value="{{ $jenis->jenis_obat }}" {{ request('jenis') == $jenis->jenis_obat ? 'selected' : '' }}>
+                            {{ $jenis->jenis_obat }}
+                        </option>
+                    @endforeach
+                </select>
+            </form>
+        </div>
+
+        <div class="col-md-2">
+            <a href="{{ route('admin.obat.index') }}" class="btn btn-secondary">Reset</a>
+        </div>
+    </div>
+
+    <table class="table table-bordered">
         <thead>
             <tr>
-                <th>ID Obat</th>
-                <th>Nama Obat</th>
-                <th>Jenis Obat</th>
-                <th>Stok</th>
-                <th>Harga</th>
-                <th>Actions</th>
+                <th>
+                    <a href="{{ route('admin.obat.index', ['sort' => 'nama_obat', 'direction' => request('direction') == 'asc' ? 'desc' : 'asc'] + request()->except(['sort', 'direction'])) }}" class="text-primary">
+                        Nama Obat
+                        @if(request('sort') == 'nama_obat')
+                            {!! request('direction') == 'asc' ? '▲' : '▼' !!}
+                        @endif
+                    </a>
+                </th>
+                <th>
+                    <a href="{{ route('admin.obat.index', ['sort' => 'jenis_obat', 'direction' => request('direction') == 'asc' ? 'desc' : 'asc'] + request()->except(['sort', 'direction'])) }}" class="text-primary">
+                        Jenis Obat
+                        @if(request('sort') == 'jenis_obat')
+                            {!! request('direction') == 'asc' ? '▲' : '▼' !!}
+                        @endif
+                    </a>
+                </th>
+                <th>
+                    <a href="{{ route('admin.obat.index', ['sort' => 'stok', 'direction' => request('direction') == 'asc' ? 'desc' : 'asc'] + request()->except(['sort', 'direction'])) }}" class="text-primary">
+                        Stok
+                        @if(request('sort') == 'stok')
+                            {!! request('direction') == 'asc' ? '▲' : '▼' !!}
+                        @endif
+                    </a>
+                </th>
+                <th>
+                    <a href="{{ route('admin.obat.index', ['sort' => 'harga', 'direction' => request('direction') == 'asc' ? 'desc' : 'asc'] + request()->except(['sort', 'direction'])) }}" class="text-primary">
+                        Harga
+                        @if(request('sort') == 'harga')
+                            {!! request('direction') == 'asc' ? '▲' : '▼' !!}
+                        @endif
+                    </a>
+                </th>
             </tr>
         </thead>
         <tbody>
             @foreach($obats as $obat)
             <tr>
-                <td>{{ $obat->id_obat }}</td>
                 <td>{{ $obat->nama_obat }}</td>
                 <td>{{ $obat->jenis_obat }}</td>
                 <td>{{ $obat->stok }}</td>
-                <td>{{ $obat->harga }}</td>
-                <td>
-                    <a href="{{ route('admin.obat.edit', $obat->id_obat) }}" class="btn btn-warning btn-sm">Edit</a>
-                    <form action="{{ route('admin.obat.destroy', $obat->id_obat) }}" method="POST" style="display:inline;">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this drug?')">Delete</button>
-                    </form>
-                </td>
+                <td>{{ number_format($obat->harga, 0, ',', '.') }}</td>
             </tr>
             @endforeach
         </tbody>
-    </table> --}}
-</div>
+    </table>
 
-    <!-- DataTales Example -->
-    <div class="card shadow mb-4">
-        <div class="card-header py-3">
-            <h6 class="m-0 font-weight-bold text-primary">Drugs Management</h6>
-        </div>
-        <div class="card-body">
-            <div class="table-responsive">
-                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
-                    <thead>
-                        <tr>
-                            <th>ID Obat</th>
-                            <th>Nama Obat</th>
-                            <th>Jenis Obat</th>
-                            <th>Stok</th>
-                            <th>Harga</th>
-                            
-                        </tr>
-                    </thead>
-                    
-                    <tbody>
-                        @foreach($obats as $obat)
-                        <tr>
-                            <td>{{ $obat->id_obat }}</td>
-                            <td>{{ $obat->nama_obat }}</td>
-                            <td>{{ $obat->jenis_obat }}</td>
-                            <td>{{ $obat->stok }}</td>
-                            <td>{{ $obat->harga }}</td>
-                            
-                        </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            </div>
+    <div class="d-flex justify-content-between align-items-center mt-3">
+        <span>Halaman {{ $obats->currentPage() }} dari {{ $obats->lastPage() }}</span>
+        <div>
+            {{ $obats->appends(request()->query())->links('pagination::bootstrap-4') }}
         </div>
     </div>
-
+</div>
 @endsection

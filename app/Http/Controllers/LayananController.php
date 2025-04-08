@@ -7,11 +7,34 @@ use App\Models\Layanan;
 
 class LayananController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $layanans = Layanan::all();
+        $query = Layanan::query();
+
+        // Search berdasarkan nama layanan atau deskripsi
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where('nama_layanan', 'like', "%$search%")
+                  ->orWhere('deskripsi', 'like', "%$search%");
+        }
+
+        // Sorting
+        $sort = $request->get('sort', 'nama_layanan'); // Default sorting
+        $direction = $request->get('direction', 'asc'); // Default direction
+
+        // Kolom yang bisa diurutkan
+        $sortable = ['nama_layanan', 'deskripsi', 'harga'];
+
+        if (in_array($sort, $sortable)) {
+            $query->orderBy($sort, $direction);
+        }
+
+        // Ambil data dengan pagination
+        $layanans = $query->paginate(10)->appends($request->query());
+
         return view('admin.layanan.index', compact('layanans'));
     }
+
 
     // Show the form for creating a new resource
     public function create()

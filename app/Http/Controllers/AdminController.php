@@ -22,7 +22,6 @@ class AdminController extends Controller
     /**
      * Tampilkan halaman dashboard admin.
      *
-     * @return \Illuminate\View\View
      */
     public function index()
     {
@@ -34,61 +33,43 @@ class AdminController extends Controller
             ->whereIn('status', ['Menunggu', 'Sedang Diproses'])
             ->orderBy('no_antrian')
             ->first();
-        // Dapatkan statistik atau data lainnya yang relevan untuk admin
         $usersCount = User::count();  // Jumlah pengguna
-        // $appointmentsCount = \App\Models\Appointment::count();  // Jumlah janji temu
-        $medicationsCount = obat::count();
-        $ownersCount = pemilik_hewan::count();
-        $doctorsCount = Dokter::count();
-        $animalsCount = hewan::count();
+        $medicationsCount = obat::count(); // Jumlah obat
+        $ownersCount = pemilik_hewan::count(); // Jumlah pemilik hewan
+        $doctorsCount = Dokter::count();// Jumlah dokter
+        $animalsCount = hewan::count();// jumlah hewan
         $consultationsCount = konsultasi::count();
         $totalThisMonth = Transaksi::where('status_pembayaran', 'dibayar')
-        ->where('created_at', 'like', "$currentMonth%")
-        ->sum('total_harga');
+            ->where('created_at', 'like', "$currentMonth%")
+            ->sum('total_harga');
 
 
         return view('admin.dashboard', compact('usersCount', 'ownersCount', 'medicationsCount', 'doctorsCount', 'animalsCount', 'consultationsCount', 'nextQueue', 'totalThisMonth'));
     }
 
-    // Menampilkan pengguna yang belum diverifikasi
-    // public function verifyUsers()
-    // {
-    //     $users = User::where('verified', false)->get();
-    //     return view('admin.verify-users', compact('users'));
-    // }
 
-    // // Verifikasi pengguna
-    // public function approveUser($id)
-    // {
-    //     $user = User::findOrFail($id);
-    //     $user->verified = true; // Set verified ke true
-    //     $user->save();
+    // Menampilkan form untuk mengedit role pengguna
+    public function editRole($id)
+    {
+        $user = User::findOrFail($id);
+        return view('admin.edit-role', compact('user')); // Menampilkan form edit role
+    }
 
-    //     return redirect()->route('admin.verify-users')->with('status', 'Pengguna telah berhasil diverifikasi.');
-    // }
+    // Memperbarui role pengguna
+    public function updateRole(Request $request, $id)
+    {
+        $user = User::findOrFail($id);
 
-      // Menampilkan form untuk mengedit role pengguna
-      public function editRole($id)
-      {
-          $user = User::findOrFail($id);
-          return view('admin.edit-role', compact('user')); // Menampilkan form edit role
-      }
-  
-      // Memperbarui role pengguna
-      public function updateRole(Request $request, $id)
-      {
-          $user = User::findOrFail($id);
-  
-          // Validasi input role
-          $validated = $request->validate([
-              'role' => 'required|in:admin,dokter,apoteker,pemilik_hewan', // Gantilah sesuai role yang ada
-          ]);
-  
-          $user->role = $validated['role'];
-          $user->save();
-  
-          return redirect()->route('admin.verify-users')->with('status', 'Role pengguna telah berhasil diperbarui.');
-      }
+        // Validasi input role
+        $validated = $request->validate([
+            'role' => 'required|in:admin,dokter,apoteker,pemilik_hewan', // Gantilah sesuai role yang ada
+        ]);
+
+        $user->role = $validated['role'];
+        $user->save();
+
+        return redirect()->route('admin.verify-users')->with('status', 'Role pengguna telah berhasil diperbarui.');
+    }
 
     // Tambahkan fungsi lain untuk mengelola fitur admin, misalnya:
     public function manageUsers()
