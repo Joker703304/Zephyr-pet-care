@@ -7,15 +7,34 @@ use App\Models\obat;
 
 class ObatController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $obats = obat::all();
+        $query = Obat::query();
 
-        if (auth()->user()->role == 'apoteker') {
-            return view('apoteker.obat.index', compact('obats'));
+        // Search berdasarkan nama obat
+        if ($request->filled('search')) {
+            $query->where('nama_obat', 'like', '%' . $request->search . '%');
         }
 
-        return view('admin.obat.index', compact('obats'));
+        // Filter berdasarkan jenis obat
+        if ($request->filled('jenis')) {
+            $query->where('jenis_obat', $request->jenis);
+        }
+
+        // Sorting berdasarkan kolom tertentu (kecuali foto)
+        $sort = $request->input('sort', 'nama_obat'); // Default sorting by nama_obat
+        $direction = $request->input('direction', 'asc'); // Default direction asc
+        if (in_array($sort, ['id_obat', 'nama_obat', 'jenis_obat', 'stok', 'harga'])) {
+            $query->orderBy($sort, $direction);
+        }
+
+        // Pagination
+        $obats = $query->paginate(10);
+
+        // Ambil daftar jenis obat untuk filter dropdown
+        $jenisObats = Obat::all();
+
+        return view('admin.obat.index', compact('obats', 'jenisObats', 'sort', 'direction'));
     }
 
     // Menampilkan form untuk menambahkan obat baru

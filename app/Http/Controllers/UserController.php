@@ -18,6 +18,11 @@ class UserController extends Controller
     {
         $query = User::query();
 
+        // Filter berdasarkan role
+        if ($request->has('role') && $request->role != '') {
+            $query->where('role', $request->role);
+        }
+
         // Cek apakah ada input pencarian
         if ($request->has('search')) {
             $search = $request->search;
@@ -27,11 +32,31 @@ class UserController extends Controller
             });
         }
 
-        // Ambil data user dengan pagination (10 data per halaman)
-        $users = $query->paginate(10);
+        // Sorting berdasarkan kolom yang dipilih
+        $sortColumn = $request->input('sort', 'name'); // Default sort by name
+        $sortDirection = $request->input('direction', 'asc'); // Default ascending
 
-        return view('admin.users.index', compact('users'));
+        // Validasi agar hanya kolom tertentu yang bisa di-sort
+        if (!in_array($sortColumn, ['name', 'phone'])) {
+            $sortColumn = 'name';
+        }
+        if (!in_array($sortDirection, ['asc', 'desc'])) {
+            $sortDirection = 'asc';
+        }
+
+        $query->orderBy($sortColumn, $sortDirection);
+
+        // Ambil data user dengan pagination (10 data per halaman)
+        $users = $query->paginate(10)->appends([
+            'search' => $request->search,
+            'role' => $request->role,
+            'sort' => $sortColumn,
+            'direction' => $sortDirection,
+        ]);
+
+        return view('admin.users.index', compact('users', 'sortColumn', 'sortDirection'));
     }
+
 
 
     // Menampilkan form untuk menambah pengguna baru

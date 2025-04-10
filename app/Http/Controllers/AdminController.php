@@ -9,7 +9,18 @@ use App\Models\obat;
 use App\Models\pemilik_hewan;
 use App\Models\Transaksi;
 use App\Models\User;
+use Carbon\Carbon;
+use Illuminate\Support\Collection;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\LaporanExport;
+
+use App\Exports\TransaksiExport;
+use PHPExcel;
+use PHPExcel_IOFactory;
+
+
 
 
 class AdminController extends Controller
@@ -22,7 +33,6 @@ class AdminController extends Controller
     /**
      * Tampilkan halaman dashboard admin.
      *
-     * @return \Illuminate\View\View
      */
     public function index()
 {
@@ -77,45 +87,29 @@ class AdminController extends Controller
     ));
 }
 
-    // Menampilkan pengguna yang belum diverifikasi
-    // public function verifyUsers()
-    // {
-    //     $users = User::where('verified', false)->get();
-    //     return view('admin.verify-users', compact('users'));
-    // }
 
-    // // Verifikasi pengguna
-    // public function approveUser($id)
-    // {
-    //     $user = User::findOrFail($id);
-    //     $user->verified = true; // Set verified ke true
-    //     $user->save();
+    // Menampilkan form untuk mengedit role pengguna
+    public function editRole($id)
+    {
+        $user = User::findOrFail($id);
+        return view('admin.edit-role', compact('user')); // Menampilkan form edit role
+    }
 
-    //     return redirect()->route('admin.verify-users')->with('status', 'Pengguna telah berhasil diverifikasi.');
-    // }
+    // Memperbarui role pengguna
+    public function updateRole(Request $request, $id)
+    {
+        $user = User::findOrFail($id);
 
-      // Menampilkan form untuk mengedit role pengguna
-      public function editRole($id)
-      {
-          $user = User::findOrFail($id);
-          return view('admin.edit-role', compact('user')); // Menampilkan form edit role
-      }
-  
-      // Memperbarui role pengguna
-      public function updateRole(Request $request, $id)
-      {
-          $user = User::findOrFail($id);
-  
-          // Validasi input role
-          $validated = $request->validate([
-              'role' => 'required|in:admin,dokter,apoteker,pemilik_hewan', // Gantilah sesuai role yang ada
-          ]);
-  
-          $user->role = $validated['role'];
-          $user->save();
-  
-          return redirect()->route('admin.verify-users')->with('status', 'Role pengguna telah berhasil diperbarui.');
-      }
+        // Validasi input role
+        $validated = $request->validate([
+            'role' => 'required|in:admin,dokter,apoteker,pemilik_hewan', // Gantilah sesuai role yang ada
+        ]);
+
+        $user->role = $validated['role'];
+        $user->save();
+
+        return redirect()->route('admin.verify-users')->with('status', 'Role pengguna telah berhasil diperbarui.');
+    }
 
     // Tambahkan fungsi lain untuk mengelola fitur admin, misalnya:
     public function manageUsers()
@@ -159,4 +153,68 @@ class AdminController extends Controller
         $konsultasi = konsultasi::all();
         return view('admin.konsultasi', compact('konsultasi'));
     }
+
+
+public function laporan(Request $request)
+{
+    $bulan = $request->bulan;
+    $tahun = $request->tahun ?? now()->format('Y');
+    $mode = $request->mode ?? 'bulan';
+
+    $query = Transaksi::with(['konsultasi.hewan.pemilik.user'])
+        ->where('status_pembayaran', 'Sudah Dibayar');
+
+    if ($mode === 'bulan' && $bulan) {
+        $start = Carbon::parse($bulan . '-01')->startOfMonth();
+        $end = Carbon::parse($bulan . '-01')->endOfMonth();
+        $query->whereBetween('created_at', [$start, $end]);
+        $transaksi = $query->orderBy('created_at')->get();
+
+        return view('admin.laporan.kasir', compact('transaksi', 'bulan', 'tahun', 'mode'));
+    } else {
+        // Mode tahun
+        $start = Carbon::parse($tahun . '-01-01')->startOfYear();
+        $end = Carbon::parse($tahun . '-12-31')->endOfYear();
+        $query->whereBetween('created_at', [$start, $end]);
+
+        // Ambil transaksi, kelompokkan berdasarkan bulan (01-12)
+        $rawRekap = $query->get()->groupBy(function ($item) {
+            return $item->created_at->format('m'); // Ambil angka bulan (01–12)
+        })->map(function ($group) {
+            return $group->sum('total_harga');
+        });
+
+        // Buat array berisi 12 bulan, isi 0 jika tidak ada data
+        $rekapTahun = collect();
+        for ($i = 1; $i <= 12; $i++) {
+            $bulanStr = str_pad($i, 2, '0', STR_PAD_LEFT); // '01', '02', ..., '12'
+            $rekapTahun[$bulanStr] = $rawRekap->get($bulanStr, 0);
+        }
+
+        $totalTahun = $rekapTahun->sum();
+
+        return view('admin.laporan.kasir', [
+            'rekapTahun' => $rekapTahun,
+            'totalTahun' => $totalTahun,
+            'bulan' => null,
+            'tahun' => $tahun,
+            'mode' => 'tahun',
+            'transaksi' => collect(),
+        ]);
+    }
+}
+
+public function exportLaporan(Request $request)
+{
+    $mode = $request->mode ?? 'bulan';
+    $tahun = $request->tahun ?? now()->format('Y');
+    $bulan = $request->bulan ?? now()->format('Y-m');
+
+    $filename = 'laporan_' . $mode . '_' . now()->format('Ymd_His') . '.xlsx';
+
+    return Excel::download(new TransaksiExport($mode, $bulan, $tahun), $filename);
+}
+
+
+
 }
