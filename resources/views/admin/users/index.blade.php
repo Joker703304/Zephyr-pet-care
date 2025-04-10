@@ -43,51 +43,61 @@
         </div>
     </div>
 
-    <table class="table table-bordered">
-        <thead>
-            <tr>
-                <th>
-                    <a href="{{ route('admin.users.index', array_merge(request()->query(), ['sort' => 'name', 'direction' => request('direction') == 'asc' ? 'desc' : 'asc'])) }}">
-                        Nama {!! request('sort') == 'name' ? (request('direction') == 'asc' ? '↑' : '↓') : '' !!}
-                    </a>
-                </th>
-                <th>
-                    <a href="{{ route('admin.users.index', array_merge(request()->query(), ['sort' => 'phone', 'direction' => request('direction') == 'asc' ? 'desc' : 'asc'])) }}">
-                        No Telepon {!! request('sort') == 'phone' ? (request('direction') == 'asc' ? '↑' : '↓') : '' !!}
-                    </a>
-                </th>
-                <th>Password</th>
-                <th>Role</th>
-            </tr>
-        </thead>
-        <tbody>
-            @forelse($users as $user)
-            <tr>
-                <td>{{ $user->name }}</td>
-                <td>{{ $user->phone }}</td>
-                <td>********</td>
-                <td>
-                    <form action="{{ route('admin.users.updateRole', $user->id) }}" method="POST">
-                        @csrf
-                        @method('PUT')
-                        <select name="role" class="form-control" onchange="this.form.submit()">
-                            <option value="pemilik_hewan" {{ $user->role == 'pemilik_hewan' ? 'selected' : '' }}>Pemilik Hewan</option>
-                            <option value="admin" {{ $user->role == 'admin' ? 'selected' : '' }}>Admin</option>
-                            <option value="dokter" {{ $user->role == 'dokter' ? 'selected' : '' }}>Dokter</option>
-                            <option value="apoteker" {{ $user->role == 'apoteker' ? 'selected' : '' }}>Apoteker</option>
-                            <option value="kasir" {{ $user->role == 'kasir' ? 'selected' : '' }}>Kasir</option>
-                            <option value="security" {{ $user->role == 'security' ? 'selected' : '' }}>Security</option>
-                        </select>
-                    </form>
-                </td>
-            </tr>
-            @empty
-            <tr>
-                <td colspan="5" class="text-center">Tidak ada data ditemukan</td>
-            </tr>
-            @endforelse
-        </tbody>
-    </table>
+    <div class="card shadow rounded">
+    <div class="card">
+    <div class="card-header">
+        <h5 class="mb-0">Daftar Pengguna</h5>
+    </div>
+    <div class="card-body p-0">
+        <table class="table table-bordered mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th>
+                        <a href="{{ route('admin.users.index', array_merge(request()->query(), ['sort' => 'name', 'direction' => request('direction') == 'asc' ? 'desc' : 'asc'])) }}">
+                            Nama {!! request('sort') == 'name' ? (request('direction') == 'asc' ? '↑' : '↓') : '' !!}
+                        </a>
+                    </th>
+                    <th>
+                        <a href="{{ route('admin.users.index', array_merge(request()->query(), ['sort' => 'phone', 'direction' => request('direction') == 'asc' ? 'desc' : 'asc'])) }}">
+                            No Telepon {!! request('sort') == 'phone' ? (request('direction') == 'asc' ? '↑' : '↓') : '' !!}
+                        </a>
+                    </th>
+                    <th>Password</th>
+                    <th>Role</th>
+                </tr>
+            </thead>
+            <tbody>
+                @forelse($users as $user)
+                <tr>
+                    <td>{{ $user->name }}</td>
+                    <td>{{ $user->phone }}</td>
+                    <td>********</td>
+                    <td>
+                        <form action="{{ route('admin.users.updateRole', $user->id) }}" method="POST">
+                            @csrf
+                            @method('PUT')
+                            <select name="role" class="form-control" onchange="this.form.submit()">
+                                <option value="pemilik_hewan" {{ $user->role == 'pemilik_hewan' ? 'selected' : '' }}>Pemilik Hewan</option>
+                                <option value="admin" {{ $user->role == 'admin' ? 'selected' : '' }}>Admin</option>
+                                <option value="dokter" {{ $user->role == 'dokter' ? 'selected' : '' }}>Dokter</option>
+                                <option value="apoteker" {{ $user->role == 'apoteker' ? 'selected' : '' }}>Apoteker</option>
+                                <option value="kasir" {{ $user->role == 'kasir' ? 'selected' : '' }}>Kasir</option>
+                                <option value="security" {{ $user->role == 'security' ? 'selected' : '' }}>Security</option>
+                            </select>
+                        </form>
+                    </td>
+                </tr>
+                @empty
+                <tr>
+                    <td colspan="5" class="text-center">Tidak ada data ditemukan</td>
+                </tr>
+                @endforelse
+            </tbody>
+        </table>
+    </div>
+</div>
+    
+
 
     <!-- Pagination -->
     <div class="d-flex justify-content-between align-items-center mt-3">

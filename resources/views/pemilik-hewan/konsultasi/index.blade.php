@@ -46,7 +46,7 @@
                                 </h5>
                                 <span class="badge bg-secondary">No. {{ $item->no_antrian }}</span>
                             </div>
-                            
+
                             <p class="text-muted mb-1">👨‍⚕️ Dokter: {{ $item->dokter->user->name ?? 'Belum ditentukan' }}</p>
                             <p class="mb-1">🩺 Keluhan: <strong>{{ $item->keluhan }}</strong></p>
                             <p class="text-muted">📅 Tanggal: {{ $item->tanggal_konsultasi }}</p>
@@ -73,8 +73,8 @@
                                 </span>
 
                                 @if ($item->status === 'Menunggu')
-                                    <form action="{{ route('pemilik-hewan.konsultasi_pemilik.cancel', $item->id_konsultasi) }}" 
-                                          method="POST" class="d-inline" 
+                                    <form action="{{ route('pemilik-hewan.konsultasi_pemilik.cancel', $item->id_konsultasi) }}"
+                                          method="POST" class="d-inline"
                                           onsubmit="return confirm('Apakah Anda yakin ingin membatalkan konsultasi ini?')">
                                         @csrf
                                         @method('PUT')
@@ -88,6 +88,11 @@
                     </div>
                 </div>
             @endforeach
+        </div>
+
+        {{-- Pagination --}}
+        <div class="d-flex justify-content-center mt-3">
+            {{ $konsultasi->links('pagination::bootstrap-4') }}
         </div>
     @endif
 </div>

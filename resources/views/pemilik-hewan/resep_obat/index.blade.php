@@ -57,25 +57,26 @@
                 </div>
             @endforeach
         </div>
+
+        <div class="mt-4 d-flex justify-content-center">
+            {{ $resep_obat->links() }}
+        </div>
     @endif
 </div>
 
 <style>
-    /* Ukuran card seragam */
     .resep-card {
         display: flex;
         flex-direction: column;
-        min-height: 320px; /* Minimum tinggi card */
-        max-height: 360px; /* Batas tinggi maksimum */
+        min-height: 320px;
+        max-height: 360px;
         font-size: 14px;
     }
 
-    /* Agar konten dalam card tetap proporsional */
     .resep-card .card-body {
         flex-grow: 1;
     }
 
-    /* Styling list dan efek hover */
     .small-list .list-group-item {
         background: transparent;
         border: none;

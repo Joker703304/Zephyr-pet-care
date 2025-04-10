@@ -36,54 +36,62 @@
         </div>
     </div>
 
-    <table class="table table-bordered">
-        <thead>
-            <tr>
-                <th>
-                    <a href="{{ route('admin.obat.index', ['sort' => 'nama_obat', 'direction' => request('direction') == 'asc' ? 'desc' : 'asc'] + request()->except(['sort', 'direction'])) }}" class="text-primary">
-                        Nama Obat
-                        @if(request('sort') == 'nama_obat')
-                            {!! request('direction') == 'asc' ? '▲' : '▼' !!}
-                        @endif
-                    </a>
-                </th>
-                <th>
-                    <a href="{{ route('admin.obat.index', ['sort' => 'jenis_obat', 'direction' => request('direction') == 'asc' ? 'desc' : 'asc'] + request()->except(['sort', 'direction'])) }}" class="text-primary">
-                        Jenis Obat
-                        @if(request('sort') == 'jenis_obat')
-                            {!! request('direction') == 'asc' ? '▲' : '▼' !!}
-                        @endif
-                    </a>
-                </th>
-                <th>
-                    <a href="{{ route('admin.obat.index', ['sort' => 'stok', 'direction' => request('direction') == 'asc' ? 'desc' : 'asc'] + request()->except(['sort', 'direction'])) }}" class="text-primary">
-                        Stok
-                        @if(request('sort') == 'stok')
-                            {!! request('direction') == 'asc' ? '▲' : '▼' !!}
-                        @endif
-                    </a>
-                </th>
-                <th>
-                    <a href="{{ route('admin.obat.index', ['sort' => 'harga', 'direction' => request('direction') == 'asc' ? 'desc' : 'asc'] + request()->except(['sort', 'direction'])) }}" class="text-primary">
-                        Harga
-                        @if(request('sort') == 'harga')
-                            {!! request('direction') == 'asc' ? '▲' : '▼' !!}
-                        @endif
-                    </a>
-                </th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach($obats as $obat)
-            <tr>
-                <td>{{ $obat->nama_obat }}</td>
-                <td>{{ $obat->jenis_obat }}</td>
-                <td>{{ $obat->stok }}</td>
-                <td>{{ number_format($obat->harga, 0, ',', '.') }}</td>
-            </tr>
-            @endforeach
-        </tbody>
-    </table>
+    <div class="card shadow rounded">
+        <div class="card-header">
+            <h5 class="mb-0">Data Obat</h5>
+        </div>
+        <div class="card-body p-0">
+            <table class="table table-bordered mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>
+                            <a href="{{ route('admin.obat.index', ['sort' => 'nama_obat', 'direction' => request('direction') == 'asc' ? 'desc' : 'asc'] + request()->except(['sort', 'direction'])) }}" class="text-primary">
+                                Nama Obat
+                                @if(request('sort') == 'nama_obat')
+                                    {!! request('direction') == 'asc' ? '▲' : '▼' !!}
+                                @endif
+                            </a>
+                        </th>
+                        <th>
+                            <a href="{{ route('admin.obat.index', ['sort' => 'jenis_obat', 'direction' => request('direction') == 'asc' ? 'desc' : 'asc'] + request()->except(['sort', 'direction'])) }}" class="text-primary">
+                                Jenis Obat
+                                @if(request('sort') == 'jenis_obat')
+                                    {!! request('direction') == 'asc' ? '▲' : '▼' !!}
+                                @endif
+                            </a>
+                        </th>
+                        <th>
+                            <a href="{{ route('admin.obat.index', ['sort' => 'stok', 'direction' => request('direction') == 'asc' ? 'desc' : 'asc'] + request()->except(['sort', 'direction'])) }}" class="text-primary">
+                                Stok
+                                @if(request('sort') == 'stok')
+                                    {!! request('direction') == 'asc' ? '▲' : '▼' !!}
+                                @endif
+                            </a>
+                        </th>
+                        <th>
+                            <a href="{{ route('admin.obat.index', ['sort' => 'harga', 'direction' => request('direction') == 'asc' ? 'desc' : 'asc'] + request()->except(['sort', 'direction'])) }}" class="text-primary">
+                                Harga
+                                @if(request('sort') == 'harga')
+                                    {!! request('direction') == 'asc' ? '▲' : '▼' !!}
+                                @endif
+                            </a>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($obats as $obat)
+                    <tr>
+                        <td>{{ $obat->nama_obat }}</td>
+                        <td>{{ $obat->jenis_obat }}</td>
+                        <td>{{ $obat->stok }}</td>
+                        <td>{{ number_format($obat->harga, 0, ',', '.') }}</td>
+                    </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
 
     <div class="d-flex justify-content-between align-items-center mt-3">
         <span>Halaman {{ $obats->currentPage() }} dari {{ $obats->lastPage() }}</span>

@@ -20,54 +20,62 @@
             </div>
         </div>
 
-        <table class="table table-bordered">
-            <thead>
-                <tr>
-                    <th>
-                        <a href="{{ route('admin.layanan.index', ['sort' => 'nama_layanan', 'direction' => request('direction') == 'asc' ? 'desc' : 'asc'] + request()->except(['sort', 'direction'])) }}" class="text-primary">
-                            Nama Layanan
-                            @if(request('sort') == 'nama_layanan')
-                                {!! request('direction') == 'asc' ? '▲' : '▼' !!}
-                            @endif
-                        </a>
-                    </th>
-                    <th>
-                        <a href="{{ route('admin.layanan.index', ['sort' => 'deskripsi', 'direction' => request('direction') == 'asc' ? 'desc' : 'asc'] + request()->except(['sort', 'direction'])) }}" class="text-primary">
-                            Deskripsi
-                            @if(request('sort') == 'deskripsi')
-                                {!! request('direction') == 'asc' ? '▲' : '▼' !!}
-                            @endif
-                        </a>
-                    </th>
-                    <th>
-                        <a href="{{ route('admin.layanan.index', ['sort' => 'harga', 'direction' => request('direction') == 'asc' ? 'desc' : 'asc'] + request()->except(['sort', 'direction'])) }}" class="text-primary">
-                            Harga
-                            @if(request('sort') == 'harga')
-                                {!! request('direction') == 'asc' ? '▲' : '▼' !!}
-                            @endif
-                        </a>
-                    </th>
-                    <th>Aksi</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach ($layanans as $layanan)
-                    <tr>
-                        <td>{{ $layanan->nama_layanan }}</td>
-                        <td>{{ $layanan->deskripsi }}</td>
-                        <td>{{ number_format($layanan->harga, 0, ',', '.') }}</td>
-                        <td>
-                            <a href="{{ route('admin.layanan.edit', $layanan->id_layanan) }}" class="btn btn-warning">Edit</a>
-                            <form action="{{ route('admin.layanan.destroy', $layanan->id_layanan) }}" method="POST" style="display:inline;">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="btn btn-danger" onclick="return confirm('Yakin ingin menghapus layanan ini?')">Hapus</button>
-                            </form>
-                        </td>
-                    </tr>
-                @endforeach
-            </tbody>
-        </table>
+        <div class="card shadow rounded">
+            <div class="card-header">
+                <h5 class="mb-0">Data Layanan</h5>
+            </div>
+            <div class="card-body p-0">
+                <table class="table table-bordered mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>
+                                <a href="{{ route('admin.layanan.index', ['sort' => 'nama_layanan', 'direction' => request('direction') == 'asc' ? 'desc' : 'asc'] + request()->except(['sort', 'direction'])) }}" class="text-primary">
+                                    Nama Layanan
+                                    @if(request('sort') == 'nama_layanan')
+                                        {!! request('direction') == 'asc' ? '▲' : '▼' !!}
+                                    @endif
+                                </a>
+                            </th>
+                            <th>
+                                <a href="{{ route('admin.layanan.index', ['sort' => 'deskripsi', 'direction' => request('direction') == 'asc' ? 'desc' : 'asc'] + request()->except(['sort', 'direction'])) }}" class="text-primary">
+                                    Deskripsi
+                                    @if(request('sort') == 'deskripsi')
+                                        {!! request('direction') == 'asc' ? '▲' : '▼' !!}
+                                    @endif
+                                </a>
+                            </th>
+                            <th>
+                                <a href="{{ route('admin.layanan.index', ['sort' => 'harga', 'direction' => request('direction') == 'asc' ? 'desc' : 'asc'] + request()->except(['sort', 'direction'])) }}" class="text-primary">
+                                    Harga
+                                    @if(request('sort') == 'harga')
+                                        {!! request('direction') == 'asc' ? '▲' : '▼' !!}
+                                    @endif
+                                </a>
+                            </th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($layanans as $layanan)
+                            <tr>
+                                <td>{{ $layanan->nama_layanan }}</td>
+                                <td>{{ $layanan->deskripsi }}</td>
+                                <td>{{ number_format($layanan->harga, 0, ',', '.') }}</td>
+                                <td>
+                                    <a href="{{ route('admin.layanan.edit', $layanan->id_layanan) }}" class="btn btn-warning btn-sm">Edit</a>
+                                    <form action="{{ route('admin.layanan.destroy', $layanan->id_layanan) }}" method="POST" class="d-inline">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Yakin ingin menghapus layanan ini?')">Hapus</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
 
         <div class="d-flex justify-content-between align-items-center mt-3">
             <span>Halaman {{ $layanans->currentPage() }} dari {{ $layanans->lastPage() }}</span>
