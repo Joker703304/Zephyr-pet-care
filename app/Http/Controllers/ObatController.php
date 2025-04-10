@@ -31,6 +31,10 @@ class ObatController extends Controller
         // Pagination
         $obats = $query->paginate(10);
 
+        if (auth()->user()->role == 'apoteker') {
+            return view('apoteker.obat.index', compact('obats'));
+        }
+
         // Ambil daftar jenis obat untuk filter dropdown
         $jenisObats = Obat::all();
 
