@@ -133,9 +133,11 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::resource('security', SecurityAdminController::class);
     Route::resource('apoteker', ApotekerAdminController::class);
     Route::get('/laporan', [AdminController::class, 'laporan'])->name('laporan');
-    Route::get('/admin/laporan/export', [AdminController::class, 'exportLaporan'])->name('export-laporan');
+    Route::get('/laporan/export', [AdminController::class, 'exportLaporan'])->name('export-laporan');
+    Route::get('/admin/export-laporan-pdf', [AdminController::class, 'exportLaporanPdf'])->name('admin.export-laporan.pdf');
 
-Route::get('/laporan/export-pdf', [AdminController::class, 'exportPdf'])->name('laporan.pdf');
+    Route::get('/laporan/export-pdf', [AdminController::class, 'exportLaporanPdf'])->name('laporan.pdf');
+    
 
 });
 Route::post('/admin/dokter/find-user', [DokterController::class, 'findUserByEmail'])->name('admin.dokter.findUser');

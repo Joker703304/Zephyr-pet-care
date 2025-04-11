@@ -15,7 +15,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\LaporanExport;
-
+use Barryvdh\DomPDF\Facade\Pdf;
 use App\Exports\TransaksiExport;
 use PHPExcel;
 use PHPExcel_IOFactory;
@@ -215,6 +215,50 @@ public function exportLaporan(Request $request)
     return Excel::download(new TransaksiExport($mode, $bulan, $tahun), $filename);
 }
 
+public function exportLaporanPdf(Request $request)
+{
+    $mode = $request->mode ?? 'bulan';
+    $tahun = $request->tahun ?? now()->format('Y');
+    $bulan = $request->bulan ?? now()->format('Y-m');
+
+    if ($mode === 'bulan' && $bulan) {
+        $start = Carbon::parse($bulan . '-01')->startOfMonth();
+        $end = Carbon::parse($bulan . '-01')->endOfMonth();
+
+        $transaksi = Transaksi::with(['konsultasi.hewan'])
+            ->where('status_pembayaran', 'Sudah Dibayar')
+            ->whereBetween('created_at', [$start, $end])
+            ->orderBy('created_at')
+            ->get();
+
+        $pdf = Pdf::loadView('admin.laporan.pdf', compact('transaksi', 'mode', 'bulan', 'tahun'));
+    } else {
+        $start = Carbon::parse($tahun . '-01-01')->startOfYear();
+        $end = Carbon::parse($tahun . '-12-31')->endOfYear();
+
+        $transaksi = Transaksi::where('status_pembayaran', 'Sudah Dibayar')
+            ->whereBetween('created_at', [$start, $end])
+            ->get();
+
+        $rekap = $transaksi->groupBy(function ($item) {
+            return $item->created_at->format('m');
+        })->map(function ($group) {
+            return $group->sum('total_harga');
+        });
+
+        $rekapTahun = collect();
+        for ($i = 1; $i <= 12; $i++) {
+            $bulanStr = str_pad($i, 2, '0', STR_PAD_LEFT);
+            $rekapTahun[$bulanStr] = $rekap->get($bulanStr, 0);
+        }
+
+        $totalTahun = $rekapTahun->sum();
+
+        $pdf = Pdf::loadView('admin.laporan.pdf', compact('rekapTahun', 'totalTahun', 'mode', 'tahun'));
+    }
+
+    return $pdf->setPaper('A4', 'portrait')->download('laporan_transaksi_' . now()->format('Ymd_His') . '.pdf');
+}
 
 
 }

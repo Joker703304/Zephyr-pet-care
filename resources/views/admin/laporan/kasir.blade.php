@@ -23,10 +23,16 @@
     </div>
 
     @if (($mode === 'tahun' && $rekapTahun->sum() > 0) || ($mode === 'bulan' && $transaksi->count() > 0))
-        <a href="{{ route('admin.export-laporan', ['mode' => $mode, 'bulan' => $bulan, 'tahun' => $tahun]) }}" class="btn btn-success mb-3">
-            Export ke Excel
-        </a>
-    @endif
+    <a href="{{ route('admin.export-laporan', ['mode' => $mode, 'bulan' => $bulan, 'tahun' => $tahun]) }}" class="btn btn-success mb-3">
+        Export ke Excel
+    </a>
+    <a href="{{ route('admin.laporan.pdf', ['mode' => $mode, 'bulan' => $bulan, 'tahun' => $tahun]) }}" class="btn btn-danger mb-3">
+        Export ke PDF
+    </a>
+@endif
+
+
+    
 
     @if ($mode === 'tahun')
         <table class="table table-bordered mt-3">

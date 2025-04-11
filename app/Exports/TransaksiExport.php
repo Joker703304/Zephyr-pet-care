@@ -41,11 +41,11 @@ class TransaksiExport implements FromCollection, WithHeadings, WithTitle, WithSt
                 ->get()
                 ->map(function ($item) {
                     return [
-                        $item->created_at->format('d-m-Y'),
-                        $item->konsultasi->hewan->nama_hewan ?? '-',
-                        $item->total_harga,
-                        $item->jumlah_bayar,
-                        $item->kembalian,
+                        'tanggal' => $item->created_at->format('d-m-Y'),
+                        'nama_hewan' => $item->konsultasi->hewan->nama_hewan ?? '-',
+                        'total_harga' => $item->total_harga,
+                        'jumlah_bayar' => $item->jumlah_bayar,
+                        'kembalian' => $item->kembalian,
                     ];
                 });
         } else {
@@ -63,20 +63,23 @@ class TransaksiExport implements FromCollection, WithHeadings, WithTitle, WithSt
             });
 
             $rekapTahun = collect();
+            $totalTahun = 0;
+
             for ($i = 1; $i <= 12; $i++) {
                 $bulanStr = str_pad($i, 2, '0', STR_PAD_LEFT);
                 $namaBulan = Carbon::createFromFormat('m', $bulanStr)->locale('id')->translatedFormat('F');
+                $jumlah = $rekap->get($bulanStr, 0);
+                $totalTahun += $jumlah;
+
                 $rekapTahun->push([
-                    $namaBulan,
-                    $rekap->get($bulanStr, 0)
+                    'bulan' => $namaBulan,
+                    'total_uang' => $jumlah,
                 ]);
             }
 
             $rekapTahun->push([
-                'Total Tahun ' . $this->tahun,
-                $rekapTahun->sum(function ($row) {
-                    return $row[1];
-                })
+                'bulan' => 'Total Tahun ' . $this->tahun,
+                'total_uang' => $totalTahun,
             ]);
 
             return $rekapTahun;
@@ -85,11 +88,9 @@ class TransaksiExport implements FromCollection, WithHeadings, WithTitle, WithSt
 
     public function headings(): array
     {
-        if ($this->mode === 'bulan') {
-            return ['Tanggal', 'Nama Hewan', 'Total Harga', 'Jumlah Bayar', 'Kembalian'];
-        }
-
-        return ['Bulan', 'Total Uang Masuk'];
+        return $this->mode === 'bulan'
+            ? ['Tanggal', 'Nama Hewan', 'Total Harga', 'Jumlah Bayar', 'Kembalian']
+            : ['Bulan', 'Total Uang Masuk'];
     }
 
     public function title(): string
@@ -99,11 +100,31 @@ class TransaksiExport implements FromCollection, WithHeadings, WithTitle, WithSt
 
     public function styles(Worksheet $sheet)
     {
-        $sheet->getStyle('A1:E1')->getFont()->setBold(true);
         $lastRow = $sheet->getHighestRow();
         $lastCol = $sheet->getHighestColumn();
 
-        // Border seluruh tabel
-        $sheet->getStyle("A1:{$lastCol}{$lastRow}")->getBorders()->getAllBorders()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
+        // Bold header
+        $sheet->getStyle('A1:' . $lastCol . '1')->getFont()->setBold(true);
+
+        // All borders
+        $sheet->getStyle("A1:{$lastCol}{$lastRow}")
+              ->getBorders()->getAllBorders()
+              ->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
+
+        // Center alignment
+        $sheet->getStyle("A1:{$lastCol}{$lastRow}")
+              ->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
+
+        // Right alignment for currency columns (if exist)
+        if ($this->mode === 'bulan') {
+            $sheet->getStyle("C2:C{$lastRow}")->getNumberFormat()->setFormatCode('#,##0');
+            $sheet->getStyle("D2:D{$lastRow}")->getNumberFormat()->setFormatCode('#,##0');
+            $sheet->getStyle("E2:E{$lastRow}")->getNumberFormat()->setFormatCode('#,##0');
+        } else {
+            $sheet->getStyle("B2:B{$lastRow}")->getNumberFormat()->setFormatCode('#,##0');
+
+            // Bold total row
+            $sheet->getStyle("A{$lastRow}:B{$lastRow}")->getFont()->setBold(true);
+        }
     }
 }
