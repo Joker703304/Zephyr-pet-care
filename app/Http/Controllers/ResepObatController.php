@@ -7,6 +7,8 @@ use App\Models\konsultasi;
 use App\Models\Transaksi;
 use App\Models\obat;
 use App\Models\User;
+use Illuminate\Support\Collection;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Http;
@@ -20,23 +22,34 @@ class ResepObatController extends Controller
     
         // Check if the logged-in user is 'pemilik_hewan'
         if ($user->role == 'pemilik_hewan') {
-            // Ambil semua resep obat dengan status "siap" yang terkait dengan konsultasi hewan yang dimiliki oleh pemilik hewan
-            $resep_obat = ResepObat::where('status', 'siap') // Tambahkan filter status "siap"
-                ->whereHas('konsultasi', function ($query) use ($user) {
-                    // Ambil konsultasi berdasarkan hewan yang dimiliki oleh pemilik hewan
-                    $query->whereIn('id_hewan', function ($subQuery) use ($user) {
-                        $subQuery->select('id_hewan')
-                            ->from('hewan')
-                            ->where('id_pemilik', $user->pemilikHewan->id_pemilik);  // Relasi dengan pemilik hewan
-                    });
-                })
-                ->with('konsultasi', 'obat') // Sertakan relasi konsultasi dan obat
-                ->orderByDesc('created_at') // Urutkan berdasarkan waktu terbaru
-                ->get()
-                ->groupBy('id_konsultasi'); // Kelompokkan berdasarkan id_konsultasi
-    
-            // Tampilkan halaman untuk pemilik_hewan
-            return view('pemilik-hewan.resep_obat.index', compact('resep_obat'));
+             // Ambil semua resep "siap" dengan relasi
+        $resep_obat_all = ResepObat::where('status', 'siap')
+        ->whereHas('konsultasi', function ($query) use ($user) {
+            $query->whereIn('id_hewan', function ($subQuery) use ($user) {
+                $subQuery->select('id_hewan')
+                    ->from('hewan')
+                    ->where('id_pemilik', $user->pemilikHewan->id_pemilik);
+            });
+        })
+        ->with('konsultasi.hewan', 'obat')
+        ->orderByDesc('created_at')
+        ->get()
+        ->groupBy('id_konsultasi'); // Masih collection
+
+    // Paginasi manual untuk hasil yang sudah digroup
+    $currentPage = request()->get('page', 1);
+    $perPage = 6;
+
+    // Convert group collection ke array biasa
+    $resep_obat_paginated = new LengthAwarePaginator(
+        $resep_obat_all->slice(($currentPage - 1) * $perPage, $perPage)->values(),
+        $resep_obat_all->count(),
+        $perPage,
+        $currentPage,
+        ['path' => request()->url(), 'query' => request()->query()]
+    );
+
+    return view('pemilik-hewan.resep_obat.index', ['resep_obat' => $resep_obat_paginated]);
         }
     
         // Untuk apoteker: Ambil resep dengan status selain 'siap' dan urutkan berdasarkan tanggal terbaru
