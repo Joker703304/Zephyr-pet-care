@@ -11,59 +11,55 @@ use Illuminate\Support\Facades\Storage;
 class HewanController extends Controller
 {
     public function index(Request $request)
-    {
-        $user = auth()->user();
-        $query = hewan::with('pemilik', 'jenis');
+{
+    $user = auth()->user();
+    $query = Hewan::with('pemilik', 'jenis');
 
-        if ($user->role == 'pemilik_hewan') {
-            $query->whereHas('pemilik', function ($q) use ($user) {
-                $q->where('id_user', $user->id);
-            });
-        }
-
-        if ($request->has('search')) {
-            $search = $request->search;
-            $query->where(function ($q) use ($search) {
-                $q->where('nama_hewan', 'like', "%$search%")
-                    ->orWhereHas('pemilik', function ($q) use ($search) {
-                        $q->where('nama', 'like', "%$search%");
-                    });
-            });
-        }
-
-        if ($request->has('jenis') && $request->jenis != '') {
-            $query->whereHas('jenis', function ($q) use ($request) {
-                $q->where('id', $request->jenis);
-            });
-        }
-
-        // Sorting default
-        $sort = $request->get('sort', 'nama_hewan');
-        $direction = $request->get('direction', 'asc');
-
-        // Pastikan sorting hanya pada kolom yang diizinkan
-        $sortable = ['nama_hewan', 'umur', 'jenis_id', 'jenkel', 'berat', 'pemilik_nama'];
-
-        if (in_array($sort, $sortable)) {
-            if ($sort == 'pemilik_nama') {
-                $query->orderBy(
-                    \DB::raw('(SELECT nama FROM users WHERE users.id = hewan.id_user)'),
-                    $direction
-                );
-            } else {
-                $query->orderBy($sort, $direction);
-            }
-        }
-
-        $hewan = $query->paginate(10)->appends($request->query());
-        $jenisHewan = \App\Models\JenisHewan::all();
-
-        if ($user->role == 'pemilik_hewan') {
-            return view('pemilik-hewan.hewan.index', compact('hewan', 'jenisHewan'));
-        }
-
-        return view('admin.hewan.index', compact('hewan', 'jenisHewan'));
+    // Khusus pemilik hewan, tampilkan hanya hewan miliknya
+    if ($user->role === 'pemilik_hewan') {
+        $query->whereHas('pemilik', function ($q) use ($user) {
+            $q->where('id_user', $user->id);
+        });
     }
+
+    // Pencarian
+    if ($request->has('search') && $request->search !== '') {
+        $search = $request->search;
+        $query->where(function ($q) use ($search) {
+            $q->where('nama_hewan', 'like', "%$search%")
+              ->orWhereHas('pemilik', function ($q) use ($search) {
+                  $q->where('nama', 'like', "%$search%");
+              });
+        });
+    }
+
+    // Filter berdasarkan jenis
+    if ($request->has('jenis') && $request->jenis !== '') {
+        $query->where('jenis_id', $request->jenis);
+    }
+
+    // Sorting
+    $sort = $request->get('sort', 'nama_hewan'); // default sort
+    $direction = $request->get('direction', 'asc');
+    $sortable = ['nama_hewan', 'umur', 'jenis_id', 'jenkel', 'berat', 'created_at'];
+
+    if (in_array($sort, $sortable)) {
+        $query->orderBy($sort, $direction);
+    }
+
+    // Pagination berbeda sesuai role
+    $perPage = $user->role === 'pemilik_hewan' ? 5 : 10;
+    $hewan = $query->paginate($perPage)->appends($request->query());
+
+    $jenisHewan = \App\Models\JenisHewan::all();
+
+    if ($user->role === 'pemilik_hewan') {
+        return view('pemilik-hewan.hewan.index', compact('hewan', 'jenisHewan'));
+    }
+
+    return view('admin.hewan.index', compact('hewan', 'jenisHewan'));
+}
+
 
 
 

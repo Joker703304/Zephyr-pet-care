@@ -35,26 +35,26 @@ class SecurityController extends Controller
     }
 
     public function storeProfile(Request $request)
-{
-    // Validate the incoming data
-    $validated = $request->validate([
-        'nama' => 'required|string|max:50',
-        'phone' => 'required|string|max:13|exists:users,phone',
-        'jenkel' => 'required|in:pria,wanita',
-        'alamat' => 'nullable|string',
-    ]);
+    {
+        // Validate the incoming data
+        $validated = $request->validate([
+            'nama' => 'required|string|max:50',
+            'phone' => 'required|string|max:13|exists:users,phone',
+            'jenkel' => 'required|in:pria,wanita',
+            'alamat' => 'nullable|string',
+        ]);
 
-    // Create a new security profile
-    Security::create([
-        'id_user' => Auth::id(),
-        'nama' => $validated['nama'],
-        'jenkel' => $validated['jenkel'],
-        'alamat' => $validated['alamat'],
-    ]);
+        // Create a new security profile
+        Security::create([
+            'id_user' => Auth::id(),
+            'nama' => $validated['nama'],
+            'jenkel' => $validated['jenkel'],
+            'alamat' => $validated['alamat'],
+        ]);
 
-    // Redirect to the dashboard after the profile is created
-    return redirect()->route('security.dashboard')->with('success', 'Profile anda berhasil dibuat.');
-}
+        // Redirect to the dashboard after the profile is created
+        return redirect()->route('security.dashboard')->with('success', 'Profile anda berhasil dibuat.');
+    }
 
 
     public function editProfile()
@@ -110,49 +110,47 @@ class SecurityController extends Controller
             ->whereDate('created_at', $today)
             ->where('status', 'Dipanggil')
             ->get();
-    
+
         // Antrian dengan status "Menunggu"
         $antrianMenunggu = Antrian::with(['konsultasi.dokter.user'])
             ->whereDate('created_at', $today)
             ->where('status', 'Menunggu')
             ->get();
-    
+
         return view('security.dashboard', compact('antrianDipanggil', 'antrianMenunggu'));
     }
 
     public function getAntrian()
-{
-    $today = Carbon::today();
+    {
+        $today = Carbon::today();
 
-    // Ambil antrian dengan status "Dipanggil"
-    $antrianDipanggil = Antrian::with(['konsultasi.dokter.user'])
-        ->whereDate('created_at', $today)
-        ->where('status', 'Dipanggil')
-        ->get();
+        $antrianDipanggil = Antrian::with(['konsultasi.dokter.user', 'konsultasi.hewan.pemilik'])
+            ->whereDate('created_at', $today)
+            ->where('status', 'Dipanggil')
+            ->get();
 
-    // Ambil antrian dengan status "Menunggu"
-    $antrianMenunggu = Antrian::with(['konsultasi.dokter.user'])
-        ->whereDate('created_at', $today)
-        ->where('status', 'Menunggu')
-        ->get();
+        $antrianMenunggu = Antrian::with(['konsultasi.dokter.user'])
+            ->whereDate('created_at', $today)
+            ->where('status', 'Menunggu')
+            ->get();
 
-    // Kirim data dalam bentuk JSON
-    return response()->json([
-        'antrianDipanggil' => $antrianDipanggil,
-        'antrianMenunggu' => $antrianMenunggu,
-    ]);
-}
-public function updatePassword(Request $request, $id)
+        return response()->json([
+            'antrianDipanggil' => $antrianDipanggil,
+            'antrianMenunggu' => $antrianMenunggu,
+        ]);
+    }
+
+    public function updatePassword(Request $request, $id)
     {
         $request->validate([
             'password' => 'required|min:8|confirmed',
         ]);
-    
+
         $security = Security::findOrFail($id); // Pastikan model sesuai
         $security->user->update([
             'password' => Hash::make($request->password),
         ]);
-    
+
         return redirect()->back()->with('success', 'Password berhasil diperbarui.');
     }
 }

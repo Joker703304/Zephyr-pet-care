@@ -65,7 +65,7 @@
                 @endforeach
             </div>
             <div class="mt-4">
-                {{ $resep_obat->links() }}
+                {{ $resep_obat->links('pagination::bootstrap-4') }}
             </div>
             
         @endif
