@@ -158,6 +158,11 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     // Route untuk menambah jenis hewan
     Route::get('hewan/create-jenis', [HewanController::class, 'createJenis'])->name('hewan.create-jenis');
     Route::post('hewan/store-jenis', [HewanController::class, 'storeJenis'])->name('hewan.store-jenis');
+
+    // ✅ Tambahkan yang ini:
+    Route::get('hewan/{id}/edit-jenis', [HewanController::class, 'editJenis'])->name('hewan.edit-jenis');
+    Route::put('hewan/{id}/update-jenis', [HewanController::class, 'updateJenis'])->name('hewan.update-jenis');
+    Route::delete('hewan/{id}/delete-jenis', [HewanController::class, 'deleteJenis'])->name('hewan.delete-jenis');
 });
 
 //konsultasi
