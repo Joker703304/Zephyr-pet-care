@@ -9,46 +9,46 @@
     @endif
 
     <div class="card shadow-lg p-4">
-    <form action="{{ route('pemilik-hewan.konsultasi_pemilik.store') }}" method="POST">
-        @csrf
+        <form action="{{ route('pemilik-hewan.konsultasi_pemilik.store') }}" method="POST" id="konsultasiForm">
+            @csrf
 
-        <div class="mb-3">
-            <label for="id_hewan" class="form-label fw-bold"><i class="fas fa-paw"></i> Pilih Hewan</label>
-            <select name="id_hewan" id="id_hewan" class="form-control" required>
-                <option value="">Pilih Hewan</option>
-                @foreach($hewan as $h)
-                    <option value="{{ $h->id_hewan }}">{{ $h->nama_hewan }} ({{ $h->jenis->nama_jenis }})</option>
-                @endforeach
-            </select>
-        </div>
+            <div class="mb-3">
+                <label for="id_hewan" class="form-label fw-bold"><i class="fas fa-paw"></i> Pilih Hewan</label>
+                <select name="id_hewan" id="id_hewan" class="form-control" required>
+                    <option value="">Pilih Hewan</option>
+                    @foreach($hewan as $h)
+                        <option value="{{ $h->id_hewan }}">{{ $h->nama_hewan }} ({{ $h->jenis->nama_jenis }})</option>
+                    @endforeach
+                </select>
+            </div>
 
-        <div class="mb-3">
-            <label for="keluhan" class="form-label fw-bold"><i class="fas fa-exclamation-triangle"></i> Keluhan</label>
-            <textarea name="keluhan" id="keluhan" class="form-control" rows="3" required placeholder="Jelaskan keluhan hewan peliharaan Anda...">{{ old('keluhan') }}</textarea>
-        </div>
+            <div class="mb-3">
+                <label for="keluhan" class="form-label fw-bold"><i class="fas fa-exclamation-triangle"></i> Keluhan</label>
+                <textarea name="keluhan" id="keluhan" class="form-control" rows="3" required placeholder="Jelaskan keluhan hewan peliharaan Anda...">{{ old('keluhan') }}</textarea>
+            </div>
 
-        <div class="mb-3">
-            <label for="tanggal_konsultasi" class="form-label fw-bold"><i class="fas fa-calendar-alt"></i> Tanggal Konsultasi</label>
-            <input type="text" name="tanggal_konsultasi" id="tanggal_konsultasi" class="form-control" required placeholder="Pilih tanggal...">
-        </div>
+            <div class="mb-3">
+                <label for="tanggal_konsultasi" class="form-label fw-bold"><i class="fas fa-calendar-alt"></i> Tanggal Konsultasi</label>
+                <input type="text" name="tanggal_konsultasi" id="tanggal_konsultasi" class="form-control" required placeholder="Pilih tanggal...">
+            </div>
 
-        <div class="mb-3">
-            <label for="dokter" class="form-label fw-bold"><i class="fas fa-user-md"></i> Pilih Dokter</label>
-            <select name="dokter_id" id="dokter" class="form-control" required>
-                <option value="">Pilih Dokter</option>
-                @foreach($dokterJadwal as $jadwal)
-                    <option value="{{ $jadwal->dokter->id_dokter }}">
-                        {{ $jadwal->dokter->user->name }} (Maksimal Konsultasi: {{ $jadwal->maksimal_konsultasi }})
-                    </option>
-                @endforeach
-            </select>
-        </div>
+            <div class="mb-3">
+                <label for="dokter" class="form-label fw-bold"><i class="fas fa-user-md"></i> Pilih Dokter</label>
+                <select name="dokter_id" id="dokter" class="form-control" required>
+                    <option value="">Pilih Dokter</option>
+                    @foreach($dokterJadwal as $jadwal)
+                        <option value="{{ $jadwal->dokter->id_dokter }}">
+                            {{ $jadwal->dokter->user->name }} (Maksimal Konsultasi: {{ $jadwal->maksimal_konsultasi }})
+                        </option>
+                    @endforeach
+                </select>
+            </div>
 
-        <a href="{{ route('pemilik-hewan.konsultasi_pemilik.index') }}" class="btn btn-secondary">
-            <i class="fas fa-arrow-left"></i> Kembali
-        </a>
-        <button type="submit" class="btn btn-primary">Ajukan Konsultasi</button>
-    </form>
+            <a href="{{ route('pemilik-hewan.konsultasi_pemilik.index') }}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Kembali
+            </a>
+            <button type="submit" class="btn btn-primary" id="submitButton">Ajukan Konsultasi</button>
+        </form>
     </div>
 </div>
 
@@ -57,6 +57,12 @@
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 
 <script>
+    document.querySelector('#konsultasiForm').addEventListener('submit', function() {
+        const button = document.getElementById('submitButton');
+        button.disabled = true;
+        button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Mengajukan...';
+    });
+
     // Jadwal dokter dari backend
     const dokterJadwal = @json($dokterJadwal);
 
@@ -122,9 +128,6 @@
     dokterSelect.disabled = true;
 </script>
 
-
-
-
 <style>
     .card {
         border-radius: 12px;
@@ -155,5 +158,4 @@
         }
     }
 </style>
-
 @endsection

@@ -5,6 +5,7 @@
     <h1>Daftar Konsultasi</h1>
 
     <a href="{{ route('kasir.dashboard') }}" class="btn btn-secondary mb-3">Kembali</a>
+    <a href="{{ route('kasir.daftarUlang.kadaluarsa') }}" class="btn btn-danger mb-3">kadaluarsa</a>
 
 
     {{-- <a href="{{ route('admin.konsultasi.create') }}" class="btn btn-primary mb-3">Tambah Konsultasi</a> --}}

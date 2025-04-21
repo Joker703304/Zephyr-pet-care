@@ -142,6 +142,32 @@ class kasirController extends Controller
         return redirect()->back()->with('success', 'Pasien telah dipanggil.');
     }
 
+    public function daftarUlangKadaluarsa()
+{
+    $today = Carbon::today();
+
+    // Ambil konsultasi dengan status "Menunggu" tapi tanggal konsultasi sudah lewat
+    $kadaluwarsa = Konsultasi::with(['hewan.pemilik.user', 'dokter.user'])
+        ->where('status', 'Menunggu')
+        ->whereDate('tanggal_konsultasi', '<', $today)
+        ->get();
+
+    return view('kasir.daftar_ulang.kadaluarsa', compact('kadaluwarsa'));
+}
+
+public function batalSemua(Request $request)
+{
+    $request->validate([
+        'selected_ids' => 'required|array',
+    ]);
+
+    Konsultasi::whereIn('id_konsultasi', $request->selected_ids)
+        ->update(['status' => 'Dibatalkan']);
+
+    return back()->with('success', 'Daftar ulang yang dipilih berhasil dibatalkan.');
+}
+
+
     /**
      * Show the form for creating a new resource.
      */

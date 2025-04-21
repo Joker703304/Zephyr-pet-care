@@ -9,20 +9,7 @@
             <div class="col-lg-8 mb-4">
                 <h3 class="text-center">ANTRIAN DIPANGGIL</h3>
                 <div class="d-flex flex-wrap justify-content-center" id="antrianDipanggil">
-                    @forelse ($antrianDipanggil as $item)
-                        <div class="kotak-antrian m-3">
-                            <h1>{{ strtoupper($item->no_antrian) }}</h1>
-                            <p>{{ strtoupper($item->konsultasi->hewan->pemilik->nama ?? 'TIDAK ADA') }}</p>
-                            <p>{{ strtoupper($item->konsultasi->hewan->nama_hewan ?? 'TIDAK ADA') }}</p>
-                            @if ($item->konsultasi->status == 'Pembayaran')
-                                <p class="kasir text-success">KASIR</p>
-                            @else
-                                <p class="text-primary">{{ strtoupper($item->konsultasi->dokter->user->name ?? 'TIDAK ADA') }}</p>
-                            @endif
-                        </div>
-                    @empty
-                        <p class="text-center w-100">TIDAK ADA ANTRIAN YANG DIPANGGIL.</p>
-                    @endforelse
+                    <!-- Data AJAX -->
                 </div>
             </div>
 
@@ -36,73 +23,83 @@
                         </tr>
                     </thead>
                     <tbody id="menungguTable">
-                        @forelse ($antrianMenunggu as $item)
-                            @if ($item->konsultasi->status !== 'Selesai')
-                                <tr>
-                                    <td>{{ strtoupper($item->no_antrian) }}</td>
-                                </tr>
-                            @endif
-                        @empty
-                            <tr>
-                                <td colspan="2" class="text-center">BELUM ADA ANTRIAN UNTUK SAAT INI.</td>
-                            </tr>
-                        @endforelse
+                        <!-- Data AJAX -->
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
 
+    {{-- Font Awesome --}}
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+
+    {{-- Gaya --}}
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@700&display=swap');
+
         .kotak-antrian {
-            width: 230px;
-            height: 230px;
-            background-color: #f8f9fa;
-            border: 3px solid #007bff;
+            width: 250px;
+            height: 250px;
+            background: linear-gradient(135deg, #e3f2fd, #ffffff);
+            border: none;
+            box-shadow: 0 8px 16px rgba(0, 123, 255, 0.3);
+            border-radius: 20px;
+            font-family: 'Nunito', sans-serif;
             font-weight: bold;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             text-align: center;
-            overflow: hidden;
-            word-wrap: break-word;
+            margin: 10px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .kotak-antrian.animate {
+            animation: fadeInUp 0.5s ease;
+        }
+
+        .kotak-antrian:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 20px rgba(0, 123, 255, 0.5);
         }
 
         .kotak-antrian h1 {
-            font-size: 2.5rem;
+            font-size: 3rem;
             color: #007bff;
-            font-weight: bold;
-            margin: 0;
-            line-height: 1;
-            text-transform: uppercase;
+            margin-bottom: 10px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
         }
 
         .kotak-antrian p {
-            font-size: 2rem;
-            color: #333;
+            font-size: 1.5rem;
             margin: 0;
-            white-space: nowrap;
-            overflow: hidden;
+            color: #333;
             text-overflow: ellipsis;
-            text-transform: uppercase;
+            overflow: hidden;
+            max-width: 100%;
+            white-space: nowrap;
+        }
+
+        .kasir {
+            color: #28a745 !important;
+            font-weight: bold;
+            font-size: 1.4rem;
+            margin-top: 10px;
         }
 
         .text-primary {
-            color: blue !important; /* Nama dokter jadi biru */
+            color: #007bff !important;
             font-weight: bold;
-        }
-
-        .text-success {
-            color: green !important; /* Kasir jadi hijau */
-            font-weight: bold;
+            font-size: 1.4rem;
+            margin-top: 10px;
         }
 
         .table th, .table td {
             text-align: center;
             vertical-align: middle;
             text-transform: uppercase;
-            font-size: 2rem;
+            font-size: 1.5rem;
             font-weight: bold;
             color: #000;
         }
@@ -111,68 +108,91 @@
             background-color: #007bff;
             color: #fff;
         }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
     </style>
 
+    {{-- AJAX --}}
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
-        const fetchAntrian = () => {
+        let lastDipanggilHTML = '';
+        let lastMenungguHTML = '';
+
+        function fetchAntrian() {
             $.ajax({
                 url: "{{ route('security.getAntrian') }}",
-                method: "GET",
+                method: 'GET',
                 success: function (data) {
-                    const antrianDipanggilContainer = $("#antrianDipanggil");
-                    antrianDipanggilContainer.empty();
+                    const dipanggil = data.antrianDipanggil;
+                    const menunggu = data.antrianMenunggu;
 
-                    if (data.antrianDipanggil.length > 0) {
-                        data.antrianDipanggil.forEach(item => {
-                            let statusPembayaran = item.konsultasi.status_pembayaran == 'Belum Lunas' 
-                                ? '<p class="kasir text-success">Silakan ke kasir</p>' 
-                                : `<p class="text-primary">${(item.konsultasi.dokter.user.name ?? 'TIDAK ADA').toUpperCase()}</p>`;
+                    // Antrian Dipanggil
+                    let htmlDipanggil = '';
+                    if (dipanggil.length > 0) {
+                        dipanggil.forEach(item => {
+                            const pemilik = item.konsultasi?.hewan?.pemilik?.nama ?? 'TIDAK ADA';
+                            const hewan = item.konsultasi?.hewan?.nama_hewan ?? 'TIDAK ADA';
+                            const dokter = item.konsultasi?.dokter?.user?.name ?? 'TIDAK ADA';
+                            const status = item.konsultasi?.status === 'Pembayaran'
+                                ? '<p class="kasir text-success">KASIR</p>'
+                                : `<p class="text-primary">${dokter.toUpperCase()}</p>`;
 
-                            const antrianBox = `
-                                <div class="kotak-antrian m-3">
+                            htmlDipanggil += `
+                                <div class="kotak-antrian animate m-3">
                                     <h1>${item.no_antrian.toUpperCase()}</h1>
-                                    <p>${(item.konsultasi.hewan.pemilik. ?? 'TIDAK ADA').toUpperCase()}</p>
-                                    <p>${(item.konsultasi.hewan.nama_hewan ?? 'TIDAK ADA').toUpperCase()}</p>
-                                    ${statusPembayaran}
+                                    <p><i class="fas fa-user"></i> ${pemilik.toUpperCase()}</p>
+                                    <p><i class="fas fa-paw"></i> ${hewan.toUpperCase()}</p>
+                                    ${status}
                                 </div>
                             `;
-                            antrianDipanggilContainer.append(antrianBox);
                         });
                     } else {
-                        antrianDipanggilContainer.append('<p class="text-center w-100">TIDAK ADA ANTRIAN YANG DIPANGGIL.</p>');
+                        htmlDipanggil = '<p class="text-center w-100">TIDAK ADA ANTRIAN YANG DIPANGGIL.</p>';
                     }
 
-                    const menungguTableBody = $("#menungguTable");
-                    menungguTableBody.empty();
+                    if (htmlDipanggil !== lastDipanggilHTML) {
+                        $('#antrianDipanggil').html(htmlDipanggil);
+                        lastDipanggilHTML = htmlDipanggil;
+                    }
 
-                    if (data.antrianMenunggu.length > 0) {
-                        data.antrianMenunggu.forEach(item => {
-                            if (item.konsultasi.status !== "Selesai") {
-                                let dokterName = item.konsultasi.status_pembayaran !== 'Belum Lunas' 
-                                    ? `<span class="text-primary">${(item.konsultasi.dokter.user.name ?? 'TIDAK ADA').toUpperCase()}</span>` 
-                                    : '';
-
-                                const row = `
+                    // Antrian Menunggu
+                    let htmlMenunggu = '';
+                    if (menunggu.length > 0) {
+                        menunggu.forEach(item => {
+                            if (item.konsultasi?.status !== 'Selesai') {
+                                htmlMenunggu += `
                                     <tr>
                                         <td>${item.no_antrian.toUpperCase()}</td>
-                                        <td>${dokterName}</td>
                                     </tr>
                                 `;
-                                menungguTableBody.append(row);
                             }
                         });
-                    } else {
-                        menungguTableBody.append('<tr><td colspan="2" class="text-center">BELUM ADA ANTRIAN UNTUK SAAT INI.</td></tr>');
+                    }
+                    if (htmlMenunggu === '') {
+                        htmlMenunggu = '<tr><td colspan="2" class="text-center">BELUM ADA ANTRIAN UNTUK SAAT INI.</td></tr>';
+                    }
+
+                    if (htmlMenunggu !== lastMenungguHTML) {
+                        $('#menungguTable').html(htmlMenunggu);
+                        lastMenungguHTML = htmlMenunggu;
                     }
                 },
                 error: function () {
-                    console.error("GAGAL MENGAMBIL DATA ANTRIAN.");
-                },
+                    console.error('GAGAL MENGAMBIL DATA ANTRIAN.');
+                }
             });
-        };
+        }
 
         setInterval(fetchAntrian, 5000);
-        fetchAntrian();
+        $(document).ready(fetchAntrian);
     </script>
 @endsection

@@ -137,7 +137,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::get('/admin/export-laporan-pdf', [AdminController::class, 'exportLaporanPdf'])->name('admin.export-laporan.pdf');
 
     Route::get('/laporan/export-pdf', [AdminController::class, 'exportLaporanPdf'])->name('laporan.pdf');
-    
+ 
 
 });
 Route::post('/admin/dokter/find-user', [DokterController::class, 'findUserByEmail'])->name('admin.dokter.findUser');
@@ -158,6 +158,11 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     // Route untuk menambah jenis hewan
     Route::get('hewan/create-jenis', [HewanController::class, 'createJenis'])->name('hewan.create-jenis');
     Route::post('hewan/store-jenis', [HewanController::class, 'storeJenis'])->name('hewan.store-jenis');
+
+     // ✅ Tambahkan yang ini:
+     Route::get('hewan/{id}/edit-jenis', [HewanController::class, 'editJenis'])->name('hewan.edit-jenis');
+     Route::put('hewan/{id}/update-jenis', [HewanController::class, 'updateJenis'])->name('hewan.update-jenis');
+     Route::delete('hewan/{id}/delete-jenis', [HewanController::class, 'deleteJenis'])->name('hewan.delete-jenis');
 });
 
 //konsultasi
@@ -257,6 +262,9 @@ Route::middleware(['auth', 'role:kasir'])->prefix('kasir')->name('kasir.')->grou
     Route::get('/transaksi/riwayat', [KasirController::class, 'riwayatTransaksi'])->name('transaksi.riwayat');
     Route::post('kasir/transaksi/{id}/bayar', [KasirController::class, 'bayar'])->name('transaksi.bayar');
 Route::get('kasir/transaksi/{id}/rincian', [KasirController::class, 'rincian'])->name('transaksi.rincian');
+Route::get('/kasir/daftar-ulang/kadaluarsa', [KasirController::class, 'daftarUlangKadaluarsa'])->name('daftarUlang.kadaluarsa');
+Route::post('/kasir/daftar-ulang/batal-semua', [KasirController::class, 'batalSemua'])->name('daftarUlang.batalMassal');
+
 });
 
 

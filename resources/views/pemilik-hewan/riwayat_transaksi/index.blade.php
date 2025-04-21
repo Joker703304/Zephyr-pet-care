@@ -52,6 +52,11 @@
             </div>
             @endforeach
         </div>
+
+        {{-- PAGINATION --}}
+        <div class="d-flex justify-content-center mt-4">
+            {{ $transaksi->links('pagination::bootstrap-4') }}
+        </div>
     @endif
 </div>
 @endsection
